@@ -1,6 +1,6 @@
 Synthetic Dataset for VLM Relational Reasoning
 This project generates a synthetic dataset of geometric scenes to test and analyze the relational reasoning capabilities of Vision-Language Models (VLMs).
-The goal is to create a controlled environment to probe VLM attention patterns, specifically addressing why they often succeed at entity recognition but fail at understanding spatial relationships (as outlined in the project proposals [cite: Project_Proposal_Yifan_Hou.pdf, DL2025_Project_Proposal.pdf]).
+The goal is to create a controlled environment to probe VLM attention patterns, specifically addressing why they often succeed at entity recognition but fail at understanding spatial relationships (TA support from Yifan Hou).
 The dataset consists of images with colored shapes (circles, squares, triangles, stars) and detailed JSON annotations. These annotations include:
 Object bounding boxes (with correct tight boxes for all shapes [cite: img-gen.py]).
 A complete list of spatial relations (e.g., left_of, above).
