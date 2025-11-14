@@ -1,5 +1,5 @@
-/base_scenes/
-/synthetic_vlm_rel_aug/
+/base_scenes
+/synthetic_vlm_rel_aug
 pycache/
 *.pyc
 *.pyo
