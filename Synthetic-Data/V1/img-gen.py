@@ -117,7 +117,7 @@ def make_obj(obj_id: int, shape: str, color: str, center: Tuple[int,int], size: 
 # SCENE GENERATION
 # -------------------------------------------------------
 def generate_scene(scene_id: int):
-    # Random layout of 3–4 shapes
+    # Random layout of 2–5 shapes
     n_shapes = random.randint(2, 4)
     chosen_shapes = random.sample(SHAPES, n_shapes)
     coords = []

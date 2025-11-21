@@ -27,7 +27,7 @@ def main():
     for fname, desc in scripts:
         path = os.path.join(root, fname)
         if not os.path.exists(path):
-            print(f"⚠️  Skipping {fname} (file not found).")
+            print(f"Skipping {fname} (file not found).")
             continue
         run_stage(path, desc)
     
