@@ -7,3 +7,7 @@ pycache/
 *.pyo
 *.pyd
 .venv/venv/env/
+venv
+layer_vis_results*
+attention_map*
+llava_attention_analysis*.pdf
