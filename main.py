@@ -18,7 +18,7 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration, BitsAndBy
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 IMAGE_PATH = "sample.png"
-PROMPT_TEXT = "USER: <image>\nIs the orange triangle above the yellow triangle?\nASSISTANT:"
+PROMPT_TEXT = "USER: <image>\nIs the orange triangle above the yellow triangle?\nASSISTANT: "
 PDF_FILENAME = "llava_attention_analysis.pdf"
 
 def create_plot(image, attn_map, title):
@@ -61,7 +61,8 @@ def main():
     print(f"Loading model: {MODEL_ID} (4-bit mode)...")
     model = LlavaForConditionalGeneration.from_pretrained(
         MODEL_ID, 
-        quantization_config=quantization_config,
+        # quantization_config=quantization_config,
+        dtype=torch.float16,
         device_map="auto",
         attn_implementation="eager"
     )
@@ -82,6 +83,17 @@ def main():
 
     inputs = processor(text=PROMPT_TEXT, images=image, return_tensors="pt").to(model.device)
 
+    # --- NEW: INSPECTION BLOCK ---
+    print("\n" + "="*30)
+    print(" INSPECTING PROCESSOR OUTPUTS")
+    print("="*30)
+    
+    for key, value in inputs.items():
+        if hasattr(value, 'shape'):
+            print(f"Key: {key:15} | Shape: {value.shape} | Type: {value.dtype}")
+    
+    print("="*30 + "\n")
+    # -----------------------------
     # 3. Inference
     print("Running inference...")
     with torch.no_grad():
@@ -94,6 +106,7 @@ def main():
 
     generated_text = processor.batch_decode(outputs.sequences, skip_special_tokens=True)[0]
     print(f"\nResponse: {generated_text}\n")
+    # print(f"Output Length (Prompt + Image + Generated Answer): {outputs.sequences.shape[1]}")
 
     if outputs.attentions is None:
         print("Error: Model did not return attentions.")
@@ -107,14 +120,21 @@ def main():
     with PdfPages(PDF_FILENAME) as pdf:
         
         # Loop through all layers
-        all_layers_data = outputs.attentions[0]
-        
+        print(f"Type of outputs.attentions = {type(outputs.attentions)} and is of shape {len(outputs.attentions)}")
+        all_layers_data = outputs.attentions[0] # outputs.attentions gives us a tuple of tuples, and the outermost tuple has the attentions at each step of the generation. We do 0 because we want to visualise the attention that the model had when generating the first word
+        print(f"Retrieved {len(all_layers_data)} attention matrices")
         print(f"Generating pages for {num_layers} layers...")
         for layer_idx, layer_attn_tensor in enumerate(all_layers_data):
+            # print(f"Retrieved attention matrix of shape {layer_attn_tensor.shape}for {layer_idx}")
             try:
                 # Extract Attention
+                print(f"Shape before collapsing: {layer_attn_tensor.shape}")
+                # 0 ensures you take the first batch only (we only have 1 batch so far)
+                # : ensures you take all the attention heads
+                # -1 here ensures you take the attention for the last token that is generated
+                # ensures you take the attention placed by the generated token on all the tokens
                 avg_attn = layer_attn_tensor[0, :, -1, :].mean(dim=0)
-
+                print(f"Shape after collapsing along head dimension: {avg_attn.shape}")
                 # Extract Image tokens (approx 576 tokens)
                 num_image_tokens = 576
                 start_idx = 5 
