@@ -182,14 +182,14 @@ def _rel_spatial(objs, patch):
                 continue
 
             # Strict margin check
-            if a.center[0] < b.center[0] - buffer: 
+            if a.center[0] <= b.center[0] - buffer: 
                 rels.append({"type":"left_of", "subject_id":a.id, "object_id":b.id})
-            if a.center[0] > b.center[0] + buffer: 
+            if a.center[0] >= b.center[0] + buffer: 
                 rels.append({"type":"right_of", "subject_id":a.id, "object_id":b.id})
             
-            if a.center[1] < b.center[1] - buffer: 
+            if a.center[1] <= b.center[1] - buffer: 
                 rels.append({"type":"above", "subject_id":a.id, "object_id":b.id})
-            if a.center[1] > b.center[1] + buffer: 
+            if a.center[1] >= b.center[1] + buffer: 
                 rels.append({"type":"below", "subject_id":a.id, "object_id":b.id})
     return rels
 
