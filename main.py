@@ -2,7 +2,10 @@ import torch
 import sys
 import importlib.util
 import os
-import shutil
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+from PIL import Image
+import numpy as np
 
 # --- Dependency Check ---
 if importlib.util.find_spec("bitsandbytes") is None:
@@ -11,81 +14,44 @@ if importlib.util.find_spec("bitsandbytes") is None:
     sys.exit(1)
 
 from transformers import AutoProcessor, LlavaForConditionalGeneration, BitsAndBytesConfig
-from PIL import Image
-import matplotlib.pyplot as plt
-import numpy as np
 
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 IMAGE_PATH = "sample.png"
-PROMPT_TEXT = "USER: <image>\nIs the yellow triangle right of the red triangle?\nASSISTANT:"
-OUTPUT_DIR = "layer_vis_results"
-OVERLAP_OUTPUT_FILE = "all_layers_overlap_attention.png" # New output file for overlap
+PROMPT_TEXT = "USER: <image>\nIs the orange triangle above the yellow triangle?\nASSISTANT:"
+PDF_FILENAME = "llava_attention_analysis.pdf"
 
-def save_attention_map(image, attn_map, layer_idx, output_dir):
+def create_plot(image, attn_map, title):
     """
-    Helper function to plot and save a single layer's attention map.
+    Creates a Matplotlib figure for a specific attention map.
+    Returns the figure object (does not save it).
     """
     fig, ax = plt.subplots(1, 2, figsize=(15, 7))
     
-    # Original Image
+    # Left: Original Image
     ax[0].imshow(image)
     ax[0].set_title("Original Image")
     ax[0].axis('off')
     
-    # Heatmap Overlay
-    # Resize attention map to match original image size
-    attn_image = Image.fromarray((attn_map * 255).astype('uint8'))
+    # Right: Heatmap Overlay
+    # Normalize map for visualization
+    if attn_map.max() > attn_map.min():
+        norm_map = (attn_map - attn_map.min()) / (attn_map.max() - attn_map.min())
+    else:
+        norm_map = attn_map 
+
+    attn_image = Image.fromarray((norm_map * 255).astype('uint8'))
     attn_image = attn_image.resize(image.size, resample=Image.BICUBIC)
     
     ax[1].imshow(image)
     ax[1].imshow(attn_image, cmap='jet', alpha=0.6)
     
-    ax[1].set_title(f"Attention of 1st Gen Token\n(Layer {layer_idx})")
+    ax[1].set_title(title)
     ax[1].axis('off')
     
-    # Save file with zero-padded index (e.g., layer_05.png)
-    filename = os.path.join(output_dir, f"layer_{layer_idx:02d}.png")
-    plt.savefig(filename, bbox_inches='tight')
-    
-    # CRITICAL: Close the figure to free memory
-    plt.close(fig) 
-
-def save_overlap_attention_map(image, aggregated_attn_map, output_file_path):
-    """
-    Helper function to plot and save the aggregated attention map.
-    """
-    fig, ax = plt.subplots(1, 2, figsize=(15, 7))
-    
-    # Original Image
-    ax[0].imshow(image)
-    ax[0].set_title("Original Image")
-    ax[0].axis('off')
-    
-    # Heatmap Overlay
-    # Normalize the aggregated map to [0, 1] for proper visualization
-    normalized_aggregated_attn = (aggregated_attn_map - aggregated_attn_map.min()) / \
-                                 (aggregated_attn_map.max() - aggregated_attn_map.min() + 1e-8) # Add epsilon for stability
-    
-    attn_image = Image.fromarray((normalized_aggregated_attn * 255).astype('uint8'))
-    attn_image = attn_image.resize(image.size, resample=Image.BICUBIC)
-    
-    ax[1].imshow(image)
-    ax[1].imshow(attn_image, cmap='jet', alpha=0.6)
-    
-    ax[1].set_title("Aggregated Attention Across All Layers")
-    ax[1].axis('off')
-    
-    plt.savefig(output_file_path, bbox_inches='tight')
-    plt.close(fig)
+    return fig
 
 def main():
-    # 0. Output Setup
-    if os.path.exists(OUTPUT_DIR):
-        shutil.rmtree(OUTPUT_DIR)
-    os.makedirs(OUTPUT_DIR)
-    print(f"Created output directory: {OUTPUT_DIR}/")
-
     # 1. Setup Model
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -126,7 +92,6 @@ def main():
             return_dict_in_generate=True
         )
 
-    # Decode response
     generated_text = processor.batch_decode(outputs.sequences, skip_special_tokens=True)[0]
     print(f"\nResponse: {generated_text}\n")
 
@@ -134,56 +99,64 @@ def main():
         print("Error: Model did not return attentions.")
         return
 
-    # List to store all attention maps for aggregation
-    all_attention_maps = []
+    all_attention_maps = [] # To store numpy arrays for the final overlap
 
-    # 4. Attention Extraction Loop
-    print(f"Generating visualizations for all {num_layers} layers...")
+    # 4. Initialize PDF
+    print(f"Initializing PDF: {PDF_FILENAME}...")
     
-    all_layers_data = outputs.attentions[0]
-
-    for layer_idx, layer_attn_tensor in enumerate(all_layers_data):
-        try:
-            avg_attn = layer_attn_tensor[0, :, -1, :].mean(dim=0)
-
-            num_image_tokens = 576
-            start_idx = 5 
-            end_idx = start_idx + num_image_tokens
-            
-            if end_idx > len(avg_attn):
-                image_attn = avg_attn[-num_image_tokens:] 
-            else:
-                image_attn = avg_attn[start_idx:end_idx]
-
-            attn_map = image_attn.view(24, 24).float().cpu().numpy()
-            
-            # Store the attention map for aggregation later
-            all_attention_maps.append(attn_map)
-
-            # 6. Save Individual Visualization
-            save_attention_map(image, attn_map, layer_idx, OUTPUT_DIR)
-            
-            if layer_idx % 5 == 0:
-                print(f"Processed Layer {layer_idx}...")
-
-        except Exception as e:
-            print(f"Error processing layer {layer_idx}: {e}")
-
-    print(f"\nIndividual layer images saved in: {os.path.abspath(OUTPUT_DIR)}")
-
-    # 7. Generate Overlap Visualization
-    if all_attention_maps:
-        print(f"\nGenerating overlap visualization: {OVERLAP_OUTPUT_FILE}...")
-        # Sum all collected attention maps
-        aggregated_attn_map = np.sum(all_attention_maps, axis=0)
+    with PdfPages(PDF_FILENAME) as pdf:
         
-        # Save the aggregated overlap map
-        save_overlap_attention_map(image, aggregated_attn_map, os.path.join(OUTPUT_DIR, OVERLAP_OUTPUT_FILE))
-        print(f"Overlap visualization saved to: {os.path.join(OUTPUT_DIR, OVERLAP_OUTPUT_FILE)}")
-    else:
-        print("No attention maps were collected to create an overlap visualization.")
+        # Loop through all layers
+        all_layers_data = outputs.attentions[0]
+        
+        print(f"Generating pages for {num_layers} layers...")
+        for layer_idx, layer_attn_tensor in enumerate(all_layers_data):
+            try:
+                # Extract Attention
+                avg_attn = layer_attn_tensor[0, :, -1, :].mean(dim=0)
 
-    print("\nAll tasks completed!")
+                # Extract Image tokens (approx 576 tokens)
+                num_image_tokens = 576
+                start_idx = 5 
+                end_idx = start_idx + num_image_tokens
+                
+                if end_idx > len(avg_attn):
+                    image_attn = avg_attn[-num_image_tokens:] 
+                else:
+                    image_attn = avg_attn[start_idx:end_idx]
+
+                attn_map = image_attn.view(24, 24).float().cpu().numpy()
+                all_attention_maps.append(attn_map)
+
+                # Create Figure
+                fig = create_plot(image, attn_map, title=f"Layer {layer_idx} Attention\n(1st Generated Token)")
+                
+                # Save into PDF
+                pdf.savefig(fig, bbox_inches='tight')
+                plt.close(fig) # Close figure to free memory
+
+                if layer_idx % 5 == 0:
+                    print(f"  - Saved Layer {layer_idx}")
+
+            except Exception as e:
+                print(f"Error processing layer {layer_idx}: {e}")
+
+        # 5. Generate Overlap Page
+        if all_attention_maps:
+            print("Generating final overlap page...")
+            aggregated_attn_map = np.sum(all_attention_maps, axis=0)
+            
+            fig_overlap = create_plot(image, aggregated_attn_map, title="Aggregated Attention (All Layers Summed)")
+            
+            pdf.savefig(fig_overlap, bbox_inches='tight')
+            plt.close(fig_overlap)
+        
+        # Set Metadata
+        d = pdf.infodict()
+        d['Title'] = 'LLaVA Attention Map Analysis'
+        d['Author'] = 'LLaVA Visualizer'
+
+    print(f"\nSuccess! PDF saved to: {os.path.abspath(PDF_FILENAME)}")
 
 if __name__ == "__main__":
     main()
