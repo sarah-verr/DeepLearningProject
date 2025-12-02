@@ -8,6 +8,8 @@ pycache/
 *.pyd
 .venv/venv/env/
 venv
-layer_vis_results*
+*vis_results*
 attention_map*
 llava_attention_analysis*.pdf
+llava_detailed_*.pdf
+patch_reference_grid.png

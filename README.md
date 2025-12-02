@@ -35,3 +35,10 @@ python3 main.py
 ```
 
 This will save the visualisations from all layers in a .pdf file. 
+
+The `debug.py` is used to visualise the patches over a single image, and how the pixel density are distributed across the patches. To run this, use:
+```python
+python3 debug.py
+```
+
+It also gives the patch index of the shapes, which is useful for analysis in `main.py`. Make sure to fill the TARGET_PATCHES variable in `main.py` with those indices. 
