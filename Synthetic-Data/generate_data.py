@@ -12,7 +12,7 @@ def parse_args():
     ap.add_argument("--levels", type=int, nargs="+", default=[1,2,3,4,5,6])
     ap.add_argument("--scenes_per_level", type=int, default=20)
     
-    ap.add_argument("--img_size", type=int, default=256)
+    ap.add_argument("--img_size", type=int, default=336)
     ap.add_argument("--patch", type=int, default=14)
     ap.add_argument("--seed", type=int, default=123)
 

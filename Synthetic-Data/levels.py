@@ -18,7 +18,7 @@ def scene_grid_strict(img_size:int, patch:int, n_range:Tuple[int,int], shapes:Li
     objs = []
     for i,(_,_,cx,cy) in enumerate(chosen):
         shape = random.choice(shapes)
-        size = int(patch - 2)
+        size = int(patch - 4)
         objs.append(make_obj(i, shape, "red", (cx,cy), size))
     
     # Adjacency enforcement for level 1
