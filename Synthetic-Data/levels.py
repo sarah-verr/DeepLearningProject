@@ -10,7 +10,7 @@ from core_utils import (
 # ---------- Scene Generators (Unified) ----------
 
 def scene_grid_strict(img_size:int, patch:int, n_range:Tuple[int,int], shapes:List[str]) -> List[Obj]:
-    """Level 1 style: strictly small objects, centered in grid cells."""
+    """Level 0 style: strictly small objects, centered in grid cells."""
     n_objs = random.randint(*n_range)
     centers = grid_centers(img_size, patch)
     random.shuffle(centers)
@@ -25,6 +25,35 @@ def scene_grid_strict(img_size:int, patch:int, n_range:Tuple[int,int], shapes:Li
     if len(objs) >= 2:
         gx0, gy0, _, _ = chosen[0]
         neighbors = [(gx0+1,gy0),(gx0-1,gy0),(gx0,gy0+1),(gx0,gy0-1)]
+        random.shuffle(neighbors)
+        grid_map = {(gx,gy):(cx,cy) for gx,gy,cx,cy in centers}
+        count = 1
+        for ng in neighbors:
+            if count >= len(objs): break
+            if ng in grid_map:
+                cx,cy = grid_map[ng]
+                o = objs[count]
+                objs[count] = make_obj(o.id, o.shape, o.color, (cx,cy), o.size)
+                count += 1
+    return objs
+
+def scene_grid(img_size:int, patch:int, n_range:Tuple[int,int], shapes:List[str]) -> List[Obj]:
+    """Level 1 style: strictly small objects, centered in grid cells."""
+    n_objs = random.randint(*n_range)
+    centers = grid_centers(img_size, patch)
+    random.shuffle(centers)
+    chosen = centers[:n_objs]
+    objs = []
+    for i,(_,_,cx,cy) in enumerate(chosen):
+        shape = random.choice(shapes)
+        size = int(patch - 4)
+        objs.append(make_obj(i, shape, "red", (cx,cy), size))
+    
+    # Adjacency enforcement for level 1
+    if len(objs) >= 2:
+        gx0, gy0, _, _ = chosen[0]
+        n = random.randint(2, 4)
+        neighbors = [(gx0+n,gy0),(gx0-n,gy0),(gx0,gy0+n),(gx0,gy0-n)]
         random.shuffle(neighbors)
         grid_map = {(gx,gy):(cx,cy) for gx,gy,cx,cy in centers}
         count = 1
@@ -241,7 +270,8 @@ def rel_level4(objs: List[Obj], patch: int) -> List[dict]:
 
 # ---------- Mapping Dictionary ----------
 LEVEL_MAPPING = {
-    1: {"scene": scene_grid_strict,      "rel": rel_level1},
+    0: {"scene": scene_grid_strict,      "rel": rel_level1},
+    1: {"scene": scene_grid,             "rel": rel_level1},
     2: {"scene": scene_level2_no_overlap,"rel": rel_level1}, 
     3: {"scene": scene_level2_no_overlap,"rel": rel_level2}, 
     4: {"scene": scene_grid_loose,       "rel": rel_level3},
