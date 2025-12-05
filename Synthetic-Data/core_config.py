@@ -29,6 +29,7 @@ MAX_QA       = 10
 # --- LEVEL DESIGN CONFIGURATION ---
 # specific complexity settings for each level
 LEVEL_CONFIG = {
+    0: {"min_shapes": 2, "max_shapes": 2, "adv_lang": False},
     1: {"min_shapes": 2, "max_shapes": 2, "adv_lang": False},
     2: {"min_shapes": 2, "max_shapes": 2, "adv_lang": False},
     3: {"min_shapes": 3, "max_shapes": 3, "adv_lang": False},
