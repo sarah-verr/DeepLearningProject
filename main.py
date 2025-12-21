@@ -22,16 +22,60 @@ if importlib.util.find_spec("bitsandbytes") is None:
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
-BASE_DATA_PATH = "/home/kkarthikeyan/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+BASE_DATA_PATH = f"/home/{os.environ['USER']}/DeepLearningProject/Synthetic-Data/vlm_levels"
 
-# --- TARGET GROUP CONFIGURATION ---
-TARGET_GROUPS = [
-    [475, 476, 477, 499, 500, 501, 523, 524, 525],  # Group 0: cyan star
-    [33, 34, 35, 57, 58, 59, 81, 82, 83],  # Group 1: green square
-    [248, 249, 250, 272, 273, 274, 296, 297, 298],  # Group 2: purple star
-    [509, 510, 511, 533, 534, 535, 557, 558, 559],  # Group 3: pink triangle
-]
-GROUP_COLORS = ['cyan', 'magenta', 'yellow', 'lime']
+# --- DYNAMIC TARGET GROUP EXTRACTION ---
+def extract_target_groups_from_annotation(annotation_data, image_width=336, image_height=336):
+    """
+    Converts object bounding boxes to patch indices for a 24x24 grid.
+    Returns target groups organized by object ID.
+    """
+    objects = annotation_data.get('objects', [])
+    
+    target_groups = []
+    group_metadata = []
+    
+    patch_width = image_width / 24
+    patch_height = image_height / 24
+    
+    for obj in objects:
+        obj_id = obj['id']
+        bbox = obj['bbox']  # [x_min, y_min, x_max, y_max]
+        color = obj['color']
+        shape = obj['shape']
+        
+        # Calculate which patches this object overlaps
+        x_min, y_min, x_max, y_max = bbox
+        
+        # Convert to patch coordinates
+        col_min = int(x_min / patch_width)
+        col_max = int(x_max / patch_width)
+        row_min = int(y_min / patch_height)
+        row_max = int(y_max / patch_height)
+        
+        # Clamp to valid range
+        col_min = max(0, min(23, col_min))
+        col_max = max(0, min(23, col_max))
+        row_min = max(0, min(23, row_min))
+        row_max = max(0, min(23, row_max))
+        
+        # Collect all patch indices in this bounding box
+        patch_indices = []
+        for row in range(row_min, row_max + 1):
+            for col in range(col_min, col_max + 1):
+                patch_idx = row * 24 + col
+                patch_indices.append(patch_idx)
+        
+        if patch_indices:
+            target_groups.append(patch_indices)
+            group_metadata.append({
+                'object_id': obj_id,
+                'shape': shape,
+                'color': color,
+                'patch_count': len(patch_indices)
+            })
+    
+    return target_groups, group_metadata
 
 # --- HELPER: Visualization ---
 def draw_target_highlights(ax, target_groups_meta):
@@ -83,7 +127,7 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
         draw_target_highlights(axes_flat[0], target_groups_meta)
         from matplotlib.lines import Line2D
         legend_elements = [
-            Line2D([0], [0], color=g['color'], lw=2, label=f"Group {i}") 
+            Line2D([0], [0], color=g['color'], lw=2, label=f"Obj{g['object_id']}: {g['color']} {g['shape']}")
             for i, g in enumerate(target_groups_meta)
         ]
         axes_flat[0].legend(handles=legend_elements, loc='upper right', fontsize='small')
@@ -105,13 +149,23 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     return fig
 
 # --- PLOT 1: PER-QUESTION TREND ---
-def plot_attention_trends(group_scores_history, output_dir, question_idx):
+def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx):
     plt.figure(figsize=(10, 6))
     for group_idx, scores in group_scores_history.items():
         layers = range(len(scores))
-        color = GROUP_COLORS[group_idx % len(GROUP_COLORS)]
-        plt.plot(layers, scores, marker='o', color=color, linewidth=2, label=f"Group {group_idx}")
-    plt.title(f"Q{question_idx}: Attention Flow on Target Groups")
+        
+        # Use metadata for color and label
+        if group_idx < len(group_metadata):
+            meta = group_metadata[group_idx]
+            color = meta['color']  # Real color from annotation
+            label = f"Obj {meta['object_id']}: {meta['color']} {meta['shape']}"
+        else:
+            color = 'gray'  # Fallback
+            label = f"Group {group_idx}"
+        
+        plt.plot(layers, scores, marker='o', color=color, linewidth=2, label=label)
+    
+    plt.title(f"Q{question_idx}: Attention Flow on Target Objects")
     plt.xlabel("Layer Index")
     plt.ylabel("Total Attention")
     plt.grid(True, linestyle='--', alpha=0.5)
@@ -271,14 +325,26 @@ def main():
 
     # Data Prep
     image = Image.open(image_path).convert('RGB')
+
+    with open(json_path, 'r') as f:
+        annotation_data = json.load(f)
+        full_qa_list = annotation_data.get('qa', [])
+    # Extract dynamic target groups from annotation
+    TARGET_GROUPS, group_metadata = extract_target_groups_from_annotation(annotation_data)
+    # Extract dynamic target groups from annotation
+    TARGET_GROUPS, group_metadata = extract_target_groups_from_annotation(annotation_data)
     
-    # --- PREPARE GROUP METADATA ---
+    print(f"\nDynamically extracted {len(TARGET_GROUPS)} target groups:")
+    for i, meta in enumerate(group_metadata):
+        print(f"  Group {i}: Object {meta['object_id']} - {meta['color']} {meta['shape']} ({meta['patch_count']} patches)")
+    
+    # --- PREPARE GROUP METADATA FOR VISUALIZATION ---
     target_groups_meta = []
-    # Only need to prepare this if we are plotting visual grids
     if args.plot_attention:
         vis_image = image.resize((336, 336), resample=Image.BICUBIC)
-        for i, group_indices in enumerate(TARGET_GROUPS):
-            group_color = GROUP_COLORS[i % len(GROUP_COLORS)]
+        for i, (group_indices, meta) in enumerate(zip(TARGET_GROUPS, group_metadata)):
+            # Use the actual object color from annotation
+            object_color = meta['color']
             group_patches = []
             for idx in group_indices:
                 row = idx // 24
@@ -287,13 +353,13 @@ def main():
             
             target_groups_meta.append({
                 'group_id': i,
-                'color': group_color,
-                'patches': group_patches
+                'color': object_color,
+                'patches': group_patches,
+                'shape': meta['shape'],
+                'object_id': meta['object_id']
             })
 
-    with open(json_path, 'r') as f:
-        full_qa_list = json.load(f).get('qa', [])
-
+    # Question sampling
     if args.num_questions is not None and args.num_questions > 0:
         if args.num_questions < len(full_qa_list):
             print(f"Randomly sampling {args.num_questions} questions from {len(full_qa_list)} total available.")
@@ -419,7 +485,7 @@ def main():
 
             # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
             if args.plot_trends:
-                plot_attention_trends(group_scores_layerwise, q_dir, i)
+                plot_attention_trends(group_scores_layerwise, group_metadata, q_dir, i)
             
 
     # --- SAVE SUMMARY ---
