@@ -149,8 +149,8 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     return fig
 
 # --- PLOT 1: PER-QUESTION TREND ---
-def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx):
-    plt.figure(figsize=(10, 6))
+def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx, question_text):
+    plt.figure(figsize=(12, 7))
     for group_idx, scores in group_scores_history.items():
         layers = range(len(scores))
         
@@ -165,12 +165,15 @@ def plot_attention_trends(group_scores_history, group_metadata, output_dir, ques
         
         plt.plot(layers, scores, marker='o', color=color, linewidth=2, label=label)
     
-    plt.title(f"Q{question_idx}: Attention Flow on Target Objects")
+    # Question as title with wrapping
+    wrapped_question = "\n".join([question_text[i:i+80] for i in range(0, len(question_text), 80)])
+    plt.title(f"Q{question_idx}: {wrapped_question}", fontsize=11, pad=20)
     plt.xlabel("Layer Index")
     plt.ylabel("Total Attention")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.legend()
-    plt.savefig(os.path.join(output_dir, "attention_trend_analysis.png"), bbox_inches='tight')
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "attention_trend_analysis.png"), bbox_inches='tight', dpi=100)
     plt.close()
 
 # --- NEW PLOT: CORRECT VS INCORRECT COMPARISON ---
@@ -297,14 +300,24 @@ def main():
         print(f"Error: Files not found at constructed paths.")
         return
 
-    # Output Setup
+    # Output Setup - Organized structure with timestamp for multiple trials
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    output_folder_name = f"{timestamp}_{args.id}"
-    current_output_dir = os.path.join(BASE_OUTPUT_DIR, output_folder_name)
-    os.makedirs(current_output_dir, exist_ok=True)
+    level_output = os.path.join(BASE_OUTPUT_DIR, f"level_{args.level}")
+    image_output = os.path.join(level_output, f"{args.id}_{timestamp}")
+    
+    # Create subdirectories
+    overview_dir = os.path.join(image_output, "overview")
+    trends_dir = os.path.join(image_output, "trend_analysis")
+    attention_dir = os.path.join(image_output, "full_attention")
+    
+    os.makedirs(overview_dir, exist_ok=True)
+    if args.plot_trends:
+        os.makedirs(trends_dir, exist_ok=True)
+    if args.plot_attention:
+        os.makedirs(attention_dir, exist_ok=True)
     
     print(f"Processing Level: {args.level} | ID: {args.id}")
-    print(f"Output: {current_output_dir}")
+    print(f"Output: {image_output}")
     
     # LOGIC: We need attention from model if EITHER flag is true
     REQUIRES_ATTENTION = args.plot_attention or args.plot_trends
@@ -329,8 +342,6 @@ def main():
     with open(json_path, 'r') as f:
         annotation_data = json.load(f)
         full_qa_list = annotation_data.get('qa', [])
-    # Extract dynamic target groups from annotation
-    TARGET_GROUPS, group_metadata = extract_target_groups_from_annotation(annotation_data)
     # Extract dynamic target groups from annotation
     TARGET_GROUPS, group_metadata = extract_target_groups_from_annotation(annotation_data)
     
@@ -413,9 +424,13 @@ def main():
 
         # --- ATTENTION PROCESSING ---
         if REQUIRES_ATTENTION:
-            q_safe_text = "".join(x for x in question_text[:20] if x.isalnum() or x in " _-").strip()
-            q_dir = os.path.join(current_output_dir, f"Q{i}_{q_safe_text}")
-            os.makedirs(q_dir, exist_ok=True)
+            # Create question directory in appropriate location
+            if args.plot_attention:
+                q_dir = os.path.join(attention_dir, f"Q{i}")
+                os.makedirs(q_dir, exist_ok=True)
+            elif args.plot_trends:
+                q_dir = os.path.join(trends_dir, f"Q{i}")
+                os.makedirs(q_dir, exist_ok=True)
 
             # --- VRAM OPTIMIZATION START ---
             raw_layers_gpu = outputs.attentions[0]
@@ -485,7 +500,9 @@ def main():
 
             # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
             if args.plot_trends:
-                plot_attention_trends(group_scores_layerwise, group_metadata, q_dir, i)
+                trend_q_dir = os.path.join(trends_dir, f"Q{i}")
+                os.makedirs(trend_q_dir, exist_ok=True)
+                plot_attention_trends(group_scores_layerwise, group_metadata, trend_q_dir, i, question_text)
             
 
     # --- SAVE SUMMARY ---
@@ -493,21 +510,23 @@ def main():
         "timestamp": timestamp,
         "level": args.level,
         "id": args.id,
+        "num_objects": len(TARGET_GROUPS),
+        "objects": group_metadata,
         "results": results_summary,
         "accuracy": sum(r['is_correct'] for r in results_summary) / len(results_summary) if results_summary else 0
     }
     
-    with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+    with open(os.path.join(overview_dir, "results.json"), "w") as f:
         json.dump(final_metadata, f, indent=4)
 
     if results_summary:
-        plot_evaluation_results(results_summary, current_output_dir, f"{args.id} (Level {args.level})")
+        plot_evaluation_results(results_summary, overview_dir, f"{args.id} (Level {args.level})")
     
     # --- GENERATE THE COMPARISON PLOT ---
     if args.plot_trends:
-        plot_correct_vs_incorrect_trends(correct_runs_layerwise, incorrect_runs_layerwise, current_output_dir)
+        plot_correct_vs_incorrect_trends(correct_runs_layerwise, incorrect_runs_layerwise, overview_dir)
         
-    print(f"\nCompleted. Results saved to: {os.path.abspath(current_output_dir)}")
+    print(f"\nCompleted. Results saved to: {os.path.abspath(image_output)}")
 
 if __name__ == "__main__":
     main()
