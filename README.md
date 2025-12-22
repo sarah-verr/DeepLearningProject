@@ -41,7 +41,9 @@ Use the following scripts to generate and augment the synthetic datasets require
 * **Generate Synthetic Data:**
   The generator now requires selecting at least one question group:
   - `--primary` (left/right/above/below)
-  - `--advanced` (includes touching/overlapping + inside/near/far/next_to/beside/encapsulates)
+  - `--advanced` (includes touching/overlapping + inside/encapsulates)
+
+  Note: phrases for `near`/`far`/`next_to`/`beside` exist in code, but these relation types are currently not sampled (they are intentionally excluded from the active ADVANCED set).
 
   Examples:
   ```bash
@@ -69,6 +71,7 @@ Each `ann/*.json` now stores extra supervision that downstream scripts use:
 - `qa[*].subject_id` / `qa[*].object_id`: object ids referenced in the question
 - `qa[*].rel_type`: relation type (e.g., `left_of`)
 - `qa[*].rel_group`: relation group (`PRIMARY` or `ADVANCED`)
+- `qa[*].rel_phrase`: the exact relational phrase used in the question (e.g., `to the left of`)
 - `meta`: `{img_size, patch, grid_dim}`
 
 ---
@@ -77,9 +80,11 @@ Each `ann/*.json` now stores extra supervision that downstream scripts use:
 
 This is the primary script for running the LLaVA model against a specific image and its corresponding questions. It supports tracking attention on specific groups of image patches (e.g., "Target Object" vs "Distractor").
 
+`main.py` is **config-driven** (YAML or JSON).
+
 **Usage:**
 ```bash
-python main.py --level <level> --id <id> [options]
+python main.py --config configs/run_configs.yaml
 ```
 
 Options are other optional flags detailed below in the Arguments section.
@@ -97,41 +102,28 @@ When attention extraction is enabled, it produces:
 - A per-question plot comparing attention on the subject vs object across layers
 - Plot titles include `rel_group` and `rel_type`
 
-### Arguments
+### Config file
 
-| Argument | Type | Description |
-| :--- | :--- | :--- |
-| `--level` | **Required** | Specifies the dataset level to use (e.g., `1`). |
-| `--id` | **Required** | The unique identifier for the image file (e.g., `00007_b`). |
-| `--plot_trends` | Optional | Generates line graphs showing total attention on Target Groups per layer. Fast (does not generate heatmaps). |
-| `--plot_attention` | Optional | If present, generates and saves detailed attention heatmaps for each layer. <br>**Note:** Significantly slows down execution. |
-| `--num_questions` | Optional | Number of questions to randomly sample (e.g., 5). If omitted, processes all questions in the JSON |
+Example (see `configs/run_configs.yaml`):
+```yaml
+level: 4
+id: "00010_b"
 
+num_questions: 5
 
+plot_trends: true
+plot_attention: false
 
-### Examples
+plot_relational_phrase_attention: true
+relational_phrase_attention_mode: "simple"  # "simple"|"detailed"
 
-**1. Run a standard evaluation:**
-Processes the image, prints results to the console, and saves a summary plot and JSOxwN log in `vis_results/`.
-```bash
-python main.py --level 1 --id 00007_b
+# Optional overrides
+model_id: "llava-hf/llava-1.5-7b-hf"
+base_data_path: "/path/to/Synthetic-Data/vlm_levels"
+base_output_dir: "vis_results"
 ```
 
-**2. Run evaluation with attention plotting:**
-Performs standard evaluation and creates subdirectories containing attention heatmaps for each question.
-```bash
-python main.py --level 1 --id 00007_b --plot_attention
-```
-
-**3. Run trend plots only (faster):**
-```bash
-python main.py --level 1 --id 00007_b --plot_trends
-```
-
-**4. Run a subset of questions:**
-```bash
-python main.py --level 1 --id 00007_b --num_questions 5 --plot_trends
-```
+When enabled, `plot_relational_phrase_attention` uses `qa[*].rel_phrase` and produces phrase→image attention visualizations.
 
 ---
 
@@ -177,3 +169,6 @@ python compute_accuracy.py --levels 0 1 2 3 4 5 6
 Optional flags:
 - `--output_json evaluation_results.json`
 - `--log_file model_calls_log.csv`
+
+Text-only baseline:
+- `--text_only`: evaluates relational reasoning from a text-only prompt (no image). The per-question CSV includes a `Mode` column to distinguish `image` vs `text_only` runs.

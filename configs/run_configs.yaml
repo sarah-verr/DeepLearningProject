@@ -1,0 +1,15 @@
+level: 4
+id: "00010_b"
+
+num_questions: 5
+
+plot_trends: true
+plot_attention: false
+
+plot_relational_phrase_attention: true
+relational_phrase_attention_mode: "simple"  # "simple"|"detailed"
+
+# Optional overrides
+model_id: "llava-hf/llava-1.5-7b-hf"
+base_data_path: "/path/to/Synthetic-Data/vlm_levels"
+base_output_dir: "vis_results"

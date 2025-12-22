@@ -6,6 +6,7 @@
 #SBATCH --error=logs/eval_%j.err          # Standard error log
 #SBATCH --time=01:00:00              # Time limit (hrs:min:sec)
 
+export HF_HOME="/work/scratch/$USER"
 
 # 1. Load modules (adjust based on your cluster's setup)
 # module load cuda/12.1

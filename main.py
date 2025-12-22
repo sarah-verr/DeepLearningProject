@@ -12,17 +12,87 @@ import numpy as np
 from PIL import Image
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 from tqdm import tqdm
-
-# --- Dependency Check ---
-if importlib.util.find_spec("bitsandbytes") is None:
-    print("Error: 'bitsandbytes' library is missing.")
-    print("Please install it by running: pip install bitsandbytes accelerate")
-    sys.exit(1)
+from types import SimpleNamespace
 
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+
+# ---------------------- Config Loader (YAML/JSON) ----------------------
+def _load_config_file(path: str) -> dict:
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Config file not found: {path}")
+
+    ext = os.path.splitext(path)[1].lower()
+    if ext in {".yaml", ".yml"}:
+        try:
+            import yaml  # requires: pip install pyyaml
+        except Exception as e:
+            raise RuntimeError(
+                "YAML config requested but PyYAML is not installed. "
+                "Install with: pip install pyyaml"
+            ) from e
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+            return data or {}
+
+    if ext == ".json":
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f) or {}
+
+    raise ValueError(f"Unsupported config extension '{ext}'. Use .yaml/.yml or .json")
+
+def _normalize_config(cfg: dict) -> dict:
+    """
+    Fills defaults and validates required fields.
+    """
+    if not isinstance(cfg, dict):
+        raise ValueError("Config must be a mapping/object at the top level.")
+
+    # required
+    if "level" not in cfg or "id" not in cfg:
+        raise ValueError("Config must include required keys: level, id")
+
+    out = dict(cfg)
+
+    # defaults (match your existing CLI defaults)
+    out.setdefault("num_questions", None)
+    out.setdefault("plot_attention", False)
+    out.setdefault("plot_trends", False)
+    out.setdefault("plot_relational_phrase_attention", False)
+
+    # optional: if you later want simple vs detailed phrase plots
+    out.setdefault("relational_phrase_attention_mode", "detailed")  # "simple"|"detailed"
+    if out["relational_phrase_attention_mode"] not in {"simple", "detailed"}:
+        raise ValueError("relational_phrase_attention_mode must be one of: simple, detailed")
+
+    # optional overrides for paths/model
+    out.setdefault("model_id", None)
+    out.setdefault("base_output_dir", None)
+    out.setdefault("base_data_path", None)
+
+    # normalize types
+    out["level"] = str(out["level"])
+    out["id"] = str(out["id"])
+    if out["num_questions"] is not None:
+        out["num_questions"] = int(out["num_questions"])
+
+    out["plot_attention"] = bool(out["plot_attention"])
+    out["plot_trends"] = bool(out["plot_trends"])
+    out["plot_relational_phrase_attention"] = bool(out["plot_relational_phrase_attention"])
+
+    return out
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Run LLaVA inference (config-driven)")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="configs/run_configs.yaml",
+        help="Path to YAML/JSON config (default: configs/run_configs.yaml)",
+    )
+    return parser.parse_args()
 
 # --- DYNAMIC TARGET GROUP EXTRACTION ---
 def extract_target_groups_from_annotation(annotation_data, grid_dim: int):
@@ -300,21 +370,124 @@ def plot_evaluation_results(results, output_dir, title_id):
     plt.savefig(os.path.join(output_dir, "evaluation_summary.png"))
     plt.close()
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run Batch LLaVA Inference")
-    parser.add_argument("--level", type=str, required=True, help="Level number (e.g., '1')")
-    parser.add_argument("--id", type=str, required=True, help="File ID (e.g., '00000_b')")
-    parser.add_argument("--num_questions", type=int, default=None, help="Number of questions to sample randomly (default: all)")
-    
-    # SPLIT ARGUMENTS
-    parser.add_argument("--plot_attention", action="store_true", help="Save HEAVY layer-wise heatmaps (Slow)")
-    parser.add_argument("--plot_trends", action="store_true", help="Save LIGHTWEIGHT line plots of group attention (Fast)")
-    
-    return parser.parse_args()
+
+def _find_subsequence(haystack: list[int], needle: list[int]) -> int | None:
+    """Return start index of needle in haystack, or None."""
+    if not needle or not haystack or len(needle) > len(haystack):
+        return None
+    for i in range(len(haystack) - len(needle) + 1):
+        if haystack[i : i + len(needle)] == needle:
+            return i
+    return None
+
+def _locate_rel_phrase_token_positions(tokenizer, full_input_ids_1d, question_text: str, rel_phrase: str) -> list[int]:
+    """
+    Returns absolute token positions (indices into full_input_ids_1d) corresponding to rel_phrase tokens.
+    Strategy:
+      1) find question token span inside full prompt tokens
+      2) find rel_phrase token span inside question tokens
+      3) convert to absolute positions
+    """
+    if not question_text or not rel_phrase:
+        return []
+
+    full_ids = full_input_ids_1d.tolist() if hasattr(full_input_ids_1d, "tolist") else list(full_input_ids_1d)
+
+    q_ids = tokenizer(question_text, add_special_tokens=False).input_ids
+    q_start = _find_subsequence(full_ids, q_ids)
+
+    # Tokenize phrase in two ways to handle whitespace-sensitive tokenization
+    phrase_ids_a = tokenizer(rel_phrase, add_special_tokens=False).input_ids
+    phrase_ids_b = tokenizer(" " + rel_phrase, add_special_tokens=False).input_ids
+
+    if q_start is not None:
+        # find phrase within question tokens
+        p_start = _find_subsequence(q_ids, phrase_ids_a)
+        p_len = len(phrase_ids_a)
+        if p_start is None:
+            p_start = _find_subsequence(q_ids, phrase_ids_b)
+            p_len = len(phrase_ids_b)
+
+        if p_start is None:
+            return []
+
+        abs_start = q_start + p_start
+        return list(range(abs_start, abs_start + p_len))
+
+    # Fallback: search in the full prompt directly
+    p_start = _find_subsequence(full_ids, phrase_ids_a)
+    p_len = len(phrase_ids_a)
+    if p_start is None:
+        p_start = _find_subsequence(full_ids, phrase_ids_b)
+        p_len = len(phrase_ids_b)
+    if p_start is None:
+        return []
+    return list(range(p_start, p_start + p_len))
+
+def create_phrase_thirds_plot(image, maps_3, rel_phrase: str, patch_size: int = 14):
+    """
+    maps_3: dict with keys {"early","mid","late"} each a [grid_dim, grid_dim] numpy array
+    """
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig.suptitle(f'Phrase→Image Attention (Layer Thirds) | "{rel_phrase}"', fontsize=14, weight="bold")
+
+    overlay_heatmap(axes[0], image, maps_3["early"], "Early (0–33%)", target_groups_meta=None, patch_size=patch_size)
+    overlay_heatmap(axes[1], image, maps_3["mid"],   "Mid (33–66%)", target_groups_meta=None, patch_size=patch_size)
+    overlay_heatmap(axes[2], image, maps_3["late"],  "Late (66–100%)", target_groups_meta=None, patch_size=patch_size)
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.92])
+    return fig
+
+def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_phrase: str, patch_size: int = 14):
+    """
+    Same layout as create_layer_grid_plot, but for phrase->image attention maps.
+    heads_data: [num_heads, grid_dim, grid_dim]
+    avg_data:   [grid_dim, grid_dim]
+    """
+    num_heads = heads_data.shape[0]
+    total_plots = num_heads + 2
+    cols = 6
+    rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows))
+    fig.suptitle(f'Layer {layer_idx} | Phrase→Image Attention | "{rel_phrase}"', fontsize=14, weight="bold")
+    axes_flat = axes.flatten()
+
+    axes_flat[0].imshow(image)
+    axes_flat[0].set_title("Original Image", fontsize=10, weight="bold")
+    axes_flat[0].axis("off")
+
+    overlay_heatmap(axes_flat[1], image, avg_data, "AVERAGE (All Heads)", target_groups_meta=None, patch_size=patch_size)
+    for spine in axes_flat[1].spines.values():
+        spine.set_edgecolor("red")
+        spine.set_linewidth(2)
+
+    for i in range(num_heads):
+        if i + 2 < len(axes_flat):
+            overlay_heatmap(axes_flat[i + 2], image, heads_data[i], f"Head {i}", target_groups_meta=None, patch_size=patch_size)
+
+    for i in range(num_heads + 2, len(axes_flat)):
+        axes_flat[i].axis("off")
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    return fig
 
 def main():
-    args = parse_arguments()
-    
+    cli = parse_arguments()
+
+    cfg_raw = _load_config_file(cli.config)
+    cfg = _normalize_config(cfg_raw)
+    args = SimpleNamespace(**cfg)  # preserves your existing args.* usage
+
+    # Allow config to override globals (optional)
+    global MODEL_ID, BASE_OUTPUT_DIR, BASE_DATA_PATH
+    if args.model_id:
+        MODEL_ID = args.model_id
+    if args.base_output_dir:
+        BASE_OUTPUT_DIR = args.base_output_dir
+    if args.base_data_path:
+        BASE_DATA_PATH = args.base_data_path
+
     # Path Construction
     level_dir = f"level_{args.level}"
     image_path = os.path.join(BASE_DATA_PATH, level_dir, "images", f"{args.id}.png")
@@ -322,36 +495,39 @@ def main():
 
     if not os.path.exists(image_path) or not os.path.exists(json_path):
         print(f"Error: Files not found at constructed paths.")
+        print(f"  image: {image_path}")
+        print(f"  json : {json_path}")
         return
 
     # Output Setup - Organized structure with timestamp for multiple trials
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     level_output = os.path.join(BASE_OUTPUT_DIR, f"level_{args.level}")
     image_output = os.path.join(level_output, f"{args.id}_{timestamp}")
-    
+
     # Create subdirectories
     overview_dir = os.path.join(image_output, "overview")
     trends_dir = os.path.join(image_output, "trend_analysis")
     attention_dir = os.path.join(image_output, "full_attention")
-    
+    phrase_attn_dir = os.path.join(image_output, "phrase_attention")
+
     os.makedirs(overview_dir, exist_ok=True)
     if args.plot_trends:
         os.makedirs(trends_dir, exist_ok=True)
     if args.plot_attention:
         os.makedirs(attention_dir, exist_ok=True)
-    
-    print(f"Processing Level: {args.level} | ID: {args.id}")
-    print(f"Output: {image_output}")
-    
-    # LOGIC: We need attention from model if EITHER flag is true
-    REQUIRES_ATTENTION = args.plot_attention or args.plot_trends
+    if args.plot_relational_phrase_attention:
+        os.makedirs(phrase_attn_dir, exist_ok=True)
+
+    # LOGIC: We need attention from model if ANY heavy/light attention plot is requested
+    REQUIRES_ATTENTION = args.plot_attention or args.plot_trends or args.plot_relational_phrase_attention
     if REQUIRES_ATTENTION:
         print("NOTE: Attention extraction is ENABLED.")
-        
         if args.plot_attention:
             print("      -> Generating full heatmaps (Expect slower performance)")
         if args.plot_trends:
             print("      -> Generating trend graphs")
+        if args.plot_relational_phrase_attention:
+            print(f"      -> Phrase→image attention enabled (mode={args.relational_phrase_attention_mode})")
 
     # Load Model
     print(f"Loading model: {MODEL_ID}...")
@@ -422,23 +598,24 @@ def main():
     print("-" * 80)
 
     for i, qa_item in tqdm(enumerate(qa_list), total=len(qa_list), desc="Total Progress"):
-        question_text = qa_item['question']
-        ground_truth = qa_item['answer'].lower() 
-        subject_id = qa_item.get('subject_id', None)
-        object_id = qa_item.get('object_id', None)
-        rel_type = qa_item.get('rel_type', None)
-        rel_group = qa_item.get('rel_group', None)
+        question_text = qa_item["question"]
+        ground_truth = qa_item["answer"].lower()
+        subject_id = qa_item.get("subject_id", None)
+        object_id = qa_item.get("object_id", None)
+        rel_type = qa_item.get("rel_type", None)
+        rel_group = qa_item.get("rel_group", None)
+        rel_phrase = qa_item.get("rel_phrase", None)  # NEW
+
         prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
-        
         inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
 
         with torch.no_grad():
             outputs = model.generate(
-                **inputs, 
-                max_new_tokens=50, 
+                **inputs,
+                max_new_tokens=50,
                 return_dict_in_generate=True,
                 output_scores=True,
-                output_attentions=REQUIRES_ATTENTION # Pass True if either flag is set
+                output_attentions=REQUIRES_ATTENTION,
             )
 
         # Eval
@@ -463,19 +640,18 @@ def main():
 
         # --- ATTENTION PROCESSING ---
         if REQUIRES_ATTENTION:
-            # Create question directory in appropriate location
+            # Choose where to store per-question artifacts
             if args.plot_attention:
                 q_dir = os.path.join(attention_dir, f"Q{i}")
-                os.makedirs(q_dir, exist_ok=True)
             elif args.plot_trends:
                 q_dir = os.path.join(trends_dir, f"Q{i}")
-                os.makedirs(q_dir, exist_ok=True)
+            else:
+                q_dir = os.path.join(overview_dir, f"Q{i}")
+            os.makedirs(q_dir, exist_ok=True)
 
             # --- VRAM OPTIMIZATION START ---
-            raw_layers_gpu = outputs.attentions[0]
-            # Move to CPU immediately
+            raw_layers_gpu = outputs.attentions[0]  # first generation step attentions
             all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in raw_layers_gpu]
-            # Delete GPU tensors
             del outputs
             del raw_layers_gpu
             torch.cuda.empty_cache()
@@ -494,6 +670,108 @@ def main():
 
             start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
             end_idx = start_idx + num_patches
+
+            if args.plot_relational_phrase_attention and rel_phrase:
+                phrase_q_dir = os.path.join(phrase_attn_dir, f"Q{i}")
+                os.makedirs(phrase_q_dir, exist_ok=True)
+
+                phrase_positions = _locate_rel_phrase_token_positions(
+                    processor.tokenizer,
+                    inputs.input_ids[0],
+                    question_text=question_text,
+                    rel_phrase=rel_phrase,
+                )
+                if not phrase_positions:
+                    tqdm.write(
+                        f'  [Warning] Could not locate rel_phrase tokens for Q{i}: "{rel_phrase}". Skipping phrase plot.'
+                    )
+                else:
+                    vis_image_phrase = image.resize((img_size, img_size), resample=Image.BICUBIC)
+
+                    # Collect per-layer avg maps for the "simple" thirds aggregation
+                    per_layer_avg_maps: list[np.ndarray] = []
+
+                    for layer_idx, layer_attn_tensor in enumerate(all_layers_data):
+                        try:
+                            layer = layer_attn_tensor[0]  # [heads, tgt_len, src_len]
+
+                            tgt_len = layer.shape[1]
+                            src_len = layer.shape[2]
+                            phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < tgt_len]
+                            if not phrase_pos_in_range:
+                                continue
+
+                            # Slice keys to image tokens
+                            if end_idx > src_len:
+                                img_key_slice = slice(src_len - num_patches, src_len)
+                            else:
+                                img_key_slice = slice(start_idx, end_idx)
+
+                            # phrase_to_img: [heads, phrase_len, num_patches]
+                            phrase_to_img = layer[:, phrase_pos_in_range, img_key_slice]
+
+                            # heads_flat: [heads, num_patches] (avg over phrase tokens)
+                            heads_flat = phrase_to_img.mean(dim=1).float().numpy()
+
+                            # heads_map_2d: [heads, grid_dim, grid_dim]
+                            heads_map_2d = heads_flat.reshape(heads_flat.shape[0], grid_dim, grid_dim)
+
+                            # avg_map_2d: [grid_dim, grid_dim] (avg over heads)
+                            avg_map_2d = heads_map_2d.mean(axis=0)
+
+                            # store for thirds plot
+                            per_layer_avg_maps.append(avg_map_2d)
+
+                            # DETAILED mode: save per-layer grids
+                            if args.relational_phrase_attention_mode == "detailed":
+                                fig = create_phrase_layer_grid_plot(
+                                    vis_image_phrase,
+                                    heads_map_2d,
+                                    avg_map_2d,
+                                    layer_idx=layer_idx,
+                                    rel_phrase=rel_phrase,
+                                    patch_size=patch_size,
+                                )
+                                plt.savefig(
+                                    os.path.join(phrase_q_dir, f"layer_{layer_idx:02d}.png"),
+                                    bbox_inches="tight",
+                                )
+                                plt.close(fig)
+
+                        except Exception as e:
+                            tqdm.write(f"  [Warning] Phrase-attn error layer {layer_idx}: {e}")
+
+                    # SIMPLE mode: one plot aggregated into early/mid/late thirds
+                    if args.relational_phrase_attention_mode == "simple":
+                        if not per_layer_avg_maps:
+                            tqdm.write(f"  [Warning] No per-layer phrase maps collected for Q{i}.")
+                        else:
+                            L = len(per_layer_avg_maps)
+                            a = L // 3
+                            b = (2 * L) // 3
+
+                            early_maps = per_layer_avg_maps[:a] if a > 0 else per_layer_avg_maps[:1]
+                            mid_maps = per_layer_avg_maps[a:b] if b > a else per_layer_avg_maps[a : a + 1]
+                            late_maps = per_layer_avg_maps[b:] if b < L else per_layer_avg_maps[-1:]
+
+                            maps_3 = {
+                                "early": np.mean(np.stack(early_maps, axis=0), axis=0),
+                                "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
+                                "late": np.mean(np.stack(late_maps, axis=0), axis=0),
+                            }
+
+                            fig3 = create_phrase_thirds_plot(
+                                vis_image_phrase,
+                                maps_3,
+                                rel_phrase=rel_phrase,
+                                patch_size=patch_size,
+                            )
+                            plt.savefig(
+                                os.path.join(phrase_q_dir, "phrase_attention_thirds.png"),
+                                bbox_inches="tight",
+                                dpi=140,
+                            )
+                            plt.close(fig3)
 
             # Iterate layers
             iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
