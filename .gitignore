@@ -13,3 +13,4 @@ attention_map*
 llava_attention_analysis*.pdf
 llava_detailed_*.pdf
 patch_reference_grid.png
+evaluation_*

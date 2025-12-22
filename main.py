@@ -22,78 +22,72 @@ if importlib.util.find_spec("bitsandbytes") is None:
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
-BASE_DATA_PATH = f"/home/{os.environ['USER']}/DeepLearningProject/Synthetic-Data/vlm_levels"
+BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
 
 # --- DYNAMIC TARGET GROUP EXTRACTION ---
-def extract_target_groups_from_annotation(annotation_data, image_width=336, image_height=336):
-    """
-    Converts object bounding boxes to patch indices for a 24x24 grid.
-    Returns target groups organized by object ID.
+def extract_target_groups_from_annotation(annotation_data, grid_dim: int):
+    """Extract per-object patch indices directly from the JSON.
+
+    Expected JSON schema (newer): objects[*].patch_indices (flat row-major indices).
+    Returns:
+      - target_groups: List[List[int]] in stable (sorted object_id) order
+      - group_metadata: List[dict] aligned with target_groups
+      - obj_id_to_patch_indices: Dict[int, List[int]]
     """
     objects = annotation_data.get('objects', [])
-    
+
+    obj_id_to_patch_indices = {}
+    obj_id_to_meta = {}
+
+    max_idx = grid_dim * grid_dim - 1
+    for obj in objects:
+        if 'id' not in obj:
+            continue
+        obj_id = int(obj['id'])
+        color = obj.get('color', 'gray')
+        shape = obj.get('shape', 'unknown')
+
+        patch_indices = obj.get('patch_indices', [])
+        if not isinstance(patch_indices, list) or len(patch_indices) == 0:
+            continue
+
+        # sanitize
+        cleaned = sorted({int(i) for i in patch_indices if 0 <= int(i) <= max_idx})
+        if not cleaned:
+            continue
+
+        obj_id_to_patch_indices[obj_id] = cleaned
+        obj_id_to_meta[obj_id] = {
+            'object_id': obj_id,
+            'shape': shape,
+            'color': color,
+            'patch_count': len(cleaned)
+        }
+
     target_groups = []
     group_metadata = []
-    
-    patch_width = image_width / 24
-    patch_height = image_height / 24
-    
-    for obj in objects:
-        obj_id = obj['id']
-        bbox = obj['bbox']  # [x_min, y_min, x_max, y_max]
-        color = obj['color']
-        shape = obj['shape']
-        
-        # Calculate which patches this object overlaps
-        x_min, y_min, x_max, y_max = bbox
-        
-        # Convert to patch coordinates
-        col_min = int(x_min / patch_width)
-        col_max = int(x_max / patch_width)
-        row_min = int(y_min / patch_height)
-        row_max = int(y_max / patch_height)
-        
-        # Clamp to valid range
-        col_min = max(0, min(23, col_min))
-        col_max = max(0, min(23, col_max))
-        row_min = max(0, min(23, row_min))
-        row_max = max(0, min(23, row_max))
-        
-        # Collect all patch indices in this bounding box
-        patch_indices = []
-        for row in range(row_min, row_max + 1):
-            for col in range(col_min, col_max + 1):
-                patch_idx = row * 24 + col
-                patch_indices.append(patch_idx)
-        
-        if patch_indices:
-            target_groups.append(patch_indices)
-            group_metadata.append({
-                'object_id': obj_id,
-                'shape': shape,
-                'color': color,
-                'patch_count': len(patch_indices)
-            })
-    
-    return target_groups, group_metadata
+    for obj_id in sorted(obj_id_to_patch_indices.keys()):
+        target_groups.append(obj_id_to_patch_indices[obj_id])
+        group_metadata.append(obj_id_to_meta[obj_id])
+
+    return target_groups, group_metadata, obj_id_to_patch_indices
 
 # --- HELPER: Visualization ---
-def draw_target_highlights(ax, target_groups_meta):
+def draw_target_highlights(ax, target_groups_meta, patch_size: int):
     if not target_groups_meta: return
-    PATCH_SIZE = 14
     for group in target_groups_meta:
         color = group['color']
         for patch in group['patches']:
             row, col = patch['row'], patch['col']
-            x = col * PATCH_SIZE
-            y = row * PATCH_SIZE
+            x = col * patch_size
+            y = row * patch_size
             rect = patches.Rectangle(
-                (x, y), PATCH_SIZE, PATCH_SIZE, 
+                (x, y), patch_size, patch_size,
                 linewidth=2, edgecolor=color, facecolor='none'
             )
             ax.add_patch(rect)
 
-def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None):
+def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None, patch_size: int = 14):
     if heatmap_data.max() > heatmap_data.min():
         norm_map = (heatmap_data - heatmap_data.min()) / (heatmap_data.max() - heatmap_data.min())
     else:
@@ -107,14 +101,14 @@ def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None
     ax.set_title(title, fontsize=8)
     ax.axis('off')
     if target_groups_meta:
-        draw_target_highlights(ax, target_groups_meta)
+        draw_target_highlights(ax, target_groups_meta, patch_size=patch_size)
 
-def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups_meta):
+def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups_meta, patch_size: int = 14):
     num_heads = heads_data.shape[0]
-    total_plots = num_heads + 2 
+    total_plots = num_heads + 2
     cols = 6
     rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
-    
+
     fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows))
     fig.suptitle(f"Layer {layer_idx} Attention", fontsize=16, weight='bold')
     axes_flat = axes.flatten()
@@ -122,9 +116,9 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     axes_flat[0].imshow(image)
     axes_flat[0].set_title("Original Image", fontsize=10, weight='bold')
     axes_flat[0].axis('off')
-    
+
     if target_groups_meta:
-        draw_target_highlights(axes_flat[0], target_groups_meta)
+        draw_target_highlights(axes_flat[0], target_groups_meta, patch_size=patch_size)
         from matplotlib.lines import Line2D
         legend_elements = [
             Line2D([0], [0], color=g['color'], lw=2, label=f"Obj{g['object_id']}: {g['color']} {g['shape']}")
@@ -132,15 +126,15 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
         ]
         axes_flat[0].legend(handles=legend_elements, loc='upper right', fontsize='small')
 
-    overlay_heatmap(axes_flat[1], image, avg_data, "AVERAGE (All Heads)", target_groups_meta)
-    
+    overlay_heatmap(axes_flat[1], image, avg_data, "AVERAGE (All Heads)", target_groups_meta, patch_size=patch_size)
+
     for spine in axes_flat[1].spines.values():
         spine.set_edgecolor('red')
         spine.set_linewidth(2)
 
     for i in range(num_heads):
         if i + 2 < len(axes_flat):
-            overlay_heatmap(axes_flat[i+2], image, heads_data[i], f"Head {i}", target_groups_meta)
+            overlay_heatmap(axes_flat[i+2], image, heads_data[i], f"Head {i}", target_groups_meta, patch_size=patch_size)
 
     for i in range(num_heads + 2, len(axes_flat)):
         axes_flat[i].axis('off')
@@ -149,7 +143,7 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     return fig
 
 # --- PLOT 1: PER-QUESTION TREND ---
-def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx, question_text):
+def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx, question_text, rel_group=None, rel_type=None):
     plt.figure(figsize=(12, 7))
     for group_idx, scores in group_scores_history.items():
         layers = range(len(scores))
@@ -167,13 +161,43 @@ def plot_attention_trends(group_scores_history, group_metadata, output_dir, ques
     
     # Question as title with wrapping
     wrapped_question = "\n".join([question_text[i:i+80] for i in range(0, len(question_text), 80)])
-    plt.title(f"Q{question_idx}: {wrapped_question}", fontsize=11, pad=20)
+    suffix = ""
+    if rel_group:
+        suffix += f" | group={rel_group}"
+    if rel_type:
+        suffix += f" | rel={rel_type}"
+    plt.title(f"Q{question_idx}: {wrapped_question}{suffix}", fontsize=11, pad=20)
     plt.xlabel("Layer Index")
     plt.ylabel("Total Attention")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "attention_trend_analysis.png"), bbox_inches='tight', dpi=100)
+    plt.close()
+
+def plot_subject_object_attention(subject_scores, object_scores, output_dir, question_idx, question_text, subject_id, object_id, rel_group=None, rel_type=None):
+    """Per-question plot of attention on subject vs object patches over layers."""
+    if not subject_scores and not object_scores:
+        return
+
+    layers = range(len(subject_scores))
+    plt.figure(figsize=(10, 5))
+    plt.plot(layers, subject_scores, marker='o', linewidth=2, label=f"subject_id={subject_id}")
+    plt.plot(layers, object_scores, marker='o', linewidth=2, label=f"object_id={object_id}")
+
+    wrapped_question = "\n".join([question_text[i:i+80] for i in range(0, len(question_text), 80)])
+    suffix = ""
+    if rel_group:
+        suffix += f" | group={rel_group}"
+    if rel_type:
+        suffix += f" | rel={rel_type}"
+    plt.title(f"Q{question_idx}: {wrapped_question}{suffix}", fontsize=10)
+    plt.xlabel("Layer Index")
+    plt.ylabel("Total Attention (avg over heads)")
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "subject_object_attention.png"), bbox_inches='tight', dpi=120)
     plt.close()
 
 # --- NEW PLOT: CORRECT VS INCORRECT COMPARISON ---
@@ -342,8 +366,15 @@ def main():
     with open(json_path, 'r') as f:
         annotation_data = json.load(f)
         full_qa_list = annotation_data.get('qa', [])
-    # Extract dynamic target groups from annotation
-    TARGET_GROUPS, group_metadata = extract_target_groups_from_annotation(annotation_data)
+
+    meta = annotation_data.get('meta', {}) if isinstance(annotation_data.get('meta', {}), dict) else {}
+    img_size = int(meta.get('img_size', 336))
+    patch_size = int(meta.get('patch', 14))
+    grid_dim = int(meta.get('grid_dim', 24))
+    num_patches = grid_dim * grid_dim
+
+    # Extract per-object patch indices directly from JSON
+    TARGET_GROUPS, group_metadata, obj_id_to_patch_indices = extract_target_groups_from_annotation(annotation_data, grid_dim=grid_dim)
     
     print(f"\nDynamically extracted {len(TARGET_GROUPS)} target groups:")
     for i, meta in enumerate(group_metadata):
@@ -352,14 +383,14 @@ def main():
     # --- PREPARE GROUP METADATA FOR VISUALIZATION ---
     target_groups_meta = []
     if args.plot_attention:
-        vis_image = image.resize((336, 336), resample=Image.BICUBIC)
+        vis_image = image.resize((img_size, img_size), resample=Image.BICUBIC)
         for i, (group_indices, meta) in enumerate(zip(TARGET_GROUPS, group_metadata)):
             # Use the actual object color from annotation
             object_color = meta['color']
             group_patches = []
             for idx in group_indices:
-                row = idx // 24
-                col = idx % 24
+                row = idx // grid_dim
+                col = idx % grid_dim
                 group_patches.append({'row': int(row), 'col': int(col), 'idx': idx})
             
             target_groups_meta.append({
@@ -393,6 +424,10 @@ def main():
     for i, qa_item in tqdm(enumerate(qa_list), total=len(qa_list), desc="Total Progress"):
         question_text = qa_item['question']
         ground_truth = qa_item['answer'].lower() 
+        subject_id = qa_item.get('subject_id', None)
+        object_id = qa_item.get('object_id', None)
+        rel_type = qa_item.get('rel_type', None)
+        rel_group = qa_item.get('rel_group', None)
         prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
         
         inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
@@ -419,7 +454,11 @@ def main():
             "gt": ground_truth,
             "prediction": prediction,
             "confidence": float(confidence),
-            "is_correct": is_correct
+            "is_correct": is_correct,
+            "subject_id": subject_id,
+            "object_id": object_id,
+            "rel_type": rel_type,
+            "rel_group": rel_group,
         })
 
         # --- ATTENTION PROCESSING ---
@@ -447,8 +486,14 @@ def main():
             # This list will hold the sum of attention on ALL targets for each layer
             current_question_layer_totals = []
 
+            # Per-question subject/object curves (dynamic targets from JSON)
+            subject_layer_scores = []
+            object_layer_scores = []
+            subj_patch_indices = obj_id_to_patch_indices.get(int(subject_id), []) if subject_id is not None else []
+            obj_patch_indices = obj_id_to_patch_indices.get(int(object_id), []) if object_id is not None else []
+
             start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
-            end_idx = start_idx + 576
+            end_idx = start_idx + num_patches
 
             # Iterate layers
             iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
@@ -458,7 +503,7 @@ def main():
                     heads_raw = layer_attn_tensor[0, :, -1, :] 
                     
                     if end_idx > heads_raw.shape[1]:
-                        image_heads_flat = heads_raw[:, -576:]
+                        image_heads_flat = heads_raw[:, -num_patches:]
                     else:
                         image_heads_flat = heads_raw[:, start_idx : end_idx]
                     
@@ -479,13 +524,27 @@ def main():
                     # Store the sum of ALL groups for this layer
                     current_question_layer_totals.append(layer_total_target_attn)
 
+                    # Per-question: subject vs object attention
+                    subj_sum = 0.0
+                    for pid in subj_patch_indices:
+                        val = avg_attention_flat[pid] if pid < len(avg_attention_flat) else 0.0
+                        subj_sum += float(val)
+
+                    obj_sum = 0.0
+                    for pid in obj_patch_indices:
+                        val = avg_attention_flat[pid] if pid < len(avg_attention_flat) else 0.0
+                        obj_sum += float(val)
+
+                    subject_layer_scores.append(subj_sum)
+                    object_layer_scores.append(obj_sum)
+
                     # 2. ONLY Plot Heavy Grids if asked
                     if args.plot_attention:
                         current_num_heads = image_heads_flat.shape[0]
-                        heads_map_2d = image_heads_flat.view(current_num_heads, 24, 24).float().numpy()
+                        heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
                         avg_map_2d = heads_map_2d.mean(axis=0)
 
-                        fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta)
+                        fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta, patch_size=patch_size)
                         plt.savefig(os.path.join(q_dir, f"layer_{layer_idx:02d}.png"), bbox_inches='tight')
                         plt.close(fig)
 
@@ -502,7 +561,20 @@ def main():
             if args.plot_trends:
                 trend_q_dir = os.path.join(trends_dir, f"Q{i}")
                 os.makedirs(trend_q_dir, exist_ok=True)
-                plot_attention_trends(group_scores_layerwise, group_metadata, trend_q_dir, i, question_text)
+                plot_attention_trends(group_scores_layerwise, group_metadata, trend_q_dir, i, question_text, rel_group=rel_group, rel_type=rel_type)
+
+            # 4. SAVE per-question subject vs object plot (always when attention is computed)
+            plot_subject_object_attention(
+                subject_layer_scores,
+                object_layer_scores,
+                q_dir,
+                i,
+                question_text,
+                subject_id,
+                object_id,
+                rel_group=rel_group,
+                rel_type=rel_type,
+            )
             
 
     # --- SAVE SUMMARY ---

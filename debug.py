@@ -66,11 +66,11 @@ def analyze_json_targets(image_path, json_path):
         print(f"Error: JSON not found at {json_path}")
         return None
 
-    # Calculate Scaling Factors
+    # Calculate Scaling Factors (only needed when JSON doesn't already store patch indices)
     w_orig, h_orig = img_orig.size
     scale_x = LLAVA_SIZE / w_orig
     scale_y = LLAVA_SIZE / h_orig
-    
+
     # Resize Image for visualization
     img_resized = img_orig.resize((LLAVA_SIZE, LLAVA_SIZE), resample=Image.BICUBIC)
     
@@ -78,7 +78,11 @@ def analyze_json_targets(image_path, json_path):
     
     # Process Objects
     for obj in ann_data.get('objects', []):
-        indices = get_intersecting_patches(obj['bbox'], scale_x, scale_y)
+        # Prefer indices precomputed at generation-time (new JSONs)
+        if 'patch_indices' in obj and isinstance(obj['patch_indices'], list):
+            indices = sorted(obj['patch_indices'])
+        else:
+            indices = get_intersecting_patches(obj['bbox'], scale_x, scale_y)
         objects_data.append({
             'id': obj['id'],
             'color': obj['color'],

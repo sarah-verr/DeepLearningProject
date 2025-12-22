@@ -18,12 +18,31 @@ def parse_args():
 
     ap.add_argument("--shapes", type=str, default="")
     ap.add_argument("--colors", type=str, default="")
-    
-    return ap.parse_args()
+
+    # Choose one or both relation families to generate questions from
+    ap.add_argument("--primary", action="store_true", help="Include PRIMARY (left/right/above/below) questions")
+    ap.add_argument(
+        "--advanced",
+        action="store_true",
+        help="Include ADVANCED questions (includes touching/overlapping + inside/near/far/next_to/beside)",
+    )
+
+    ap.add_argument("--no_dedup_qa", action="store_true", help="Disable question deduplication")
+
+    args = ap.parse_args()
+    if not (args.primary or args.advanced):
+        ap.error("Must provide at least one of: --primary, --advanced")
+    return args
 
 def main():
     args = parse_args()
     os.makedirs(args.base_dir, exist_ok=True)
+
+    question_groups = []
+    if args.primary:
+        question_groups.append("primary")
+    if args.advanced:
+        question_groups.append("advanced")
 
     # Process Shapes
     shapes = parse_list(args.shapes)
@@ -74,6 +93,9 @@ def main():
                     rel_fn=rel_fn,
                     patch=args.patch,
                     allow_advanced_language=cfg["adv_lang"],
+                    # NEW:
+                    dedup_qa=(not args.no_dedup_qa),
+                    question_groups=question_groups,
                 )
 
     print("Done.")
