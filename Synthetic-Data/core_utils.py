@@ -1,6 +1,6 @@
 # core_utils.py
 
-import os, json, math, random
+import os, json, math, random, re
 from dataclasses import dataclass, asdict
 from typing import List, Tuple, Dict
 from PIL import Image, ImageDraw
@@ -109,10 +109,33 @@ def point_in_bbox(pt, bbox):
     x0,y0,x1,y1 = bbox
     return (x0 <= x <= x1) and (y0 <= y <= y1)
 
+def intersecting_patch_indices(bbox: Tuple[int, int, int, int], img_size: int, patch: int) -> List[int]:
+    """Return flat patch indices (row-major) whose patch area intersects bbox.
+
+    Coordinates are assumed to be in the same pixel space as the rendered image.
+    """
+    x1, y1, x2, y2 = bbox
+    grid_dim = img_size // patch
+    out: List[int] = []
+    for r in range(grid_dim):
+        for c in range(grid_dim):
+            p_x1 = c * patch
+            p_y1 = r * patch
+            p_x2 = p_x1 + patch
+            p_y2 = p_y1 + patch
+
+            inter_x1 = max(x1, p_x1)
+            inter_y1 = max(y1, p_y1)
+            inter_x2 = min(x2, p_x2)
+            inter_y2 = min(y2, p_y2)
+
+            if inter_x1 < inter_x2 and inter_y1 < inter_y2:
+                out.append(r * grid_dim + c)
+    return out
+
 # ---------------------- Relations & Language ----------------------
 PRIMARY  = {"left_of","right_of","above","below"}
-CONTACT  = {"touching","overlapping"}
-ADVANCED = {"inside","near","far","next_to","beside"}
+ADVANCED = {"inside","encapsulates", "touching","overlapping"} # removed "near","far" for now as it is quite ambiguous and subjective, also removed "next_to","beside" due to its subjectivity
 
 PHRASES = {
     "left_of": ["left of", "to the left of"], 
@@ -147,36 +170,98 @@ INV = {
     "near":"near", "far":"far",
 }
 
+def rel_group(rel_type: str) -> str:
+    """Return the relation family name for a relation type."""
+    if rel_type in PRIMARY:
+        return "PRIMARY"
+    if rel_type in ADVANCED:
+        return "ADVANCED"
+    return "UNKNOWN"
+
 def rel_phrase(t: str) -> str:
     return random.choice(PHRASES[t])
 
 def caption_from_rel(a: Obj, b: Obj, rel_type: str) -> str:
     return f"The {a.color} {a.shape} is {rel_phrase(rel_type)} the {b.color} {b.shape}."
 
-def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str,str]]:
-    # Forward Question
+def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
+    # Forward Question (A ?rel? B)
     qf = f"Is the {a.color} {a.shape} {rel_phrase(rel_type)} the {b.color} {b.shape}?"
-    
-    # Inverse Question
+
+    # Inverse Question (B ?inv_rel? A)
     inv_type = INV[rel_type]
     qi = f"Is the {b.color} {b.shape} {rel_phrase(inv_type)} the {a.color} {a.shape}?"
-    
-    return [{"question": qf, "answer":"yes"}, {"question": qi, "answer":"yes"}]
 
-def sample_language(objects: List[Obj], relations: List[Dict], allow_advanced: bool, max_caps: int=MAX_CAPTIONS, max_qa: int=MAX_QA):
+    return [
+        {
+            "question": qf,
+            "answer": "yes",
+            "subject_id": a.id,
+            "object_id": b.id,
+            "rel_type": rel_type,
+            "rel_group": rel_group(rel_type),
+        },
+        {
+            "question": qi,
+            "answer": "yes",
+            "subject_id": b.id,
+            "object_id": a.id,
+            "rel_type": inv_type,
+            "rel_group": rel_group(inv_type),
+        },
+    ]
+
+def sample_language(
+    objects: List[Obj],
+    relations: List[Dict],
+    allow_advanced: bool,
+    max_caps: int = MAX_CAPTIONS,
+    max_qa: int = MAX_QA,
+    dedup_qa: bool = True,
+    include_contact: bool = True,
+    question_group: str | None = None,
+    question_groups: List[str] | None = None,
+):
     by_id = {o.id: o for o in objects}
-    
+
     # Filter allowed relation types
-    allowed_types = PRIMARY.union(CONTACT)
-    if allow_advanced:
-        allowed_types = allowed_types.union(ADVANCED)
-        
+    # If question_groups is provided, it takes precedence and can include multiple families.
+    if question_groups is not None:
+        selected = [g.lower().strip() for g in question_groups if isinstance(g, str) and g.strip()]
+        if not selected:
+            return [], []
+        allowed_types = set()
+        for g in selected:
+            if g == "primary":
+                allowed_types |= PRIMARY
+            elif g == "advanced":
+                allowed_types |= ADVANCED
+            else:
+                # Unknown group token => treat as invalid and generate no questions
+                return [], []
+    elif question_group is not None:
+        qg = question_group.lower().strip()
+        if qg == "primary":
+            allowed_types = set(PRIMARY)
+        elif qg == "advanced":
+            allowed_types = set(ADVANCED)
+        else:
+            # Unknown group => no questions.
+            return [], []
+    else:
+        # Backward-compatible default behavior (not used by current CLI):
+        allowed_types = set(PRIMARY)
+        if include_contact:
+            allowed_types |= CONTACT
+        if allow_advanced:
+            allowed_types |= ADVANCED
+
     valid_rels = [r for r in relations if r["type"] in allowed_types]
     random.shuffle(valid_rels)
 
     captions, qa = [], []
     target_yes = max_qa // 2
-    
+
     # Generate captions and YES questions
     for r in valid_rels:
         a, b = by_id[r["subject_id"]], by_id[r["object_id"]]
@@ -189,36 +274,67 @@ def sample_language(objects: List[Obj], relations: List[Dict], allow_advanced: b
 
     # Generate NO questions
     pair_to_types = {}
-    for r in relations: # Use all relations to check truth
+    for r in relations:  # Use all relations to check truth
         k = (r["subject_id"], r["object_id"])
-        if k not in pair_to_types: pair_to_types[k] = set()
+        if k not in pair_to_types:
+            pair_to_types[k] = set()
         pair_to_types[k].add(r["type"])
 
     all_types = list(allowed_types)
-    # Remove 'encapsulates' from sampling pool if it exists, as it's only an inverse
-    if "encapsulates" in all_types: all_types.remove("encapsulates")
+    if "encapsulates" in all_types:
+        all_types.remove("encapsulates")
 
     import itertools
     pairs = [(a.id, b.id) for a, b in itertools.product(objects, objects) if a.id != b.id]
-    
+
     attempts = 0
     while len(qa) < max_qa and attempts < 500 and pairs:
         attempts += 1
         sid, oid = random.choice(pairs)
         true_types = pair_to_types.get((sid, oid), set())
-        
-        # Pick a type that is FALSE for this pair
+
         candidates = [t for t in all_types if t not in true_types]
-        
-        if candidates:
-            rtype = random.choice(candidates)
-            a, b = by_id[sid], by_id[oid]
-            q = f"Is the {a.color} {a.shape} {rel_phrase(rtype)} the {b.color} {b.shape}?"
-            qa.append({"question": q, "answer": "no"})
+        if not candidates:
+            continue
 
+        rtype = random.choice(candidates)
+        a, b = by_id[sid], by_id[oid]
+        q = f"Is the {a.color} {a.shape} {rel_phrase(rtype)} the {b.color} {b.shape}?"
+        qa.append(
+            {
+                "question": q,
+                "answer": "no",
+                "subject_id": sid,
+                "object_id": oid,
+                "rel_type": rtype,
+                "rel_group": rel_group(rtype),
+            }
+        )
+
+    if dedup_qa:
+        qa = _dedup_qa_list(qa)
+
+    qa = qa[:max_qa]
     return captions, qa
-
 # ---------------------- Logic Helpers ----------------------
+
+def _norm_question(s: str) -> str:
+    s = (s or "").strip().lower()
+    s = re.sub(r"\s+", " ", s)
+    s = re.sub(r"[^\w\s]", "", s)  # drop punctuation
+    return s
+
+def _dedup_qa_list(qa: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    seen = set()
+    out = []
+    for item in qa:
+        q = item.get("question", "")
+        key = _norm_question(q)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(item)
+    return out
 
 def assign_colors(objs, allowed_colors):
     if not objs: return
@@ -246,25 +362,47 @@ def render_and_save(
     rel_fn,
     patch: int,
     allow_advanced_language: bool,
+    # NEW:
+    dedup_qa: bool = True,
+    include_contact: bool = True,
+    question_group: str | None = None,
+    question_groups: List[str] | None = None,
 ):
-    img = Image.new("RGB", (img_size, img_size), BG_CHOICES[bg_key])
+    # Create image + draw objects
+    bg = BG_CHOICES.get(bg_key, (255, 255, 255))
+    img = Image.new("RGB", (img_size, img_size), color=bg)
     draw = ImageDraw.Draw(img)
-    
-    # Draw Largest first
-    for o in sorted(objs, key=lambda x: x.size, reverse=True):
+    for o in objs:
         draw_shape(draw, o)
-
-    # Unified call
     relations = rel_fn(objs, patch)
-    
-    caps, qa = sample_language(objs, relations, allow_advanced_language)
+
+    caps, qa = sample_language(
+        objs,
+        relations,
+        allow_advanced_language,
+        dedup_qa=dedup_qa,
+        include_contact=include_contact,
+        question_group=question_group,
+        question_groups=question_groups,
+    )
 
     ann = {
         "background": bg_key,
-        "objects": [asdict(o) for o in objs],
+        "objects": [
+            {
+                **asdict(o),
+                "patch_indices": intersecting_patch_indices(o.bbox, img_size=img_size, patch=patch),
+            }
+            for o in objs
+        ],
         "relations": relations,
         "captions": caps,
         "qa": qa,
+        "meta": {
+            "img_size": img_size,
+            "patch": patch,
+            "grid_dim": img_size // patch,
+        },
     }
 
     os.makedirs(os.path.dirname(out_img), exist_ok=True)
