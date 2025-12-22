@@ -27,7 +27,7 @@ If you are running this code on the student cluster, follow these steps to avoid
 Once on the compute node, set up the dependencies. You can simply run `source setup.sh` if available, or manually set up the virtual environment:
 
 ```bash
-python3 -m venv venv 
+python -m venv venv 
 source venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -39,14 +39,37 @@ pip install -r requirements.txt
 Use the following scripts to generate and augment the synthetic datasets required for the framework.
 
 * **Generate Synthetic Data:**
+  The generator now requires selecting at least one question group:
+  - `--primary` (left/right/above/below)
+  - `--advanced` (includes touching/overlapping + inside/near/far/next_to/beside/encapsulates)
+
+  Examples:
   ```bash
-  python3 generate_data.py
+  # PRIMARY only
+  python Synthetic-Data/generate_data.py --primary --levels 2 --scenes_per_level 20
+
+  # ADVANCED only
+  python Synthetic-Data/generate_data.py --advanced --levels 2 --scenes_per_level 20
+
+  # BOTH
+  python Synthetic-Data/generate_data.py --primary --advanced --levels 2 --scenes_per_level 20
   ```
+
+  Optional flags:
+  - `--no_dedup_qa`: disables deduplication of repeated question text.
 
 * **Augment Datasets:** Creates various variations of the above generated dataset (flipping, rotation, etc)
   ```bash
-  python3 aug_datasets.py     
+  python Synthetic-Data/aug_datasets.py
   ```
+
+### Annotation JSON schema (high level)
+Each `ann/*.json` now stores extra supervision that downstream scripts use:
+- `objects[*].patch_indices`: precomputed patch indices (row-major) intersecting each object bbox
+- `qa[*].subject_id` / `qa[*].object_id`: object ids referenced in the question
+- `qa[*].rel_type`: relation type (e.g., `left_of`)
+- `qa[*].rel_group`: relation group (`PRIMARY` or `ADVANCED`)
+- `meta`: `{img_size, patch, grid_dim}`
 
 ---
 
@@ -63,15 +86,16 @@ Options are other optional flags detailed below in the Arguments section.
 
 ### Configuration (Target Groups)
 
-*Important*: The script tracks specific patches defined in the code. Before running, open main.py and modify the TARGET_GROUPS list to match the patch indices you wish to analyze:
+*Important*: You no longer need to manually define `TARGET_GROUPS` in code.
 
-```python 
-# Inside main.py
-TARGET_GROUPS = [
-    [459, 460],       # Group 0 (Cyan)
-    [483, 484, 485]   # Group 1 (Magenta)
-]
-```
+`main.py` now reads target patches directly from the JSON:
+- Per-object target patches come from `objects[*].patch_indices`
+- Per-question targets come from `qa[*].subject_id` and `qa[*].object_id`
+
+When attention extraction is enabled, it produces:
+- Trend plots for attention on all objects
+- A per-question plot comparing attention on the subject vs object across layers
+- Plot titles include `rel_group` and `rel_type`
 
 ### Arguments
 
@@ -99,15 +123,27 @@ Performs standard evaluation and creates subdirectories containing attention hea
 python main.py --level 1 --id 00007_b --plot_attention
 ```
 
+**3. Run trend plots only (faster):**
+```bash
+python main.py --level 1 --id 00007_b --plot_trends
+```
+
+**4. Run a subset of questions:**
+```bash
+python main.py --level 1 --id 00007_b --num_questions 5 --plot_trends
+```
+
 ---
 
 ## 4. Debugging and Analysis (`debug.py`)
 
-This utility analyzes an image to identify the most "active" patches based on pixel variance (standard deviation). It helps predict which areas are likely to draw the model's attention.
+This utility maps object bounding boxes to patch indices and visualizes patch coverage.
+
+With the updated dataset, `debug.py` will use `objects[*].patch_indices` from the JSON when available (and fall back to computing them for older JSONs).
 
 **Usage:**
 ```bash
-python debug.py [--level <level_number>] [--id <image_id>]
+python debug.py --level <level_number> --id <image_id>
 ```
 
 ### Arguments
@@ -120,13 +156,24 @@ python debug.py [--level <level_number>] [--id <image_id>]
 ### Examples
 
 **1. Analyze a specific image:**
-Analyzes `level_3/images/00042_a.png` and displays a plot showing the top-2 active patches.
 ```bash
 python debug.py --level 3 --id 00042_a
 ```
 
-**2. Run with default settings:**
-Analyzes the default image (`level_1/images/00007_b.png`).
+---
+
+## 5. Bulk Evaluation (`compute_accuracy.py`)
+
+This script evaluates LLaVA across one or more dataset levels and produces:
+- `evaluation_results.json`: per-level accuracy
+- per-level accuracy breakdown by `rel_group` (`PRIMARY` vs `ADVANCED`)
+- `model_calls_log.csv`: per-question log including `Rel_Group` and `Rel_Type`
+
+**Usage:**
 ```bash
-python debug.py
+python compute_accuracy.py --levels 0 1 2 3 4 5 6
 ```
+
+Optional flags:
+- `--output_json evaluation_results.json`
+- `--log_file model_calls_log.csv`
