@@ -185,12 +185,14 @@ def caption_from_rel(a: Obj, b: Obj, rel_type: str) -> str:
     return f"The {a.color} {a.shape} is {rel_phrase(rel_type)} the {b.color} {b.shape}."
 
 def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
-    # Forward Question (A ?rel? B)
-    qf = f"Is the {a.color} {a.shape} {rel_phrase(rel_type)} the {b.color} {b.shape}?"
+    # Forward Question (A ?rel? B) — choose and store the exact phrase
+    phrase_fwd = rel_phrase(rel_type)
+    qf = f"Is the {a.color} {a.shape} {phrase_fwd} the {b.color} {b.shape}?"
 
-    # Inverse Question (B ?inv_rel? A)
+    # Inverse Question (B ?inv_rel? A) — choose and store the exact phrase
     inv_type = INV[rel_type]
-    qi = f"Is the {b.color} {b.shape} {rel_phrase(inv_type)} the {a.color} {a.shape}?"
+    phrase_inv = rel_phrase(inv_type)
+    qi = f"Is the {b.color} {b.shape} {phrase_inv} the {a.color} {a.shape}?"
 
     return [
         {
@@ -200,6 +202,7 @@ def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
             "object_id": b.id,
             "rel_type": rel_type,
             "rel_group": rel_group(rel_type),
+            "rel_phrase": phrase_fwd,  # NEW
         },
         {
             "question": qi,
@@ -208,6 +211,7 @@ def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
             "object_id": a.id,
             "rel_type": inv_type,
             "rel_group": rel_group(inv_type),
+            "rel_phrase": phrase_inv,  # NEW
         },
     ]
 
@@ -299,7 +303,9 @@ def sample_language(
 
         rtype = random.choice(candidates)
         a, b = by_id[sid], by_id[oid]
-        q = f"Is the {a.color} {a.shape} {rel_phrase(rtype)} the {b.color} {b.shape}?"
+
+        phrase = rel_phrase(rtype)  # NEW: pick + store phrase
+        q = f"Is the {a.color} {a.shape} {phrase} the {b.color} {b.shape}?"
         qa.append(
             {
                 "question": q,
@@ -308,6 +314,7 @@ def sample_language(
                 "object_id": oid,
                 "rel_type": rtype,
                 "rel_group": rel_group(rtype),
+                "rel_phrase": phrase,  # NEW
             }
         )
 
