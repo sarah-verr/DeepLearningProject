@@ -68,10 +68,14 @@ Use the following scripts to generate and augment the synthetic datasets require
 ### Annotation JSON schema (high level)
 Each `ann/*.json` now stores extra supervision that downstream scripts use:
 - `objects[*].patch_indices`: precomputed patch indices (row-major) intersecting each object bbox
+- `captions_meta[*]`: structured captions with relation metadata (useful for text-only evaluation)
+- `captions_meta[*].entailed_qa_ids` / `captions_meta[*].contradicted_qa_ids`: QA ids linked to that caption (derived from `qa[*].caption_id` + `qa[*].answer`, but stored for convenience)
 - `qa[*].subject_id` / `qa[*].object_id`: object ids referenced in the question
 - `qa[*].rel_type`: relation type (e.g., `left_of`)
 - `qa[*].rel_group`: relation group (`PRIMARY` or `ADVANCED`)
 - `qa[*].rel_phrase`: the exact relational phrase used in the question (e.g., `to the left of`)
+- `qa[*].id`: stable per-image question id (0..N-1)
+- `qa[*].caption_id`: optional link to the caption in `captions_meta` that was used as evidence for this QA item (only present when captions are generated; older JSONs may not have it)
 - `meta`: `{img_size, patch, grid_dim}`
 
 ---
@@ -171,4 +175,8 @@ Optional flags:
 - `--log_file model_calls_log.csv`
 
 Text-only baseline:
-- `--text_only`: evaluates relational reasoning from a text-only prompt (no image). The per-question CSV includes a `Mode` column to distinguish `image` vs `text_only` runs.
+- `--text_only`: evaluates relational reasoning from a text-only prompt (no image).
+  - For newer datasets, the prompt is built from the per-question linked caption (`captions_meta` + `qa[*].caption_id`) followed by the question.
+  - For older datasets without caption linkage, it falls back to a simple scene description.
+  - The CSV logs the full transcript in the `Prompt` column (input prompt + `MODEL: <completion>`) and also stores the raw generated text in `Completion`.
+  - The CSV includes a `Mode` column to distinguish `image` vs `text_only` runs.
