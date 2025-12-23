@@ -23,8 +23,8 @@ NEAR_GRID_DIST = 2
 FAR_GRID_DIST  = 4
 
 # Max captions / QA per image
-MAX_CAPTIONS = 8
-MAX_QA       = 10
+MAX_CAPTIONS = 25
+MAX_QA       = 50
 
 # --- LEVEL DESIGN CONFIGURATION ---
 # specific complexity settings for each level

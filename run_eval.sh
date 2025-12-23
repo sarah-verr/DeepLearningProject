@@ -18,5 +18,5 @@ source venv/bin/activate
 # 3. Run the evaluation
 # Replace the levels with the ones you want to test
 python compute_accuracy.py --levels 0 1 2 3 4 5 6 \
-    --output_json evaluation_results.json \
-    --log_file model_calls_log.csv
+    --output_json evaluation_results_with_text_only.json \
+    --log_file model_calls_log_with_text_only.csv --text_only

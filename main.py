@@ -9,6 +9,8 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
 from PIL import Image
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 from tqdm import tqdm
@@ -18,6 +20,15 @@ from types import SimpleNamespace
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+
+# Heatmap visualization tuning
+HEATMAP_CMAP = "viridis"  # perceptually-uniform, colorblind-friendly
+HEATMAP_TRANSPARENCY_THRESHOLD = 0.05  # normalized attention in [0,1] below this is transparent
+HEATMAP_NONZERO_ALPHA = 0.55  # opacity for any non-zero attention
+
+# Patch marker drawing (target highlight rectangles)
+# If False, overlay heatmaps will not draw patch rectangles (cleaner overlays).
+DRAW_PATCH_MARKERS_ON_OVERLAY = False
 
 # ---------------------- Config Loader (YAML/JSON) ----------------------
 def _load_config_file(path: str) -> dict:
@@ -157,6 +168,18 @@ def draw_target_highlights(ax, target_groups_meta, patch_size: int):
             )
             ax.add_patch(rect)
 
+def add_heatmap_colorbar(fig, axes, *, cmap: str = HEATMAP_CMAP, label: str = "Normalized attention (0=low, 1=high)"):
+    """Add a single colorbar that explains the heatmap colors.
+
+    Note: heatmaps are normalized per-map in overlay_heatmap, so the legend is 0..1.
+    """
+    sm = ScalarMappable(norm=Normalize(0.0, 1.0), cmap=cmap)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=axes, fraction=0.025, pad=0.01)
+    cbar.set_label(label, fontsize=9)
+    cbar.ax.tick_params(labelsize=8)
+    return cbar
+
 def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None, patch_size: int = 14):
     if heatmap_data.max() > heatmap_data.min():
         norm_map = (heatmap_data - heatmap_data.min()) / (heatmap_data.max() - heatmap_data.min())
@@ -164,14 +187,25 @@ def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None
         norm_map = heatmap_data
 
     attn_image = Image.fromarray((norm_map * 255).astype('uint8'))
-    attn_image = attn_image.resize(base_image.size, resample=Image.BICUBIC)
+    attn_image = attn_image.resize(base_image.size, resample=Image.NEAREST)
 
     ax.imshow(base_image)
-    ax.imshow(attn_image, cmap='jet', alpha=0.6)
+
+    # Binary opacity: exactly-zero attention is transparent; any non-zero attention
+    # uses a constant opacity so the underlying shapes remain visible.
+    attn_resized = (np.asarray(attn_image).astype(np.float32) / 255.0)
+    attn_resized = np.clip(attn_resized, 0.0, 1.0)
+    cmap = plt.get_cmap(HEATMAP_CMAP)
+    rgba = cmap(attn_resized)
+    mask_resized = (attn_resized > HEATMAP_TRANSPARENCY_THRESHOLD)
+    rgba[..., 3] = np.where(mask_resized, HEATMAP_NONZERO_ALPHA, 0.0)
+    im = ax.imshow(rgba, interpolation="nearest")
     ax.set_title(title, fontsize=8)
     ax.axis('off')
-    if target_groups_meta:
+    if target_groups_meta and DRAW_PATCH_MARKERS_ON_OVERLAY:
         draw_target_highlights(ax, target_groups_meta, patch_size=patch_size)
+
+    return im
 
 def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups_meta, patch_size: int = 14):
     num_heads = heads_data.shape[0]
@@ -179,7 +213,7 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     cols = 6
     rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
 
-    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows))
+    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows), constrained_layout=True)
     fig.suptitle(f"Layer {layer_idx} Attention", fontsize=16, weight='bold')
     axes_flat = axes.flatten()
 
@@ -209,7 +243,7 @@ def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups
     for i in range(num_heads + 2, len(axes_flat)):
         axes_flat[i].axis('off')
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.97])
+    add_heatmap_colorbar(fig, axes_flat[1:total_plots])
     return fig
 
 # --- PLOT 1: PER-QUESTION TREND ---
@@ -428,14 +462,14 @@ def create_phrase_thirds_plot(image, maps_3, rel_phrase: str, patch_size: int = 
     """
     maps_3: dict with keys {"early","mid","late"} each a [grid_dim, grid_dim] numpy array
     """
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), constrained_layout=True)
     fig.suptitle(f'Phrase→Image Attention (Layer Thirds) | "{rel_phrase}"', fontsize=14, weight="bold")
 
     overlay_heatmap(axes[0], image, maps_3["early"], "Early (0–33%)", target_groups_meta=None, patch_size=patch_size)
     overlay_heatmap(axes[1], image, maps_3["mid"],   "Mid (33–66%)", target_groups_meta=None, patch_size=patch_size)
     overlay_heatmap(axes[2], image, maps_3["late"],  "Late (66–100%)", target_groups_meta=None, patch_size=patch_size)
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.92])
+    add_heatmap_colorbar(fig, axes)
     return fig
 
 def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_phrase: str, patch_size: int = 14):
@@ -449,7 +483,7 @@ def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_ph
     cols = 6
     rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
 
-    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows))
+    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows), constrained_layout=True)
     fig.suptitle(f'Layer {layer_idx} | Phrase→Image Attention | "{rel_phrase}"', fontsize=14, weight="bold")
     axes_flat = axes.flatten()
 
@@ -469,7 +503,7 @@ def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_ph
     for i in range(num_heads + 2, len(axes_flat)):
         axes_flat[i].axis("off")
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    add_heatmap_colorbar(fig, axes_flat[1:total_plots])
     return fig
 
 def main():
@@ -657,6 +691,34 @@ def main():
             torch.cuda.empty_cache()
             # --- VRAM OPTIMIZATION END ---
 
+            # Optional: prompt self-attention for phrase->image maps.
+            # This is the only reliable way to get attention FROM phrase tokens
+            # (which are in the prompt) TO image patch tokens.
+            prompt_attn_layers = None
+            phrase_positions = []
+            if rel_phrase and (args.plot_attention or args.plot_relational_phrase_attention):
+                phrase_positions = _locate_rel_phrase_token_positions(
+                    processor.tokenizer,
+                    inputs.input_ids[0],
+                    question_text=question_text,
+                    rel_phrase=rel_phrase,
+                )
+
+                if phrase_positions:
+                    try:
+                        with torch.no_grad():
+                            fwd = model(
+                                **inputs,
+                                output_attentions=True,
+                                use_cache=False,
+                                return_dict=True,
+                            )
+                        prompt_attn_layers = [t.detach().cpu() for t in fwd.attentions]
+                        del fwd
+                        torch.cuda.empty_cache()
+                    except Exception as e:
+                        tqdm.write(f"  [Warning] Could not compute prompt attentions for phrase maps: {e}")
+
             group_scores_layerwise = {g_idx: [] for g_idx in range(len(TARGET_GROUPS))}
             
             # This list will hold the sum of attention on ALL targets for each layer
@@ -674,16 +736,13 @@ def main():
             if args.plot_relational_phrase_attention and rel_phrase:
                 phrase_q_dir = os.path.join(phrase_attn_dir, f"Q{i}")
                 os.makedirs(phrase_q_dir, exist_ok=True)
-
-                phrase_positions = _locate_rel_phrase_token_positions(
-                    processor.tokenizer,
-                    inputs.input_ids[0],
-                    question_text=question_text,
-                    rel_phrase=rel_phrase,
-                )
                 if not phrase_positions:
                     tqdm.write(
                         f'  [Warning] Could not locate rel_phrase tokens for Q{i}: "{rel_phrase}". Skipping phrase plot.'
+                    )
+                elif prompt_attn_layers is None:
+                    tqdm.write(
+                        f"  [Warning] Prompt attentions unavailable for Q{i}; skipping phrase-attention plots."
                     )
                 else:
                     vis_image_phrase = image.resize((img_size, img_size), resample=Image.BICUBIC)
@@ -691,19 +750,18 @@ def main():
                     # Collect per-layer avg maps for the "simple" thirds aggregation
                     per_layer_avg_maps: list[np.ndarray] = []
 
-                    for layer_idx, layer_attn_tensor in enumerate(all_layers_data):
+                    for layer_idx, layer_attn_tensor in enumerate(prompt_attn_layers):
                         try:
-                            layer = layer_attn_tensor[0]  # [heads, tgt_len, src_len]
+                            layer = layer_attn_tensor[0]  # [heads, seq_len, seq_len]
 
-                            tgt_len = layer.shape[1]
-                            src_len = layer.shape[2]
-                            phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < tgt_len]
+                            seq_len = layer.shape[1]
+                            phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
                             if not phrase_pos_in_range:
                                 continue
 
                             # Slice keys to image tokens
-                            if end_idx > src_len:
-                                img_key_slice = slice(src_len - num_patches, src_len)
+                            if end_idx > seq_len:
+                                img_key_slice = slice(seq_len - num_patches, seq_len)
                             else:
                                 img_key_slice = slice(start_idx, end_idx)
 
@@ -818,9 +876,31 @@ def main():
 
                     # 2. ONLY Plot Heavy Grids if asked
                     if args.plot_attention:
-                        current_num_heads = image_heads_flat.shape[0]
-                        heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
-                        avg_map_2d = heads_map_2d.mean(axis=0)
+                        # If we have phrase token positions + prompt attentions, plot phrase->image maps.
+                        # Otherwise fall back to the original last-token->image attention.
+                        if prompt_attn_layers is not None and phrase_positions and layer_idx < len(prompt_attn_layers):
+                            layer_prompt = prompt_attn_layers[layer_idx][0]  # [heads, seq_len, seq_len]
+                            seq_len = layer_prompt.shape[1]
+                            phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
+                            if end_idx > seq_len:
+                                img_key_slice = slice(seq_len - num_patches, seq_len)
+                            else:
+                                img_key_slice = slice(start_idx, end_idx)
+
+                            if phrase_pos_in_range:
+                                phrase_to_img = layer_prompt[:, phrase_pos_in_range, img_key_slice]
+                                plot_heads_flat = phrase_to_img.mean(dim=1).float().numpy()  # [heads, num_patches]
+                                current_num_heads = plot_heads_flat.shape[0]
+                                heads_map_2d = plot_heads_flat.reshape(current_num_heads, grid_dim, grid_dim)
+                                avg_map_2d = heads_map_2d.mean(axis=0)
+                            else:
+                                current_num_heads = image_heads_flat.shape[0]
+                                heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
+                                avg_map_2d = heads_map_2d.mean(axis=0)
+                        else:
+                            current_num_heads = image_heads_flat.shape[0]
+                            heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
+                            avg_map_2d = heads_map_2d.mean(axis=0)
 
                         fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta, patch_size=patch_size)
                         plt.savefig(os.path.join(q_dir, f"layer_{layer_idx:02d}.png"), bbox_inches='tight')
