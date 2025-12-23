@@ -2,7 +2,7 @@
 
 import os, json, math, random, re
 from dataclasses import dataclass, asdict
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any
 from PIL import Image, ImageDraw
 
 from core_config import COLORS_RGB, BG_CHOICES, NEAR_GRID_DIST, FAR_GRID_DIST, MAX_CAPTIONS, MAX_QA
@@ -135,21 +135,33 @@ def intersecting_patch_indices(bbox: Tuple[int, int, int, int], img_size: int, p
 
 # ---------------------- Relations & Language ----------------------
 PRIMARY  = {"left_of","right_of","above","below"}
-ADVANCED = {"inside","encapsulates", "touching","overlapping"} # removed "near","far" for now as it is quite ambiguous and subjective, also removed "next_to","beside" due to its subjectivity
+# NOTE: We include explicit negation types for symmetric relations so we can generate
+# strong, controlled NO questions without relying on random fallbacks.
+ADVANCED = {
+    "inside",
+    "encapsulates",
+    "touching",
+    "not_touching",
+    "overlapping",
+    "not_overlapping",
+}  # removed "near","far" for now as it is quite ambiguous and subjective, also removed "next_to","beside" due to its subjectivity
+CONTACT  = set()  # kept for backward-compatibility with older code paths
 
 PHRASES = {
     "left_of": ["left of", "to the left of"], 
     "right_of": ["right of", "to the right of"],
     "above": ["above"], 
     "below": ["below"],
-    "touching": ["touching"], 
-    "overlapping": ["overlapping with", "partially covering"],
+    "touching": ["touching"],
+    "not_touching": ["not touching"],
+    "overlapping": ["overlapping with"],
+    "not_overlapping": ["not overlapping with"],
     
     # Updated "Inside" phrases
     "inside": ["fully inside", "contained within", "enclosed by"],
     
     # New "Encapsulates" phrases (used for Inverse of Inside)
-    "encapsulates": ["encapsulating", "encircling", "surrounding", "containing"],
+    "encapsulates": ["encapsulating", "surrounding", "containing"],
 
     "next_to": ["next to", "beside"], 
     "beside": ["beside", "next to"],
@@ -160,7 +172,10 @@ PHRASES = {
 INV = {
     "left_of":"right_of", "right_of":"left_of",
     "above":"below", "below":"above",
-    "touching":"touching", "overlapping":"overlapping",
+    "touching":"touching",
+    "not_touching":"not_touching",
+    "overlapping":"overlapping",
+    "not_overlapping":"not_overlapping",
     
     # Asymmetric Inverse: If A is inside B, B encapsulates A
     "inside": "encapsulates",
@@ -168,6 +183,13 @@ INV = {
     
     "next_to":"next_to", "beside":"beside",
     "near":"near", "far":"far",
+}
+
+NEG_PRIMARY = {
+    "left_of": "right_of",
+    "right_of": "left_of",
+    "above": "below",
+    "below": "above",
 }
 
 def rel_group(rel_type: str) -> str:
@@ -183,6 +205,23 @@ def rel_phrase(t: str) -> str:
 
 def caption_from_rel(a: Obj, b: Obj, rel_type: str) -> str:
     return f"The {a.color} {a.shape} is {rel_phrase(rel_type)} the {b.color} {b.shape}."
+
+
+def caption_meta_from_rel(caption_id: int, a: Obj, b: Obj, rel_type: str) -> Dict[str, Any]:
+    phrase = rel_phrase(rel_type)
+    cap = f"The {a.color} {a.shape} is {phrase} the {b.color} {b.shape}."
+    return {
+        "id": int(caption_id),
+        "caption": cap,
+        "subject_id": a.id,
+        "object_id": b.id,
+        "rel_type": rel_type,
+        "rel_group": rel_group(rel_type),
+        "rel_phrase": phrase,
+        # Filled after final QA selection + id assignment
+        "entailed_qa_ids": [],
+        "contradicted_qa_ids": [],
+    }
 
 def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
     # Forward Question (A ?rel? B) — choose and store the exact phrase
@@ -214,6 +253,123 @@ def qa_from_rel(a: Obj, b: Obj, rel_type: str) -> List[Dict[str, str]]:
             "rel_phrase": phrase_inv,  # NEW
         },
     ]
+    
+
+def _qa_item(a: Obj, b: Obj, rel_type: str, answer: str, *, caption_id: int | None = None) -> Dict[str, Any]:
+    phrase = rel_phrase(rel_type)
+    q = f"Is the {a.color} {a.shape} {phrase} the {b.color} {b.shape}?"
+    item: Dict[str, Any] = {
+        "question": q,
+        "answer": answer,
+        "subject_id": a.id,
+        "object_id": b.id,
+        "rel_type": rel_type,
+        "rel_group": rel_group(rel_type),
+        "rel_phrase": phrase,
+    }
+    if caption_id is not None:
+        item["caption_id"] = int(caption_id)
+    return item
+
+
+def _paired_yes_no_for_rel(
+    a: Obj,
+    b: Obj,
+    rel_type: str,
+    *,
+    allowed_types: set,
+    true_types_for_pair: set,
+    caption_id: int | None = None,
+) -> List[Dict[str, str]]:
+    """Return [YES, NO] for a true relation instance.
+
+    Rules:
+      - PRIMARY: NO is NEG_PRIMARY[rel_type] on the same ordered pair (a,b).
+      - ADVANCED: NO is INV[rel_type] on the same ordered pair (a,b) (no swap).
+        This works well for asymmetric pairs like inside/encapsulates.
+      - Fallback (e.g., touching/overlapping where INV == self): pick any allowed
+        relation type that is not true for this ordered pair.
+    """
+    out: List[Dict[str, Any]] = [_qa_item(a, b, rel_type, "yes", caption_id=caption_id)]
+
+    no_type = None
+
+    if rel_type in PRIMARY:
+        cand = NEG_PRIMARY.get(rel_type)
+        if cand and cand in allowed_types and cand not in true_types_for_pair:
+            no_type = cand
+
+    # Symmetric advanced relations: prefer explicit negation types.
+    if no_type is None and rel_type == "touching":
+        cand = "not_touching"
+        if cand in allowed_types and cand not in true_types_for_pair:
+            no_type = cand
+
+    if no_type is None and rel_type == "overlapping":
+        cand = "not_overlapping"
+        if cand in allowed_types and cand not in true_types_for_pair:
+            no_type = cand
+
+    if no_type is None and rel_type in ADVANCED:
+        inv = INV.get(rel_type)
+        if inv and inv in allowed_types and inv not in true_types_for_pair and inv != rel_type:
+            no_type = inv
+
+    if no_type is None:
+        # Prefer staying within the same family when possible.
+        preferred_pool = list(ADVANCED & allowed_types) if rel_type in ADVANCED else list(PRIMARY & allowed_types)
+        preferred = [t for t in preferred_pool if t not in true_types_for_pair]
+        candidates = preferred if preferred else [t for t in allowed_types if t not in true_types_for_pair]
+        if candidates:
+            no_type = random.choice(candidates)
+
+    if no_type is not None:
+        out.append(_qa_item(a, b, no_type, "no", caption_id=caption_id))
+
+    return out
+
+
+def _assign_qa_ids_and_link_captions(
+    captions_meta: List[Dict[str, Any]],
+    qa: List[Dict[str, Any]],
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Assign sequential QA ids and populate caption->qa links.
+
+    We do this AFTER dedup/balancing so caption links remain valid.
+    """
+    for c in captions_meta:
+        c["entailed_qa_ids"] = []
+        c["contradicted_qa_ids"] = []
+
+    cap_index = {int(c["id"]): c for c in captions_meta if "id" in c}
+
+    for qid, item in enumerate(qa):
+        item["id"] = int(qid)
+        cap_id = item.get("caption_id")
+        if cap_id is None:
+            continue
+        cap_id_int = int(cap_id)
+        c = cap_index.get(cap_id_int)
+        if c is None:
+            continue
+        if item.get("answer") == "yes":
+            c["entailed_qa_ids"].append(int(qid))
+        elif item.get("answer") == "no":
+            c["contradicted_qa_ids"].append(int(qid))
+
+    return captions_meta, qa
+
+
+def _balance_yes_no(qa: List[Dict[str, str]], max_qa: int) -> List[Dict[str, str]]:
+    """Return an exactly balanced list: N yes + N no, interleaved, up to max_qa."""
+    yes = [x for x in qa if x.get("answer") == "yes"]
+    no = [x for x in qa if x.get("answer") == "no"]
+    n = min(len(yes), len(no), max_qa // 2)
+    out: List[Dict[str, str]] = []
+    for i in range(n):
+        out.append(yes[i])
+        out.append(no[i])
+    return out[: 2 * n]
 
 def sample_language(
     objects: List[Obj],
@@ -263,66 +419,47 @@ def sample_language(
     valid_rels = [r for r in relations if r["type"] in allowed_types]
     random.shuffle(valid_rels)
 
-    captions, qa = [], []
-    target_yes = max_qa // 2
+    captions: List[str] = []
+    captions_meta: List[Dict[str, Any]] = []
+    qa: List[Dict[str, Any]] = []
+    # Build truth map once (used to ensure our paired NO is actually false).
+    pair_to_types: Dict[Tuple[int, int], set] = {}
+    for r in relations:
+        k = (r["subject_id"], r["object_id"])
+        pair_to_types.setdefault(k, set()).add(r["type"])
 
-    # Generate captions and YES questions
+    # Generate paired YES/NO questions. Generate extra to survive dedup.
+    budget = max_qa * 3
     for r in valid_rels:
         a, b = by_id[r["subject_id"]], by_id[r["object_id"]]
+        caption_id = None
         if len(captions) < max_caps:
-            captions.append(caption_from_rel(a, b, r["type"]))
-        if len(qa) < target_yes:
-            qa.extend(qa_from_rel(a, b, r["type"]))
+            caption_id = len(captions_meta)
+            cap_meta = caption_meta_from_rel(caption_id, a, b, r["type"])
+            captions_meta.append(cap_meta)
+            captions.append(cap_meta["caption"])
 
-    qa = qa[:target_yes]
+        if len(qa) >= budget:
+            break
 
-    # Generate NO questions
-    pair_to_types = {}
-    for r in relations:  # Use all relations to check truth
-        k = (r["subject_id"], r["object_id"])
-        if k not in pair_to_types:
-            pair_to_types[k] = set()
-        pair_to_types[k].add(r["type"])
-
-    all_types = list(allowed_types)
-    if "encapsulates" in all_types:
-        all_types.remove("encapsulates")
-
-    import itertools
-    pairs = [(a.id, b.id) for a, b in itertools.product(objects, objects) if a.id != b.id]
-
-    attempts = 0
-    while len(qa) < max_qa and attempts < 500 and pairs:
-        attempts += 1
-        sid, oid = random.choice(pairs)
-        true_types = pair_to_types.get((sid, oid), set())
-
-        candidates = [t for t in all_types if t not in true_types]
-        if not candidates:
-            continue
-
-        rtype = random.choice(candidates)
-        a, b = by_id[sid], by_id[oid]
-
-        phrase = rel_phrase(rtype)  # NEW: pick + store phrase
-        q = f"Is the {a.color} {a.shape} {phrase} the {b.color} {b.shape}?"
-        qa.append(
-            {
-                "question": q,
-                "answer": "no",
-                "subject_id": sid,
-                "object_id": oid,
-                "rel_type": rtype,
-                "rel_group": rel_group(rtype),
-                "rel_phrase": phrase,  # NEW
-            }
+        true_types = pair_to_types.get((a.id, b.id), set())
+        qa.extend(
+            _paired_yes_no_for_rel(
+                a,
+                b,
+                r["type"],
+                allowed_types=allowed_types,
+                true_types_for_pair=true_types,
+                caption_id=caption_id,
+            )
         )
 
     if dedup_qa:
         qa = _dedup_qa_list(qa)
 
-    qa = qa[:max_qa]
-    return captions, qa
+    qa = _balance_yes_no(qa, max_qa=max_qa)
+    captions_meta, qa = _assign_qa_ids_and_link_captions(captions_meta, qa)
+    return captions, qa, captions_meta
 # ---------------------- Logic Helpers ----------------------
 
 def _norm_question(s: str) -> str:
@@ -383,7 +520,7 @@ def render_and_save(
         draw_shape(draw, o)
     relations = rel_fn(objs, patch)
 
-    caps, qa = sample_language(
+    caps, qa, caps_meta = sample_language(
         objs,
         relations,
         allow_advanced_language,
@@ -404,6 +541,7 @@ def render_and_save(
         ],
         "relations": relations,
         "captions": caps,
+        "captions_meta": caps_meta,
         "qa": qa,
         "meta": {
             "img_size": img_size,

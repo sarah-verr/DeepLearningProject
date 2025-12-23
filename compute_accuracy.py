@@ -75,6 +75,54 @@ def build_text_only_prompt(scene_text: str, question: str) -> str:
         "Answer:"
     )
 
+
+def build_caption_prompt(caption: str, question: str) -> str:
+    return (
+        "You are given a caption describing a synthetic scene.\n"
+        "Use only the caption as evidence.\n"
+        "Answer the question with only \"yes\" or \"no\".\n\n"
+        f"Caption: {caption}\n\n"
+        f"Question: {question}\n"
+        "Answer:"
+    )
+
+
+def get_caption_for_qa(annotation: dict, qa_item: dict) -> str | None:
+    """Fetch the caption text associated with this QA item, if available.
+
+    Newer JSONs: qa_item has caption_id and annotation has captions_meta.
+    Returns None for older JSONs or if the caption is missing/truncated.
+    """
+    cap_id = qa_item.get("caption_id")
+    if cap_id is None:
+        return None
+
+    captions_meta = annotation.get("captions_meta")
+    if not isinstance(captions_meta, list) or not captions_meta:
+        return None
+
+    try:
+        cap_id_int = int(cap_id)
+    except Exception:
+        return None
+
+    # captions_meta ids are sequential in generation; prefer direct indexing when possible.
+    if 0 <= cap_id_int < len(captions_meta):
+        c = captions_meta[cap_id_int]
+        if isinstance(c, dict):
+            cap_text = c.get("caption")
+            return cap_text.strip() if isinstance(cap_text, str) and cap_text.strip() else None
+
+    # Fallback scan by explicit id
+    for c in captions_meta:
+        if not isinstance(c, dict):
+            continue
+        if c.get("id") == cap_id_int:
+            cap_text = c.get("caption")
+            return cap_text.strip() if isinstance(cap_text, str) and cap_text.strip() else None
+
+    return None
+
 def get_yesno_from_generated_text(s: str) -> str:
     s = (s or "").strip().lower()
     # take first token-ish answer
@@ -112,8 +160,8 @@ def predict_text_only(model, processor, prompt: str, device: str) -> str:
 
     decoded_full = tok.decode(out[0], skip_special_tokens=True)
     decoded_prompt = tok.decode(inputs["input_ids"][0], skip_special_tokens=True)
-    completion = decoded_full[len(decoded_prompt):]
-    return get_yesno_from_generated_text(completion)
+    completion = decoded_full[len(decoded_prompt):].strip()
+    return get_yesno_from_generated_text(completion), completion
 
 def parse_args():
     ap = argparse.ArgumentParser()
@@ -147,6 +195,7 @@ def main():
                 "Rel_Group",
                 "Rel_Type",
                 "Prompt",
+                "Completion",
                 "Ground_Truth",
                 "Model_Prediction",
                 "Result",
@@ -189,7 +238,8 @@ def main():
                     continue
                 image = Image.open(image_abs_path).convert("RGB")
 
-            # Build scene text once for text-only mode
+            # For text-only mode we prefer per-question caption context.
+            # Keep a fallback scene description for older JSONs.
             scene_text = scene_to_text(data) if args.text_only else None
 
             for qa in data.get("qa", []):
@@ -206,9 +256,15 @@ def main():
                     group_stats[rel_group] = {"correct": 0, "total": 0}
 
                 if args.text_only:
-                    prompt = build_text_only_prompt(scene_text or "", question)
-                    pred = predict_text_only(model, processor, prompt, device=device)
+                    caption = get_caption_for_qa(data, qa)
+                    if caption is not None:
+                        prompt = build_caption_prompt(caption, question)
+                    else:
+                        # Backward-compatible fallback when caption linkage is missing.
+                        prompt = build_text_only_prompt(scene_text or "", question)
+                    pred, completion = predict_text_only(model, processor, prompt, device=device)
                 else:
+                    caption = None
                     prompt = f"USER: <image>\n{question}\nASSISTANT:"
                     inputs = processor(text=prompt, images=image, return_tensors="pt").to(model.device)
 
@@ -220,6 +276,17 @@ def main():
                             return_dict_in_generate=True,
                         )
                     pred = get_prediction(outputs, processor)
+                    # Decode the generated completion (what the model actually output)
+                    try:
+                        seq = outputs.sequences[0]
+                        prompt_len = inputs["input_ids"].shape[1]
+                        gen_ids = seq[prompt_len:]
+                        completion = processor.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
+                    except Exception:
+                        completion = ""
+
+                # Store a single transcript in Prompt column for easier debugging.
+                transcript = f"{prompt}\nMODEL: {completion}" if completion else prompt
 
                 total_questions += 1
                 is_correct = (pred == gt)
@@ -240,7 +307,8 @@ def main():
                             "" if args.text_only else image_abs_path,
                             rel_group,
                             rel_type if rel_type is not None else "",
-                            question if args.text_only else prompt,
+                            transcript,
+                            completion,
                             gt,
                             pred,
                             "CORRECT" if is_correct else "INCORRECT",

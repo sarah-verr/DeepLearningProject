@@ -16,4 +16,5 @@ patch_reference_grid.png
 evaluation_*
 *.csv
 *.png
+evaluation_summary*.txt
 logs/
