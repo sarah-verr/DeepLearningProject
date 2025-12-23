@@ -44,6 +44,47 @@ def get_prediction(outputs, processor, prompt_context="ASSISTANT:"):
 
     return "yes" if prob_yes > prob_no else "no"
 
+
+def get_yes_no_confidence(outputs, tokenizer) -> tuple[float | None, float | None, float | None]:
+    """Return (confidence, p_yes, p_no) from the first generation step.
+
+    Confidence is computed as max(p_yes, p_no) after normalizing to p_yes + p_no.
+    Returns (None, None, None) if scores are unavailable.
+    """
+    scores = getattr(outputs, "scores", None)
+    if not scores:
+        return None, None, None
+
+    first_token_logits = scores[0][0]
+    probs = torch.softmax(first_token_logits, dim=-1)
+
+    # Token ids for yes/no. Use several variants to be robust to tokenization.
+    yes_variants = ["Yes", " yes", "yes"]
+    no_variants = ["No", " no", "no"]
+
+    def _token_ids(variants: list[str]) -> set[int]:
+        ids: set[int] = set()
+        for s in variants:
+            enc = tokenizer.encode(s, add_special_tokens=False)
+            if enc:
+                ids.add(int(enc[-1]))
+        return ids
+
+    yes_ids = _token_ids(yes_variants)
+    no_ids = _token_ids(no_variants)
+
+    p_yes = float(sum(probs[t].item() for t in yes_ids if t < probs.numel()))
+    p_no = float(sum(probs[t].item() for t in no_ids if t < probs.numel()))
+
+    denom = p_yes + p_no
+    if denom <= 0:
+        return None, None, None
+
+    p_yes_n = p_yes / denom
+    p_no_n = p_no / denom
+    conf = max(p_yes_n, p_no_n)
+    return conf, p_yes_n, p_no_n
+
 def scene_to_text(annotation: dict) -> str:
     meta = annotation.get("meta", {}) or {}
     patch = int(meta.get("patch", 14))
@@ -143,7 +184,7 @@ def _move_to_device(batch: dict, device: str):
         out[k] = v.to(device) if hasattr(v, "to") else v
     return out
 
-def predict_text_only(model, processor, prompt: str, device: str) -> str:
+def predict_text_only(model, processor, prompt: str, device: str) -> tuple[str, str, float | None, float | None, float | None]:
     tok = processor.tokenizer
     inputs = tok(prompt, return_tensors="pt")
     # with device_map="auto", model tensors live on cuda; use model.device if present
@@ -155,13 +196,18 @@ def predict_text_only(model, processor, prompt: str, device: str) -> str:
             **inputs,
             max_new_tokens=5,
             do_sample=False,
-            return_dict_in_generate=False,
+            return_dict_in_generate=True,
+            output_scores=True,
         )
 
-    decoded_full = tok.decode(out[0], skip_special_tokens=True)
+    # Decode completion
+    decoded_full = tok.decode(out.sequences[0], skip_special_tokens=True)
     decoded_prompt = tok.decode(inputs["input_ids"][0], skip_special_tokens=True)
     completion = decoded_full[len(decoded_prompt):].strip()
-    return get_yesno_from_generated_text(completion), completion
+
+    pred = get_yesno_from_generated_text(completion)
+    conf, p_yes, p_no = get_yes_no_confidence(out, tok)
+    return pred, completion, conf, p_yes, p_no
 
 def parse_args():
     ap = argparse.ArgumentParser()
@@ -196,6 +242,9 @@ def main():
                 "Rel_Type",
                 "Prompt",
                 "Completion",
+                "Confidence",
+                "P_Yes",
+                "P_No",
                 "Ground_Truth",
                 "Model_Prediction",
                 "Result",
@@ -262,7 +311,7 @@ def main():
                     else:
                         # Backward-compatible fallback when caption linkage is missing.
                         prompt = build_text_only_prompt(scene_text or "", question)
-                    pred, completion = predict_text_only(model, processor, prompt, device=device)
+                    pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt, device=device)
                 else:
                     caption = None
                     prompt = f"USER: <image>\n{question}\nASSISTANT:"
@@ -276,6 +325,7 @@ def main():
                             return_dict_in_generate=True,
                         )
                     pred = get_prediction(outputs, processor)
+                    confidence, p_yes, p_no = get_yes_no_confidence(outputs, processor.tokenizer)
                     # Decode the generated completion (what the model actually output)
                     try:
                         seq = outputs.sequences[0]
@@ -309,6 +359,9 @@ def main():
                             rel_type if rel_type is not None else "",
                             transcript,
                             completion,
+                            "" if confidence is None else float(confidence),
+                            "" if p_yes is None else float(p_yes),
+                            "" if p_no is None else float(p_no),
                             gt,
                             pred,
                             "CORRECT" if is_correct else "INCORRECT",
