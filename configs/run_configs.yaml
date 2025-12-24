@@ -1,15 +1,12 @@
-level: 3
-id: "00004_b"
+level: 6
+id: "00017_w"
 
 # num_questions: 5
 
-plot_trends: false
-plot_attention: true
-
-plot_relational_phrase_attention: false
-relational_phrase_attention_mode: "simple"  # "simple"|"detailed"
+# Modes: None, decision_simple, decision_detailed, phrase_simple, phrase_detailed
+# attention_mode: None
 
 # Optional overrides
-model_id: "llava-hf/llava-1.5-7b-hf"
+model_id: "llava-hf/llava-v1.6-mistral-7b-hf"
 base_data_path: "/home/kkarthikeyan/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
 base_output_dir: "vis_results"

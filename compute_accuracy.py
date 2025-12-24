@@ -6,11 +6,33 @@ import time
 import csv
 from tqdm import tqdm
 from PIL import Image
-from transformers import AutoProcessor, LlavaForConditionalGeneration
+from transformers import AutoProcessor, LlavaNextForConditionalGeneration, BitsAndBytesConfig
+
+from prompt_templates import build_caption_yesno_prompt, build_scene_yesno_prompt, build_visual_yesno_prompt
 
 # --- Configuration ---
-MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 BASE_DATA_PATH = "/home/kkarthikeyan/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+
+def _pick_model_input_device(model) -> torch.device:
+    """Best-effort device for placing input tensors with device_map='auto'."""
+    try:
+        emb = model.get_input_embeddings()
+        if emb is not None and hasattr(emb, "weight"):
+            return emb.weight.device
+    except Exception:
+        pass
+    try:
+        return next(model.parameters()).device
+    except Exception:
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def infer_rel_group(rel_type: str | None) -> str:
@@ -25,19 +47,19 @@ def infer_rel_group(rel_type: str | None) -> str:
         return "ADVANCED"
     return "UNKNOWN"
 
-def get_prediction(outputs, processor, prompt_context="ASSISTANT:"):
-    """Extracts 'yes' or 'no' based on logit probability."""
+def get_prediction(outputs, processor):
+    """Extract 'yes'/'no' from first-token logits (robust to prompt formatting)."""
     first_token_logits = outputs.scores[0][0]
     probs = torch.softmax(first_token_logits, dim=-1)
 
-    yes_tokens = [
-        processor.tokenizer.encode(f"{prompt_context} Yes", add_special_tokens=False)[-1],
-        processor.tokenizer.encode(f"{prompt_context} yes", add_special_tokens=False)[-1]
-    ]
-    no_tokens = [
-        processor.tokenizer.encode(f"{prompt_context} No", add_special_tokens=False)[-1],
-        processor.tokenizer.encode(f"{prompt_context} no", add_special_tokens=False)[-1]
-    ]
+    tok = processor.tokenizer
+
+    def _last_id(text: str) -> int | None:
+        ids = tok.encode(text, add_special_tokens=False)
+        return ids[-1] if ids else None
+
+    yes_tokens = [tid for tid in (_last_id(v) for v in [" yes", " Yes", "yes", "Yes"]) if tid is not None]
+    no_tokens = [tid for tid in (_last_id(v) for v in [" no", " No", "no", "No"]) if tid is not None]
 
     prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)])
     prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)])
@@ -107,27 +129,6 @@ def scene_to_text(annotation: dict) -> str:
 
     return "\n".join(lines)
 
-def build_text_only_prompt(scene_text: str, question: str) -> str:
-    return (
-        "You are given a synthetic scene description.\n"
-        "Answer the question with only \"yes\" or \"no\".\n\n"
-        f"Scene:\n{scene_text}\n\n"
-        f"Question: {question}\n"
-        "Answer:"
-    )
-
-
-def build_caption_prompt(caption: str, question: str) -> str:
-    return (
-        "You are given a caption describing a synthetic scene.\n"
-        "Use only the caption as evidence.\n"
-        "Answer the question with only \"yes\" or \"no\".\n\n"
-        f"Caption: {caption}\n\n"
-        f"Question: {question}\n"
-        "Answer:"
-    )
-
-
 def get_caption_for_qa(annotation: dict, qa_item: dict) -> str | None:
     """Fetch the caption text associated with this QA item, if available.
 
@@ -178,17 +179,16 @@ def get_yesno_from_generated_text(s: str) -> str:
         return "no"
     return "unknown"
 
-def _move_to_device(batch: dict, device: str):
+def _move_to_device(batch: dict, device: torch.device):
     out = {}
     for k, v in batch.items():
         out[k] = v.to(device) if hasattr(v, "to") else v
     return out
 
-def predict_text_only(model, processor, prompt: str, device: str) -> tuple[str, str, float | None, float | None, float | None]:
+def predict_text_only(model, processor, prompt: str) -> tuple[str, str, float | None, float | None, float | None]:
     tok = processor.tokenizer
     inputs = tok(prompt, return_tensors="pt")
-    # with device_map="auto", model tensors live on cuda; use model.device if present
-    model_device = getattr(model, "device", device)
+    model_device = _pick_model_input_device(model)
     inputs = _move_to_device(inputs, model_device)
 
     with torch.no_grad():
@@ -198,6 +198,8 @@ def predict_text_only(model, processor, prompt: str, device: str) -> tuple[str, 
             do_sample=False,
             return_dict_in_generate=True,
             output_scores=True,
+            pad_token_id=processor.tokenizer.pad_token_id,
+            
         )
 
     # Decode completion
@@ -220,12 +222,15 @@ def parse_args():
 def main():
     args = parse_args()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Loading {MODEL_ID}...")
-    model = LlavaForConditionalGeneration.from_pretrained(
-        MODEL_ID, dtype=torch.float16, device_map="auto", attn_implementation="flash_attention_2"
+    model = LlavaNextForConditionalGeneration.from_pretrained(
+        MODEL_ID,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        attn_implementation="eager",
+        quantization_config=bnb,
     )
-    processor = AutoProcessor.from_pretrained(MODEL_ID)
+    processor = AutoProcessor.from_pretrained(MODEL_ID, use_fast=False)
     model.eval()
 
     level_results = {}
@@ -307,15 +312,16 @@ def main():
                 if args.text_only:
                     caption = get_caption_for_qa(data, qa)
                     if caption is not None:
-                        prompt = build_caption_prompt(caption, question)
+                        prompt = build_caption_yesno_prompt(caption, question)
                     else:
                         # Backward-compatible fallback when caption linkage is missing.
-                        prompt = build_text_only_prompt(scene_text or "", question)
-                    pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt, device=device)
+                        prompt = build_scene_yesno_prompt(scene_text or "", question)
+                    pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt)
                 else:
                     caption = None
-                    prompt = f"USER: <image>\n{question}\nASSISTANT:"
-                    inputs = processor(text=prompt, images=image, return_tensors="pt").to(model.device)
+                    prompt = build_visual_yesno_prompt(question)
+                    inputs = processor(text=prompt, images=image, return_tensors="pt")
+                    inputs = _move_to_device(inputs, _pick_model_input_device(model))
 
                     with torch.no_grad():
                         outputs = model.generate(
@@ -323,6 +329,7 @@ def main():
                             max_new_tokens=1,
                             output_scores=True,
                             return_dict_in_generate=True,
+                            pad_token_id=processor.tokenizer.pad_token_id,
                         )
                     pred = get_prediction(outputs, processor)
                     confidence, p_yes, p_no = get_yes_no_confidence(outputs, processor.tokenizer)

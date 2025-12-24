@@ -12,12 +12,40 @@ import numpy as np
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from PIL import Image
-from transformers import AutoProcessor, LlavaForConditionalGeneration
+from transformers import AutoProcessor, LlavaNextForConditionalGeneration
 from tqdm import tqdm
 from types import SimpleNamespace
+from transformers import BitsAndBytesConfig
+
+from prompt_templates import build_visual_yesno_prompt
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+
+def _pick_model_input_device(model) -> torch.device:
+    """Best-effort device for placing input tensors with device_map='auto'."""
+    try:
+        emb = model.get_input_embeddings()
+        if emb is not None and hasattr(emb, "weight"):
+            return emb.weight.device
+    except Exception:
+        pass
+    try:
+        return next(model.parameters()).device
+    except Exception:
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def _move_processor_inputs(inputs, model):
+    dev = _pick_model_input_device(model)
+    return inputs.to(dev)
 
 # --- Configuration ---
-MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
 
@@ -69,14 +97,23 @@ def _normalize_config(cfg: dict) -> dict:
 
     # defaults (match your existing CLI defaults)
     out.setdefault("num_questions", None)
-    out.setdefault("plot_attention", False)
     out.setdefault("plot_trends", False)
-    out.setdefault("plot_relational_phrase_attention", False)
 
-    # optional: if you later want simple vs detailed phrase plots
-    out.setdefault("relational_phrase_attention_mode", "detailed")  # "simple"|"detailed"
-    if out["relational_phrase_attention_mode"] not in {"simple", "detailed"}:
-        raise ValueError("relational_phrase_attention_mode must be one of: simple, detailed")
+    # attention_mode controls attention extraction & plotting source/format
+    # None -> no attention plots
+    # decision_simple / decision_detailed -> last generated token -> image (light/heavy)
+    # phrase_simple / phrase_detailed -> phrase->image (light/heavy)
+    out.setdefault("attention_mode", None)
+    if out["attention_mode"] not in {
+        None,
+        "decision_simple",
+        "decision_detailed",
+        "phrase_simple",
+        "phrase_detailed",
+    }:
+        raise ValueError(
+            "attention_mode must be one of: None, decision_simple, decision_detailed, phrase_simple, phrase_detailed"
+        )
 
     # optional overrides for paths/model
     out.setdefault("model_id", None)
@@ -89,9 +126,7 @@ def _normalize_config(cfg: dict) -> dict:
     if out["num_questions"] is not None:
         out["num_questions"] = int(out["num_questions"])
 
-    out["plot_attention"] = bool(out["plot_attention"])
     out["plot_trends"] = bool(out["plot_trends"])
-    out["plot_relational_phrase_attention"] = bool(out["plot_relational_phrase_attention"])
 
     return out
 
@@ -351,18 +386,21 @@ def plot_correct_vs_incorrect_trends(correct_runs, incorrect_runs, output_dir):
     plt.close()
 
 # --- HELPER: Probability Extraction ---
-def get_yes_no_probability(outputs, tokenizer, prompt_context="ASSISTANT:"):
+def get_yes_no_probability(outputs, tokenizer):
     first_token_logits = outputs.scores[0][0]
     probs = torch.softmax(first_token_logits, dim=-1)
 
-    yes_tokens = [
-        tokenizer.encode(f"{prompt_context} Yes", add_special_tokens=False)[-1],
-        tokenizer.encode(f"{prompt_context} yes", add_special_tokens=False)[-1]
-    ]
-    no_tokens = [
-        tokenizer.encode(f"{prompt_context} No", add_special_tokens=False)[-1],
-        tokenizer.encode(f"{prompt_context} no", add_special_tokens=False)[-1]
-    ]
+    # Do NOT depend on a particular chat template prefix like "ASSISTANT:".
+    # Across LLaVA 1.6 variants (Vicuna/Mistral), the prompt formatting can differ,
+    # but the first generated token is typically a variant of " yes"/" no".
+    def _last_token_id(text: str) -> int | None:
+        ids = tokenizer.encode(text, add_special_tokens=False)
+        return ids[-1] if ids else None
+
+    yes_variants = [" yes", " Yes", "yes", "Yes"]
+    no_variants = [" no", " No", "no", "No"]
+    yes_tokens = [tid for tid in (_last_token_id(v) for v in yes_variants) if tid is not None]
+    no_tokens = [tid for tid in (_last_token_id(v) for v in no_variants) if tid is not None]
 
     prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)])
     prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)])
@@ -472,6 +510,19 @@ def create_phrase_thirds_plot(image, maps_3, rel_phrase: str, patch_size: int = 
     add_heatmap_colorbar(fig, axes)
     return fig
 
+
+def create_decision_thirds_plot(image, maps_3, patch_size: int = 14):
+    """Aggregated decision-token→image attention over early/mid/late layers."""
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), constrained_layout=True)
+    fig.suptitle("Decision→Image Attention (Layer Thirds)", fontsize=14, weight="bold")
+
+    overlay_heatmap(axes[0], image, maps_3["early"], "Early (0–33%)", target_groups_meta=None, patch_size=patch_size)
+    overlay_heatmap(axes[1], image, maps_3["mid"], "Mid (33–66%)", target_groups_meta=None, patch_size=patch_size)
+    overlay_heatmap(axes[2], image, maps_3["late"], "Late (66–100%)", target_groups_meta=None, patch_size=patch_size)
+
+    add_heatmap_colorbar(fig, axes)
+    return fig
+
 def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_phrase: str, patch_size: int = 14):
     """
     Same layout as create_layer_grid_plot, but for phrase->image attention maps.
@@ -541,34 +592,36 @@ def main():
     # Create subdirectories
     overview_dir = os.path.join(image_output, "overview")
     trends_dir = os.path.join(image_output, "trend_analysis")
-    attention_dir = os.path.join(image_output, "full_attention")
+    attention_dir = os.path.join(image_output, "attention")
     phrase_attn_dir = os.path.join(image_output, "phrase_attention")
 
     os.makedirs(overview_dir, exist_ok=True)
     if args.plot_trends:
         os.makedirs(trends_dir, exist_ok=True)
-    if args.plot_attention:
+    if args.attention_mode is not None:
         os.makedirs(attention_dir, exist_ok=True)
-    if args.plot_relational_phrase_attention:
-        os.makedirs(phrase_attn_dir, exist_ok=True)
+        if args.attention_mode.startswith("phrase"):
+            os.makedirs(phrase_attn_dir, exist_ok=True)
 
-    # LOGIC: We need attention from model if ANY heavy/light attention plot is requested
-    REQUIRES_ATTENTION = args.plot_attention or args.plot_trends or args.plot_relational_phrase_attention
+    # LOGIC: We need attention if attention_mode is set or trends are requested
+    REQUIRES_ATTENTION = bool(args.attention_mode) or args.plot_trends
     if REQUIRES_ATTENTION:
         print("NOTE: Attention extraction is ENABLED.")
-        if args.plot_attention:
-            print("      -> Generating full heatmaps (Expect slower performance)")
+        if args.attention_mode:
+            print(f"      -> attention_mode={args.attention_mode}")
         if args.plot_trends:
             print("      -> Generating trend graphs")
-        if args.plot_relational_phrase_attention:
-            print(f"      -> Phrase→image attention enabled (mode={args.relational_phrase_attention_mode})")
 
     # Load Model
     print(f"Loading model: {MODEL_ID}...")
-    model = LlavaForConditionalGeneration.from_pretrained(
-        MODEL_ID, dtype=torch.float16, device_map="auto", attn_implementation="eager"
+    model = LlavaNextForConditionalGeneration.from_pretrained(
+        MODEL_ID,
+        dtype=torch.float16,
+        device_map="auto",
+        attn_implementation="eager",
+        quantization_config=bnb,
     )
-    processor = AutoProcessor.from_pretrained(MODEL_ID)
+    processor = AutoProcessor.from_pretrained(MODEL_ID, use_fast=False)
 
     # Data Prep
     image = Image.open(image_path).convert('RGB')
@@ -592,7 +645,7 @@ def main():
     
     # --- PREPARE GROUP METADATA FOR VISUALIZATION ---
     target_groups_meta = []
-    if args.plot_attention:
+    if args.attention_mode is not None:
         vis_image = image.resize((img_size, img_size), resample=Image.BICUBIC)
         for i, (group_indices, meta) in enumerate(zip(TARGET_GROUPS, group_metadata)):
             # Use the actual object color from annotation
@@ -640,16 +693,18 @@ def main():
         rel_group = qa_item.get("rel_group", None)
         rel_phrase = qa_item.get("rel_phrase", None)  # NEW
 
-        prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
-        inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
+        prompt_text = build_visual_yesno_prompt(question_text)
+        inputs = processor(text=prompt_text, images=image, return_tensors="pt")
+        inputs = _move_processor_inputs(inputs, model)
 
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=50,
+                max_new_tokens=1,
                 return_dict_in_generate=True,
                 output_scores=True,
-                output_attentions=REQUIRES_ATTENTION,
+                output_attentions=False,
+                pad_token_id=processor.tokenizer.eos_token_id
             )
 
         # Eval
@@ -672,10 +727,37 @@ def main():
             "rel_group": rel_group,
         })
 
-        # --- ATTENTION PROCESSING ---
+        # If attention plots are requested, compute attentions in a separate controlled forward pass.
+        # This avoids the large VRAM spike from `generate(output_attentions=True)`.
+        all_layers_data = None
         if REQUIRES_ATTENTION:
+            try:
+                seq = outputs.sequences.detach()
+                attn_inputs = dict(inputs)
+                attn_inputs["input_ids"] = seq
+                attn_inputs["attention_mask"] = torch.ones_like(seq, dtype=torch.long, device=seq.device)
+
+                with torch.no_grad():
+                    fwd = model(
+                        **attn_inputs,
+                        output_attentions=True,
+                        use_cache=False,
+                        return_dict=True,
+                    )
+                all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in fwd.attentions]
+                del fwd
+                torch.cuda.empty_cache()
+            except Exception as e:
+                tqdm.write(f"  [Warning] Could not compute attentions in forward pass: {e}")
+
+        # Free generation outputs early (keep only derived scalars above).
+        del outputs
+        torch.cuda.empty_cache()
+
+        # --- ATTENTION PROCESSING ---
+        if REQUIRES_ATTENTION and all_layers_data is not None:
             # Choose where to store per-question artifacts
-            if args.plot_attention:
+            if args.attention_mode:
                 q_dir = os.path.join(attention_dir, f"Q{i}")
             elif args.plot_trends:
                 q_dir = os.path.join(trends_dir, f"Q{i}")
@@ -683,41 +765,20 @@ def main():
                 q_dir = os.path.join(overview_dir, f"Q{i}")
             os.makedirs(q_dir, exist_ok=True)
 
-            # --- VRAM OPTIMIZATION START ---
-            raw_layers_gpu = outputs.attentions[0]  # first generation step attentions
-            all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in raw_layers_gpu]
-            del outputs
-            del raw_layers_gpu
-            torch.cuda.empty_cache()
-            # --- VRAM OPTIMIZATION END ---
-
-            # Optional: prompt self-attention for phrase->image maps.
-            # This is the only reliable way to get attention FROM phrase tokens
-            # (which are in the prompt) TO image patch tokens.
-            prompt_attn_layers = None
+            # We use `all_layers_data` (CPU) which comes from a forward pass over
+            # prompt + generated token. This includes:
+            # - last token query (generated yes/no) -> image keys
+            # - phrase token queries -> image keys
+            prompt_attn_layers = all_layers_data
             phrase_positions = []
-            if rel_phrase and (args.plot_attention or args.plot_relational_phrase_attention):
+            decision_per_layer_maps: list[np.ndarray] = []
+            if rel_phrase and args.attention_mode and args.attention_mode.startswith("phrase"):
                 phrase_positions = _locate_rel_phrase_token_positions(
                     processor.tokenizer,
                     inputs.input_ids[0],
                     question_text=question_text,
                     rel_phrase=rel_phrase,
                 )
-
-                if phrase_positions:
-                    try:
-                        with torch.no_grad():
-                            fwd = model(
-                                **inputs,
-                                output_attentions=True,
-                                use_cache=False,
-                                return_dict=True,
-                            )
-                        prompt_attn_layers = [t.detach().cpu() for t in fwd.attentions]
-                        del fwd
-                        torch.cuda.empty_cache()
-                    except Exception as e:
-                        tqdm.write(f"  [Warning] Could not compute prompt attentions for phrase maps: {e}")
 
             group_scores_layerwise = {g_idx: [] for g_idx in range(len(TARGET_GROUPS))}
             
@@ -733,7 +794,7 @@ def main():
             start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
             end_idx = start_idx + num_patches
 
-            if args.plot_relational_phrase_attention and rel_phrase:
+            if args.attention_mode and args.attention_mode.startswith("phrase") and rel_phrase:
                 phrase_q_dir = os.path.join(phrase_attn_dir, f"Q{i}")
                 os.makedirs(phrase_q_dir, exist_ok=True)
                 if not phrase_positions:
@@ -781,7 +842,7 @@ def main():
                             per_layer_avg_maps.append(avg_map_2d)
 
                             # DETAILED mode: save per-layer grids
-                            if args.relational_phrase_attention_mode == "detailed":
+                            if args.attention_mode == "phrase_detailed":
                                 fig = create_phrase_layer_grid_plot(
                                     vis_image_phrase,
                                     heads_map_2d,
@@ -800,7 +861,7 @@ def main():
                             tqdm.write(f"  [Warning] Phrase-attn error layer {layer_idx}: {e}")
 
                     # SIMPLE mode: one plot aggregated into early/mid/late thirds
-                    if args.relational_phrase_attention_mode == "simple":
+                    if args.attention_mode == "phrase_simple":
                         if not per_layer_avg_maps:
                             tqdm.write(f"  [Warning] No per-layer phrase maps collected for Q{i}.")
                         else:
@@ -832,7 +893,12 @@ def main():
                             plt.close(fig3)
 
             # Iterate layers
-            iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
+            iterator = tqdm(
+                enumerate(all_layers_data),
+                total=len(all_layers_data),
+                desc=f"  > Processing Layers",
+                leave=False,
+            ) if args.attention_mode else enumerate(all_layers_data)
 
             for layer_idx, layer_attn_tensor in iterator:
                 try:
@@ -845,6 +911,13 @@ def main():
                     
                     # 1. ALWAYS Calculate Trends
                     avg_attention_flat = image_heads_flat.mean(dim=0).numpy()
+
+                    # For decision_simple aggregation, keep per-layer avg map
+                    if args.attention_mode and args.attention_mode.startswith("decision"):
+                        try:
+                            decision_per_layer_maps.append(avg_attention_flat.reshape(grid_dim, grid_dim))
+                        except Exception:
+                            pass
                     
                     layer_total_target_attn = 0.0
 
@@ -874,11 +947,13 @@ def main():
                     subject_layer_scores.append(subj_sum)
                     object_layer_scores.append(obj_sum)
 
-                    # 2. ONLY Plot Heavy Grids if asked
-                    if args.plot_attention:
-                        # If we have phrase token positions + prompt attentions, plot phrase->image maps.
-                        # Otherwise fall back to the original last-token->image attention.
-                        if prompt_attn_layers is not None and phrase_positions and layer_idx < len(prompt_attn_layers):
+                    # 2. Plot per-layer grids depending on attention_mode
+                    if args.attention_mode:
+                        # Skip heavy per-layer grids in lightweight modes
+                        if args.attention_mode in {"phrase_simple", "decision_simple"}:
+                            continue
+
+                        if args.attention_mode.startswith("phrase") and prompt_attn_layers is not None and phrase_positions and layer_idx < len(prompt_attn_layers):
                             layer_prompt = prompt_attn_layers[layer_idx][0]  # [heads, seq_len, seq_len]
                             seq_len = layer_prompt.shape[1]
                             phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
@@ -914,6 +989,26 @@ def main():
                 correct_runs_layerwise.append(current_question_layer_totals)
             else:
                 incorrect_runs_layerwise.append(current_question_layer_totals)
+
+            # Decision simple: aggregate thirds and save
+            if args.attention_mode == "decision_simple" and decision_per_layer_maps:
+                L = len(decision_per_layer_maps)
+                a = L // 3
+                b = (2 * L) // 3
+
+                early_maps = decision_per_layer_maps[:a] if a > 0 else decision_per_layer_maps[:1]
+                mid_maps = decision_per_layer_maps[a:b] if b > a else decision_per_layer_maps[a : a + 1]
+                late_maps = decision_per_layer_maps[b:] if b < L else decision_per_layer_maps[-1:]
+
+                maps_3 = {
+                    "early": np.mean(np.stack(early_maps, axis=0), axis=0),
+                    "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
+                    "late": np.mean(np.stack(late_maps, axis=0), axis=0),
+                }
+
+                fig_dec = create_decision_thirds_plot(vis_image, maps_3, patch_size=patch_size)
+                plt.savefig(os.path.join(q_dir, "decision_attention_thirds.png"), bbox_inches="tight", dpi=140)
+                plt.close(fig_dec)
 
             # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
             if args.plot_trends:

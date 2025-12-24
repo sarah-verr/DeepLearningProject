@@ -8,10 +8,18 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
-from transformers import AutoProcessor, LlavaForConditionalGeneration
+from transformers import AutoProcessor, LlavaNextForConditionalGeneration
+from transformers import BitsAndBytesConfig
 
+from prompt_templates import build_caption_yesno_prompt, build_scene_yesno_prompt
 
-MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 DEFAULT_BASE_DATA_PATH = "/home/{user}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
 
 
@@ -48,18 +56,29 @@ def _tokenize_ids(tokenizer, text: str) -> list[int]:
 
 
 def _locate_span(tokenizer, full_ids: list[int], span_text: str) -> list[int]:
-    """Locate span_text (tokenized) inside full_ids and return absolute positions."""
-    span_ids_a = _tokenize_ids(tokenizer, span_text)
-    span_ids_b = _tokenize_ids(tokenizer, " " + span_text)
+    """Locate span_text (tokenized) inside full_ids and return absolute positions.
 
-    start = _find_subsequence(full_ids, span_ids_a)
-    span_ids = span_ids_a
-    if start is None:
-        start = _find_subsequence(full_ids, span_ids_b)
-        span_ids = span_ids_b
-    if start is None:
+    Robust to common leading separators used in prompts (space/newline).
+    """
+    if not span_text:
         return []
-    return list(range(start, start + len(span_ids)))
+
+    candidates = [
+        span_text,
+        " " + span_text,
+        "\n" + span_text,
+        "\n\n" + span_text,
+        "\t" + span_text,
+        ":\n" + span_text,
+    ]
+
+    for cand in candidates:
+        span_ids = _tokenize_ids(tokenizer, cand)
+        start = _find_subsequence(full_ids, span_ids)
+        if start is not None:
+            return list(range(start, start + len(span_ids)))
+
+    return []
 
 
 def _locate_rel_phrase_token_positions(tokenizer, full_input_ids_1d, question_text: str, rel_phrase: str) -> list[int]:
@@ -107,6 +126,38 @@ def _locate_rel_phrase_token_positions(tokenizer, full_input_ids_1d, question_te
 
 def _safe_mkdir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
+
+
+def scene_to_text(annotation: dict) -> str:
+    """Build a plain-text scene description from an annotation JSON.
+
+    Matches the representation used in `compute_accuracy.py` so prompts stay consistent.
+    """
+    meta = annotation.get("meta", {}) or {}
+    patch = int(meta.get("patch", 14))
+
+    lines = []
+    for obj in annotation.get("objects", []):
+        oid = obj.get("id", None)
+        color = obj.get("color", "unknown")
+        shape = obj.get("shape", "unknown")
+
+        center = obj.get("center", None)
+        if isinstance(center, list) and len(center) == 2:
+            cx, cy = center
+            gx, gy = int(cx) // patch, int(cy) // patch
+            pos = f"grid ({gx}, {gy})"
+        else:
+            pos = "grid (unknown, unknown)"
+
+        lines.append(f"Object {oid}: {color} {shape} at {pos}")
+
+    return "\n".join(lines)
+
+
+def _sanitize_plot_label(s: str) -> str:
+    # Drop control characters that can trigger Matplotlib glyph warnings.
+    return "".join(ch for ch in (s or "") if ord(ch) >= 32)
 
 
 @dataclass
@@ -181,18 +232,6 @@ def load_example_from_ann(
         gt=(qa.get("answer") or None),
         rel_group=(qa.get("rel_group") or None),
         rel_type=(qa.get("rel_type") or None),
-    )
-
-
-def build_caption_question_prompt(caption: str, question: str) -> str:
-    # Keep this prompt stable so we can reliably locate spans.
-    return (
-        "You are given a caption describing a synthetic scene.\n"
-        "Use only the caption as evidence.\n"
-        "Answer the question with only \"yes\" or \"no\".\n\n"
-        f"Caption: {caption}\n\n"
-        f"Question: {question}\n"
-        "Answer:"
     )
 
 
@@ -314,47 +353,79 @@ def compute_phrase_to_caption_attention(
     }
 
 
-def plot_phrase_to_caption(
+def _get_yes_no_probability(outputs, tokenizer) -> tuple[str, float, float, float]:
+    """Compute yes/no prediction and probabilities from generate() output scores."""
+    first_token_logits = outputs.scores[0][0]  # [vocab]
+    probs = torch.softmax(first_token_logits, dim=-1)
+
+    def _last_token_id(text: str) -> int | None:
+        ids = tokenizer.encode(text, add_special_tokens=False)
+        return ids[-1] if ids else None
+
+    yes_variants = [" yes", " Yes", "yes", "Yes"]
+    no_variants = [" no", " No", "no", "No"]
+    yes_tokens = [tid for tid in (_last_token_id(v) for v in yes_variants) if tid is not None]
+    no_tokens = [tid for tid in (_last_token_id(v) for v in no_variants) if tid is not None]
+
+    p_yes = float(sum(probs[t] for t in yes_tokens if 0 <= t < probs.shape[0]))
+    p_no = float(sum(probs[t] for t in no_tokens if 0 <= t < probs.shape[0]))
+
+    denom = p_yes + p_no
+    if denom <= 0:
+        return "unknown", 0.0, 0.0, 0.0
+
+    p_yes_n = p_yes / denom
+    p_no_n = p_no / denom
+    prediction = "yes" if p_yes_n >= p_no_n else "no"
+    confidence = p_yes_n if prediction == "yes" else p_no_n
+    return prediction, float(confidence), float(p_yes_n), float(p_no_n)
+
+
+def plot_phrase_to_evidence(
     *,
     out_dir: str,
-    caption_tokens: list[str],
+    evidence_tokens: list[str],
     phrase_tokens: list[str],
     scores_per_layer: np.ndarray,
     scores_mean: np.ndarray,
     title_prefix: str,
+    evidence_kind: str,
 ):
     _safe_mkdir(out_dir)
 
-    # Convert caption token axis to word axis for plotting.
-    caption_words, groups = _group_sentencepiece_words(caption_tokens)
+    evidence_tokens = [_sanitize_plot_label(t) for t in evidence_tokens]
+    phrase_tokens = [_sanitize_plot_label(t) for t in phrase_tokens]
+
+    # Convert evidence token axis to word axis for plotting.
+    evidence_words, groups = _group_sentencepiece_words(evidence_tokens)
     scores_per_layer_w = _aggregate_scores_by_groups(scores_per_layer, groups)
     scores_mean_w = scores_per_layer_w.mean(axis=0)
 
-    # Plot 1: heatmap (layers x caption words)
-    plt.figure(figsize=(max(10, 0.45 * len(caption_words)), 6))
+    # Plot 1: heatmap (layers x evidence words)
+    plt.figure(figsize=(max(10, 0.45 * len(evidence_words)), 6))
     plt.imshow(scores_per_layer_w, aspect="auto", interpolation="nearest")
-    plt.colorbar(label="Avg attention (phrasecaption)")
+    plt.colorbar(label=f"Avg attention (phrase->{evidence_kind})")
     plt.yticks(range(scores_per_layer_w.shape[0]), [f"L{l}" for l in range(scores_per_layer_w.shape[0])], fontsize=7)
-    plt.xticks(range(len(caption_words)), caption_words, rotation=90, fontsize=7)
+    plt.xticks(range(len(evidence_words)), evidence_words, rotation=90, fontsize=7)
     plt.title(f"{title_prefix}\nPhrase tokens: {' '.join(phrase_tokens)}")
     plt.tight_layout()
-    plt.savefig(os.path.join(out_dir, "phrase_to_caption_heatmap.png"), dpi=160)
+    plt.savefig(os.path.join(out_dir, f"phrase_to_{evidence_kind}_heatmap.png"), dpi=160)
     plt.close()
 
     # Plot 2: bar chart of mean scores
-    plt.figure(figsize=(max(10, 0.45 * len(caption_words)), 4))
-    plt.bar(range(len(caption_words)), scores_mean_w)
-    plt.xticks(range(len(caption_words)), caption_words, rotation=90, fontsize=7)
+    plt.figure(figsize=(max(10, 0.45 * len(evidence_words)), 4))
+    plt.bar(range(len(evidence_words)), scores_mean_w)
+    plt.xticks(range(len(evidence_words)), evidence_words, rotation=90, fontsize=7)
     plt.ylabel("Avg attention (mean over layers)")
     plt.title(f"{title_prefix} | Mean over layers")
     plt.tight_layout()
-    plt.savefig(os.path.join(out_dir, "phrase_to_caption_mean.png"), dpi=160)
+    plt.savefig(os.path.join(out_dir, f"phrase_to_{evidence_kind}_mean.png"), dpi=160)
     plt.close()
 
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
-        description="Text-only attention analysis: relational phrase (question) -> caption tokens"
+        description="Text-only attention analysis: relational phrase (question) -> evidence tokens (caption or scene description)"
     )
 
     ap.add_argument("--ann_path", type=str, default=None, help="Path to ann JSON (overrides level/id)")
@@ -374,6 +445,22 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=None,
         help="Override rel_phrase when not present in qa",
+    )
+
+    ap.add_argument(
+        "--prompt_mode",
+        type=str,
+        default="caption",
+        choices=["caption", "scene"],
+        help="Which text-only prompt to use as evidence",
+    )
+
+    ap.add_argument(
+        "--attention_mode",
+        type=str,
+        default="phrase",
+        choices=["phrase", "decision"],
+        help="phrase: rel_phrase->evidence; decision: first generated token -> evidence",
     )
 
     ap.add_argument("--model_id", type=str, default=MODEL_ID)
@@ -396,6 +483,9 @@ def main() -> None:
     if not os.path.exists(ann_path):
         raise SystemExit(f"Annotation JSON not found: {ann_path}")
 
+    with open(ann_path, "r", encoding="utf-8") as f:
+        ann = json.load(f)
+
     ex = load_example_from_ann(
         ann_path=ann_path,
         qa_index=args.qa_index,
@@ -405,58 +495,93 @@ def main() -> None:
 
     # Model + tokenizer
     print(f"Loading model: {args.model_id}")
-    if torch.cuda.is_available():
-        model = LlavaForConditionalGeneration.from_pretrained(
-            args.model_id,
-            dtype=torch.float16,
-            device_map="auto",
-            attn_implementation="eager",
-        )
-    else:
-        model = LlavaForConditionalGeneration.from_pretrained(
-            args.model_id,
-            dtype=torch.float32,
-            device_map=None,
-            attn_implementation="eager",
-        )
-        model = model.to("cpu")
-    processor = AutoProcessor.from_pretrained(args.model_id)
+
+    model = LlavaNextForConditionalGeneration.from_pretrained(
+        args.model_id,
+        dtype=torch.float16,
+        device_map="auto",
+        attn_implementation="eager",
+        quantization_config=bnb,
+    )
+    processor = AutoProcessor.from_pretrained(args.model_id, use_fast=False)
     tokenizer = processor.tokenizer
     model.eval()
 
-    prompt = build_caption_question_prompt(ex.caption, ex.question)
+    if args.prompt_mode == "scene":
+        evidence_kind = "scene"
+        evidence_text = scene_to_text(ann)
+        prompt = build_scene_yesno_prompt(evidence_text, ex.question)
+    else:
+        evidence_kind = "caption"
+        evidence_text = ex.caption
+        prompt = build_caption_yesno_prompt(evidence_text, ex.question)
+
     tok = tokenizer(prompt, return_tensors="pt")
 
     model_device = _pick_model_input_device(model)
     tok = {k: (v.to(model_device) if hasattr(v, "to") else v) for k, v in tok.items()}
 
-    full_ids = tok["input_ids"][0]
+    # Predicted answer + confidence (no attentions, single-step)
+    with torch.no_grad():
+        gen = model.generate(
+            **tok,
+            max_new_tokens=1,
+            return_dict_in_generate=True,
+            output_scores=True,
+            output_attentions=False,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+    prediction, confidence, p_yes, p_no = _get_yes_no_probability(gen, tokenizer)
+
+    # Choose which sequence to use for attention:
+    # - phrase mode: prompt only
+    # - decision mode: prompt + generated token
+    if args.attention_mode == "decision":
+        attn_input_ids = gen.sequences.to(model_device)
+        attn_attention_mask = torch.ones_like(attn_input_ids, device=model_device)
+    else:
+        attn_input_ids = tok["input_ids"]
+        attn_attention_mask = tok.get("attention_mask")
+
+    full_ids = attn_input_ids[0]
     full_ids_list = full_ids.detach().cpu().tolist()
 
-    # Locate caption span inside the prompt
-    caption_positions = _locate_span(tokenizer, full_ids_list, ex.caption)
+    # Locate evidence span inside the prompt
 
-    # Locate phrase positions inside the prompt via question span
-    phrase_positions = _locate_rel_phrase_token_positions(
-        tokenizer, full_ids, question_text=ex.question, rel_phrase=ex.rel_phrase
-    )
+    evidence_positions = _locate_span(tokenizer, full_ids_list, evidence_text)
 
-    if not caption_positions:
-        raise SystemExit("Could not locate caption tokens in prompt. Try simplifying prompt template.")
-    if not phrase_positions:
+    # Locate phrase positions inside the prompt via question span (phrase mode only)
+    phrase_positions: list[int] = []
+    if args.attention_mode == "phrase":
+        phrase_positions = _locate_rel_phrase_token_positions(
+            tokenizer, tok["input_ids"][0], question_text=ex.question, rel_phrase=ex.rel_phrase
+        )
+
+    if not evidence_positions:
+        raise SystemExit(
+            f"Could not locate {evidence_kind} tokens in prompt. Try simplifying prompt template."
+        )
+    if args.attention_mode == "phrase" and not phrase_positions:
         raise SystemExit(f"Could not locate rel_phrase tokens in prompt: '{ex.rel_phrase}'")
 
     # Labels
-    caption_tok_labels = _token_labels_for_positions(tokenizer, full_ids_list, caption_positions)
-    phrase_tok_labels = _token_labels_for_positions(tokenizer, full_ids_list, phrase_positions)
+    evidence_tok_labels = _token_labels_for_positions(tokenizer, full_ids_list, evidence_positions)
+    if args.attention_mode == "phrase":
+        phrase_tok_labels = _token_labels_for_positions(tokenizer, full_ids_list, phrase_positions)
+        query_positions = phrase_positions
+        phrase_title = ex.rel_phrase
+    else:
+        phrase_tok_labels = ["<gen>"]
+        query_positions = [full_ids.shape[0] - 1]
+        phrase_title = "decision-token"
 
     stats = compute_phrase_to_caption_attention(
         model=model,
         tokenizer=tokenizer,
-        input_ids=tok["input_ids"],
-        attention_mask=tok.get("attention_mask"),
-        phrase_positions=phrase_positions,
-        caption_positions=caption_positions,
+        input_ids=attn_input_ids,
+        attention_mask=attn_attention_mask,
+        phrase_positions=query_positions,
+        caption_positions=evidence_positions,
     )
 
     out_dir = args.out_dir
@@ -465,17 +590,18 @@ def main() -> None:
     else:
         out_dir = os.path.join(out_dir, os.path.splitext(os.path.basename(ann_path))[0], f"qa_{args.qa_index:03d}")
 
-    title_prefix = f"Phrase→Caption Attention | rel_phrase='{ex.rel_phrase}'"
+    title_prefix = f"{('Phrase' if args.attention_mode=='phrase' else 'Decision')}->{evidence_kind} Attention | rel_phrase='{ex.rel_phrase}'"
     if ex.rel_type or ex.rel_group:
         title_prefix += f" | {ex.rel_group or ''} {ex.rel_type or ''}".strip()
 
-    plot_phrase_to_caption(
+    plot_phrase_to_evidence(
         out_dir=out_dir,
-        caption_tokens=caption_tok_labels,
+        evidence_tokens=evidence_tok_labels,
         phrase_tokens=phrase_tok_labels,
         scores_per_layer=stats["per_layer"],
         scores_mean=stats["mean"],
         title_prefix=title_prefix,
+        evidence_kind=evidence_kind,
     )
 
     # Save a small JSON summary for debugging
@@ -483,13 +609,22 @@ def main() -> None:
         "ann_path": ann_path,
         "qa_index": args.qa_index,
         "caption": ex.caption,
+        "scene_text": scene_to_text(ann),
+        "prompt_mode": evidence_kind,
+        "attention_mode": args.attention_mode,
+        "evidence_text": evidence_text,
         "question": ex.question,
         "rel_phrase": ex.rel_phrase,
         "rel_group": ex.rel_group,
         "rel_type": ex.rel_type,
-        "caption_token_positions": caption_positions,
-        "phrase_token_positions": phrase_positions,
-        "caption_tokens": caption_tok_labels,
+        "ground_truth": ex.gt,
+        "prediction": prediction,
+        "confidence": confidence,
+        "p_yes": p_yes,
+        "p_no": p_no,
+        "evidence_token_positions": evidence_positions,
+        "phrase_token_positions": query_positions,
+        "evidence_tokens": evidence_tok_labels,
         "phrase_tokens": phrase_tok_labels,
         "token_scores_mean": stats["mean"].tolist(),
     }
