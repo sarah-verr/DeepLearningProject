@@ -1,0 +1,2 @@
+{"sessionId": "debug-session", "runId": "hook-search", "hypothesisId": "A", "location": "probing.py:162", "message": "Starting hook search", "data": {"layer_idx": 0, "head_idx": 0}, "timestamp": 1766803714821}
+{"sessionId": "debug-session", "runId": "hook-search", "hypothesisId": "A", "location": "probing.py:172", "message": "Found language model layer", "data": {"target_name": "model.language_model.layers.0", "actual_name": "model.language_model.layers.0", "module_type": "LlamaDecoderLayer"}, "timestamp": 1766803714821}
