@@ -9,6 +9,7 @@ pycache/
 .venv/venv/env/
 venv
 *vis_results*
+*baseline_results*
 attention_map*
 llava_attention_analysis*.pdf
 llava_detailed_*.pdf

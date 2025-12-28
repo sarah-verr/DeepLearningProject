@@ -34,6 +34,13 @@ Each image generates exactly 4 questions with a **balanced distribution**:
 
 Questions are randomly sampled from all possible color-shape combinations to ensure variety.
 
+## Files
+
+- `add_ann_baseline_qa_strategies.py` - Adds baseline QA questions to annotation files
+- `prompt_baseline_qa.py` - Runs LLaVA inference on baseline questions
+- `analyze_baseline_qa.ipynb` - Interactive analysis with confusion matrices and plots
+- `submit_analysis.sbatch` - SLURM batch processing script
+
 ## Quick Start
 
 ### 1. Add Baseline Questions to Synthetic Data
@@ -59,13 +66,19 @@ python prompt_baseline_qa.py --level 0 --id 00000_b --all-strategies
 sbatch submit_analysis.sbatch
 ```
 
-### 3. Aggregate Results
+### 3. Analyze Results
 
+**Interactive analysis with confusion matrices:**
 ```bash
-python aggregate_baseline_strategy_results.py
+jupyter notebook analyze_baseline_qa.ipynb
 ```
 
-Creates `evaluation_results_baseline_strategies.json` with accuracy statistics per strategy per level.
+This notebook provides:
+- Confusion matrices for each strategy/level
+- Accuracy statistics and comparisons
+- Performance analysis on yes vs no questions
+- Visual plots and detailed metrics
+
 
 ## Output Structure
 
