@@ -8,13 +8,25 @@
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
+# Check if a specific strategy is provided as argument
+STRATEGY_ARG=""
+if [ -n "$1" ]; then
+    STRATEGY_ARG="$1"
+fi
+
 # Start timing
 START_TIME=$(date +%s)
 START_DATE=$(date)
 
+if [ -z "$STRATEGY_ARG" ]; then
+    STRATEGY_DESC="All Strategies per Image"
+else
+    STRATEGY_DESC="Strategy $STRATEGY_ARG Only"
+fi
+
 echo "========================================"
 echo "  VLM Baseline QA Analysis Batch Job"
-echo "  (All Strategies per Image)"
+echo "  ($STRATEGY_DESC)"
 echo "========================================"
 echo "Job ID: $SLURM_JOB_ID"
 echo "Node: $SLURM_NODELIST"
@@ -90,21 +102,38 @@ for LEVEL in "${LEVELS[@]}"; do
         # Time individual image processing
         IMAGE_START=$(date +%s)
         
-        # Run baseline QA testing for all strategies
-        python "$SCRIPT_NAME" \
-            --level "$LEVEL" \
-            --id "$IMAGE_ID" \
-            --all-strategies
+        # Run baseline QA testing
+        if [ -z "$STRATEGY_ARG" ]; then
+            # Run all strategies
+            python "$SCRIPT_NAME" \
+                --level "$LEVEL" \
+                --id "$IMAGE_ID" \
+                --all-strategies
+        else
+            # Run specific strategy
+            python "$SCRIPT_NAME" \
+                --level "$LEVEL" \
+                --id "$IMAGE_ID" \
+                --strategy "$STRATEGY_ARG"
+        fi
         
         IMAGE_END=$(date +%s)
         IMAGE_DURATION=$((IMAGE_END - IMAGE_START))
         
         # Check if successful
         if [ $? -eq 0 ]; then
-            echo "✓ Successfully processed $IMAGE_ID (All Strategies) in ${IMAGE_DURATION}s"
+            if [ -z "$STRATEGY_ARG" ]; then
+                echo "✓ Successfully processed $IMAGE_ID (All Strategies) in ${IMAGE_DURATION}s"
+            else
+                echo "✓ Successfully processed $IMAGE_ID (Strategy $STRATEGY_ARG) in ${IMAGE_DURATION}s"
+            fi
             SUCCESSFUL_IMAGES=$((SUCCESSFUL_IMAGES + 1))
         else
-            echo "✗ Error processing $IMAGE_ID (All Strategies) (took ${IMAGE_DURATION}s)"
+            if [ -z "$STRATEGY_ARG" ]; then
+                echo "✗ Error processing $IMAGE_ID (All Strategies) (took ${IMAGE_DURATION}s)"
+            else
+                echo "✗ Error processing $IMAGE_ID (Strategy $STRATEGY_ARG) (took ${IMAGE_DURATION}s)"
+            fi
             FAILED_IMAGES=$((FAILED_IMAGES + 1))
         fi
     done
@@ -115,7 +144,11 @@ for LEVEL in "${LEVELS[@]}"; do
     LEVEL_SECONDS=$((LEVEL_DURATION % 60))
     
     echo ""
-    echo "Completed level $LEVEL: Processed $COUNTER images (all strategies) in ${LEVEL_MINUTES}m ${LEVEL_SECONDS}s"
+    if [ -z "$STRATEGY_ARG" ]; then
+        echo "Completed level $LEVEL: Processed $COUNTER images (all strategies) in ${LEVEL_MINUTES}m ${LEVEL_SECONDS}s"
+    else
+        echo "Completed level $LEVEL: Processed $COUNTER images (strategy $STRATEGY_ARG) in ${LEVEL_MINUTES}m ${LEVEL_SECONDS}s"
+    fi
 done
 
 # Calculate total time
@@ -135,11 +168,19 @@ echo "End time:        $END_DATE"
 echo "Total duration:  ${HOURS}h ${MINUTES}m ${SECONDS}s"
 echo ""
 echo "Statistics:"
-echo "  Total images:      $TOTAL_IMAGES (each with 4 strategies)"
+if [ -z "$STRATEGY_ARG" ]; then
+    echo "  Total images:      $TOTAL_IMAGES (each with all strategies)"
+else
+    echo "  Total images:      $TOTAL_IMAGES (each with strategy $STRATEGY_ARG)"
+fi
 echo "  Successful:        $SUCCESSFUL_IMAGES"
 echo "  Failed:            $FAILED_IMAGES"
 if [ $TOTAL_IMAGES -gt 0 ]; then
     AVG_TIME=$((TOTAL_DURATION / TOTAL_IMAGES))
-    echo "  Avg time/image:    ${AVG_TIME}s (includes all 4 strategies)"
+    if [ -z "$STRATEGY_ARG" ]; then
+        echo "  Avg time/image:    ${AVG_TIME}s (includes all strategies)"
+    else
+        echo "  Avg time/image:    ${AVG_TIME}s (strategy $STRATEGY_ARG only)"
+    fi
 fi
 echo "========================================"

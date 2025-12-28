@@ -42,10 +42,16 @@ def generate_question(color: str, shape: str, strategy: int, is_yes: bool) -> st
         return f"Does this image have a {base}? Answer: Yes or No."
     elif strategy == 3:  # Priming
         return f"This is a Yes/No question: Does this image have a {base}?"
+    elif strategy == 4:  # Minimalist+Priming
+        return f"This is a Yes/No question: Is there a {base}?"
     else:
         return f"Does this image have a {base}?"
 
-def add_baseline_strategies():
+def add_baseline_strategies(strategies: List[int] = None):
+    """Add baseline strategies to annotations. If strategies is None, adds all (0-4)."""
+    if strategies is None:
+        strategies = list(range(5))
+    
     base_dir = "../Synthetic-Data/vlm_levels"
     for level in range(7):  # level_0 to level_6
         ann_dir = os.path.join(base_dir, f"level_{level}", "ann")
@@ -58,14 +64,28 @@ def add_baseline_strategies():
                 ann = json.load(f)
             objects = ann["objects"]
             
-            # Add all 4 strategies
-            for strategy in range(4):
+            # Add only specified strategies
+            for strategy in strategies:
                 qa_key = f"qa_baseline_{strategy}"
                 ann[qa_key] = qa_existence(objects, strategy)
             
             with open(path, "w") as f:
                 json.dump(ann, f, indent=2)
-            print(f"Added qa_baseline_0 to qa_baseline_3 to {path}")
+            
+            strat_str = ", ".join(f"qa_baseline_{s}" for s in strategies)
+            print(f"Added {strat_str} to {path}")
 
 if __name__ == "__main__":
-    add_baseline_strategies()
+    # Parse command-line arguments
+    if len(sys.argv) > 1:
+        try:
+            strategies = [int(arg) for arg in sys.argv[1:]]
+            print(f"Adding strategies: {strategies}")
+            add_baseline_strategies(strategies)
+        except ValueError:
+            print(f"Error: Invalid strategy number. Expected integers (0-4).")
+            sys.exit(1)
+    else:
+        # Default: add all strategies
+        print("No strategies specified. Adding all strategies (0-4)...")
+        add_baseline_strategies()
