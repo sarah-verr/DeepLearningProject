@@ -12,7 +12,7 @@ The baseline QA experiment tests whether LLaVA can correctly identify the presen
 
 ## Prompting Strategies
 
-Four different prompting strategies are implemented to test the impact of prompt formulation on model performance:
+Five different prompting strategies are implemented to test the impact of prompt formulation on model performance:
 
 ### Strategy 0: Minimalist
 - **Format**: `"Is there a {color} {shape}?"`
@@ -25,6 +25,10 @@ Four different prompting strategies are implemented to test the impact of prompt
 
 ### Strategy 3: Priming
 - **Format**: `"This is a Yes/No question: Does this image have a {color} {shape}?"`
+
+### Strategy 4: Minimalist+Priming
+- **Format**: `"This is a Yes/No question: Is there a {color} {shape}?"`
+- **Description**: Combines the simplicity of the Minimalist strategy with the priming effect of explicitly stating it's a Yes/No question.
 
 ## Question Generation
 
@@ -52,7 +56,12 @@ cd Baseline-QA-Experiment
 python add_ann_baseline_qa_strategies.py
 ```
 
-This adds `qa_baseline_0`, `qa_baseline_1`, `qa_baseline_2`, and `qa_baseline_3` keys to all annotation files.
+This adds `qa_baseline_0` through `qa_baseline_4` keys to all annotation files.
+
+**To add only strategy 4 (if you already have other strategies):**
+```bash
+python add_ann_baseline_qa_strategies.py 4
+```
 
 ### 2. Run Inference
 
@@ -61,9 +70,19 @@ This adds `qa_baseline_0`, `qa_baseline_1`, `qa_baseline_2`, and `qa_baseline_3`
 python prompt_baseline_qa.py --level 0 --id 00000_b --all-strategies
 ```
 
+**Single image, specific strategy (e.g., strategy 4):**
+```bash
+python prompt_baseline_qa.py --level 0 --id 00000_b --strategy 4
+```
+
 **Batch processing (all images, all strategies):**
 ```bash
 sbatch submit_analysis.sbatch
+```
+
+**Batch processing for specific strategy (e.g., strategy 4):**
+```bash
+sbatch submit_analysis.sbatch 4
 ```
 
 ### 3. Analyze Results

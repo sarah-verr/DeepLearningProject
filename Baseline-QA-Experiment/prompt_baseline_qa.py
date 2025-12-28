@@ -112,13 +112,13 @@ def parse_arguments():
     parser.add_argument(
         "--strategy",
         type=int,
-        choices=[0, 1, 2, 3],
-        help="Specific prompting strategy (0-3) to run. Use --all-strategies to run all strategies.",
+        choices=[0, 1, 2, 3, 4],
+        help="Specific prompting strategy (0-4) to run. Use --all-strategies to run all strategies.",
     )
     parser.add_argument(
         "--all-strategies",
         action="store_true",
-        help="Run all 4 strategies for this image",
+        help="Run all 5 strategies for this image",
     )
     parser.add_argument(
         "--model_id",
@@ -563,7 +563,7 @@ def main():
 
     # Determine strategies to run
     if args.all_strategies:
-        strategies_to_run = [0, 1, 2, 3]
+        strategies_to_run = [0, 1, 2, 3, 4]
     else:
         strategies_to_run = [args.strategy]
 
