@@ -1,0 +1,142 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        273,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        310,
+        278,
+        320
+      ],
+      "patch_indices": [
+        547
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        245,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        310,
+        250,
+        320
+      ],
+      "patch_indices": [
+        545
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow square is left of the lime square.",
+    "The lime square is to the right of the yellow square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow square is left of the lime square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime square is to the right of the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow square left of the lime square?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the yellow square right of the lime square?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the lime square right of the yellow square?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the lime square left of the yellow square?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

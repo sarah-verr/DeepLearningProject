@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "green",
+      "center": [
+        30,
+        231
+      ],
+      "size": 21,
+      "bbox": [
+        20,
+        221,
+        40,
+        241
+      ],
+      "patch_indices": [
+        146,
+        147,
+        148,
+        170,
+        171,
+        172,
+        194,
+        195,
+        196
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        294,
+        63
+      ],
+      "size": 24,
+      "bbox": [
+        284,
+        51,
+        304,
+        75
+      ],
+      "patch_indices": [
+        453,
+        454,
+        455,
+        477,
+        478,
+        479,
+        501,
+        502,
+        503
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green square is left of the pink triangle.",
+    "The green square is below the pink triangle.",
+    "The pink triangle is right of the green square.",
+    "The pink triangle is above the green square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green square is above the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green square is to the left of the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink triangle is below the green square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink triangle is to the right of the green square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green square left of the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink triangle above the green square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink triangle above the green square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green square right of the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green square above the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle left of the green square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle below the green square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green square left of the pink triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

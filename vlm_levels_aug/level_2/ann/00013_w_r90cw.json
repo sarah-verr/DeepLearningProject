@@ -1,0 +1,146 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "orange",
+      "center": [
+        315,
+        244
+      ],
+      "size": 25,
+      "bbox": [
+        303,
+        232,
+        327,
+        256
+      ],
+      "patch_indices": [
+        509,
+        510,
+        511,
+        533,
+        534,
+        535,
+        557,
+        558,
+        559
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "red",
+      "center": [
+        315,
+        76
+      ],
+      "size": 26,
+      "bbox": [
+        302,
+        63,
+        328,
+        89
+      ],
+      "patch_indices": [
+        521,
+        522,
+        523,
+        545,
+        546,
+        547,
+        569,
+        570,
+        571
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange star is above the red star.",
+    "The red star is below the orange star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red star is to the right of the orange star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange star is to the left of the red star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the orange star left of the red star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red star right of the orange star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red star below the orange star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange star right of the red star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red star left of the orange star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange star above the red star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red star below the orange star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange star above the red star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

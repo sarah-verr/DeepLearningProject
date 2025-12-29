@@ -1,0 +1,337 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        286,
+        231
+      ],
+      "size": 23,
+      "bbox": [
+        275,
+        220,
+        297,
+        242
+      ],
+      "patch_indices": [
+        63,
+        64,
+        65,
+        87,
+        88,
+        89,
+        111,
+        112,
+        113
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        258,
+        189
+      ],
+      "size": 20,
+      "bbox": [
+        248,
+        179,
+        268,
+        199
+      ],
+      "patch_indices": [
+        108,
+        109,
+        110,
+        132,
+        133,
+        134,
+        156,
+        157,
+        158
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "triangle",
+      "color": "yellow",
+      "center": [
+        174,
+        231
+      ],
+      "size": 26,
+      "bbox": [
+        161,
+        218,
+        187,
+        244
+      ],
+      "patch_indices": [
+        255,
+        256,
+        257,
+        279,
+        280,
+        281,
+        303,
+        304,
+        305
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    }
+  ],
+  "captions": [
+    "The red triangle is above the green star.",
+    "The red triangle is left of the green star.",
+    "The red triangle is left of the yellow triangle.",
+    "The green star is below the red triangle.",
+    "The green star is right of the red triangle.",
+    "The green star is below the yellow triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow triangle is below the red triangle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green star is left of the yellow triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The green star is to the left of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The red triangle is above the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The green star is above the yellow triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The red triangle is right of the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The green star is below the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The yellow triangle is below the green star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The red triangle is above the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The yellow triangle is to the right of the green star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red triangle right of the yellow triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow triangle above the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow triangle right of the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow triangle left of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star below the yellow triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle right of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow triangle below the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow triangle right of the red triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

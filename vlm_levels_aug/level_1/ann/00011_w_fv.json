@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        25,
+        257
+      ],
+      "size": 10,
+      "bbox": [
+        20,
+        252,
+        30,
+        262
+      ],
+      "patch_indices": [
+        122
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "green",
+      "center": [
+        25,
+        313
+      ],
+      "size": 10,
+      "bbox": [
+        20,
+        308,
+        30,
+        318
+      ],
+      "patch_indices": [
+        26
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red triangle is above the green circle.",
+    "The green circle is below the red triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green circle is above the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red triangle is below the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green circle below the red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle above the green circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle right of the green circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red triangle below the green circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red triangle above the green circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green circle right of the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green circle left of the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green circle below the red triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

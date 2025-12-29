@@ -1,0 +1,972 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        160,
+        175
+      ],
+      "size": 95,
+      "bbox": [
+        113,
+        128,
+        207,
+        222
+      ],
+      "patch_indices": [
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        296,
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326,
+        327,
+        344,
+        345,
+        346,
+        347,
+        348,
+        349,
+        350,
+        351
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        137,
+        176
+      ],
+      "size": 45,
+      "bbox": [
+        115,
+        154,
+        159,
+        198
+      ],
+      "patch_indices": [
+        225,
+        226,
+        227,
+        228,
+        249,
+        250,
+        251,
+        252,
+        273,
+        274,
+        275,
+        276,
+        297,
+        298,
+        299,
+        300
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        178,
+        174
+      ],
+      "size": 21,
+      "bbox": [
+        168,
+        164,
+        188,
+        184
+      ],
+      "patch_indices": [
+        252,
+        253,
+        254,
+        276,
+        277,
+        278,
+        300,
+        301,
+        302
+      ]
+    },
+    {
+      "id": 3,
+      "shape": "circle",
+      "color": "orange",
+      "center": [
+        86,
+        20
+      ],
+      "size": 23,
+      "bbox": [
+        75,
+        9,
+        97,
+        31
+      ],
+      "patch_indices": [
+        510,
+        511,
+        534,
+        535,
+        558,
+        559
+      ]
+    },
+    {
+      "id": 4,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        23,
+        118
+      ],
+      "size": 37,
+      "bbox": [
+        5,
+        100,
+        41,
+        136
+      ],
+      "patch_indices": [
+        337,
+        338,
+        339,
+        361,
+        362,
+        363,
+        385,
+        386,
+        387
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 4
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 4
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 4
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 4
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 4
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 4
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 4
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 4
+    },
+    {
+      "type": "left_of",
+      "subject_id": 4,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 4,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 4,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 4,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 4,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 4,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 4,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 4,
+      "object_id": 3
+    },
+    {
+      "type": "touching",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "overlapping",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "touching",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "touching",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "overlapping",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "touching",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "near",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "near",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "next_to",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "beside",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "far",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "far",
+      "subject_id": 0,
+      "object_id": 4
+    },
+    {
+      "type": "inside",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "near",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "far",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "far",
+      "subject_id": 1,
+      "object_id": 4
+    },
+    {
+      "type": "inside",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "near",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "next_to",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "beside",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "far",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "far",
+      "subject_id": 2,
+      "object_id": 4
+    },
+    {
+      "type": "far",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "far",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "far",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "far",
+      "subject_id": 3,
+      "object_id": 4
+    },
+    {
+      "type": "far",
+      "subject_id": 4,
+      "object_id": 0
+    },
+    {
+      "type": "far",
+      "subject_id": 4,
+      "object_id": 1
+    },
+    {
+      "type": "far",
+      "subject_id": 4,
+      "object_id": 2
+    },
+    {
+      "type": "far",
+      "subject_id": 4,
+      "object_id": 3
+    }
+  ],
+  "captions": [
+    "The blue triangle is right of the orange circle.",
+    "The blue triangle is below the orange circle.",
+    "The blue triangle is right of the cyan circle.",
+    "The blue triangle is below the cyan circle.",
+    "The red triangle is left of the lime square.",
+    "The red triangle is right of the orange circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange circle is left of the red triangle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan circle is below the lime square.",
+      "subject_id": 4,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The orange circle is below the red triangle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The orange circle is below the lime square.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The orange circle is to the left of the lime square.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The orange circle is below the cyan circle.",
+      "subject_id": 3,
+      "object_id": 4,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The orange circle is below the blue triangle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The blue triangle is right of the orange circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The cyan circle is below the red triangle.",
+      "subject_id": 4,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The red triangle is above the cyan circle.",
+      "subject_id": 1,
+      "object_id": 4,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The blue triangle is above the cyan circle.",
+      "subject_id": 0,
+      "object_id": 4,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The lime square is above the orange circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    },
+    {
+      "id": 12,
+      "caption": "The lime square is to the right of the orange circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        24
+      ],
+      "contradicted_qa_ids": [
+        25
+      ]
+    },
+    {
+      "id": 13,
+      "caption": "The red triangle is right of the cyan circle.",
+      "subject_id": 1,
+      "object_id": 4,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        26
+      ],
+      "contradicted_qa_ids": [
+        27
+      ]
+    },
+    {
+      "id": 14,
+      "caption": "The cyan circle is above the orange circle.",
+      "subject_id": 4,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        28
+      ],
+      "contradicted_qa_ids": [
+        29
+      ]
+    },
+    {
+      "id": 15,
+      "caption": "The red triangle is above the orange circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        30
+      ],
+      "contradicted_qa_ids": [
+        31
+      ]
+    },
+    {
+      "id": 16,
+      "caption": "The orange circle is right of the cyan circle.",
+      "subject_id": 3,
+      "object_id": 4,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        32
+      ],
+      "contradicted_qa_ids": [
+        33
+      ]
+    },
+    {
+      "id": 17,
+      "caption": "The lime square is above the cyan circle.",
+      "subject_id": 2,
+      "object_id": 4,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        34
+      ],
+      "contradicted_qa_ids": [
+        35
+      ]
+    },
+    {
+      "id": 18,
+      "caption": "The cyan circle is to the left of the lime square.",
+      "subject_id": 4,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        36
+      ],
+      "contradicted_qa_ids": [
+        37
+      ]
+    },
+    {
+      "id": 19,
+      "caption": "The cyan circle is to the left of the red triangle.",
+      "subject_id": 4,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        38
+      ],
+      "contradicted_qa_ids": [
+        39
+      ]
+    },
+    {
+      "id": 20,
+      "caption": "The cyan circle is to the left of the blue triangle.",
+      "subject_id": 4,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        40
+      ],
+      "contradicted_qa_ids": [
+        41
+      ]
+    },
+    {
+      "id": 21,
+      "caption": "The blue triangle is to the right of the cyan circle.",
+      "subject_id": 0,
+      "object_id": 4,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        42
+      ],
+      "contradicted_qa_ids": [
+        43
+      ]
+    },
+    {
+      "id": 22,
+      "caption": "The cyan circle is below the blue triangle.",
+      "subject_id": 4,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        44
+      ],
+      "contradicted_qa_ids": [
+        45
+      ]
+    },
+    {
+      "id": 23,
+      "caption": "The lime square is to the right of the cyan circle.",
+      "subject_id": 2,
+      "object_id": 4,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        46
+      ],
+      "contradicted_qa_ids": [
+        47
+      ]
+    },
+    {
+      "id": 24,
+      "caption": "The blue triangle is above the orange circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        48
+      ],
+      "contradicted_qa_ids": [
+        49
+      ]
+    },
+    {
+      "id": 25,
+      "caption": "The orange circle is to the left of the blue triangle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    },
+    {
+      "id": 26,
+      "caption": "The cyan circle is left of the orange circle.",
+      "subject_id": 4,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    },
+    {
+      "id": 27,
+      "caption": "The red triangle is left of the lime square.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    },
+    {
+      "id": 28,
+      "caption": "The red triangle is right of the orange circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    },
+    {
+      "id": 29,
+      "caption": "The lime square is to the right of the red triangle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the lime square above the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red triangle right of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle below the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle below the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square right of the red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle touching the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle above the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle inside the red triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

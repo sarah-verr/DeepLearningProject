@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "lime",
+      "center": [
+        63,
+        259
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        254,
+        68,
+        264
+      ],
+      "patch_indices": [
+        139
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        63,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        310,
+        68,
+        320
+      ],
+      "patch_indices": [
+        43
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime star is above the orange triangle.",
+    "The orange triangle is below the lime star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime star is below the orange triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange triangle is above the lime star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the orange triangle right of the lime star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime star left of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle left of the lime star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime star above the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange triangle below the lime star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime star right of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle below the lime star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime star above the orange triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

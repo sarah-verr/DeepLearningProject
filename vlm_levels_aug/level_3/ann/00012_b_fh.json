@@ -1,0 +1,337 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "red",
+      "center": [
+        63,
+        203
+      ],
+      "size": 18,
+      "bbox": [
+        54,
+        194,
+        72,
+        212
+      ],
+      "patch_indices": [
+        330,
+        331,
+        332,
+        354,
+        355,
+        356,
+        378,
+        379,
+        380
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "purple",
+      "center": [
+        203,
+        217
+      ],
+      "size": 29,
+      "bbox": [
+        189,
+        203,
+        217,
+        231
+      ],
+      "patch_indices": [
+        344,
+        345,
+        346,
+        368,
+        369,
+        370,
+        392,
+        393,
+        394
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "triangle",
+      "color": "green",
+      "center": [
+        63,
+        105
+      ],
+      "size": 18,
+      "bbox": [
+        54,
+        96,
+        72,
+        114
+      ],
+      "patch_indices": [
+        162,
+        163,
+        164,
+        186,
+        187,
+        188,
+        210,
+        211,
+        212
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 1
+    }
+  ],
+  "captions": [
+    "The red star is left of the purple circle.",
+    "The red star is above the purple circle.",
+    "The red star is below the green triangle.",
+    "The purple circle is right of the red star.",
+    "The purple circle is below the red star.",
+    "The purple circle is right of the green triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red star is below the green triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple circle is left of the green triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The purple circle is to the left of the red star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The green triangle is right of the purple circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The purple circle is below the green triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The green triangle is above the red star.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The red star is to the right of the purple circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The purple circle is below the red star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The red star is above the purple circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The green triangle is above the purple circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the purple circle below the green triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green triangle above the purple circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple circle above the green triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple circle right of the red star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red star right of the green triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple circle right of the green triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple circle below the red star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green triangle right of the purple circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

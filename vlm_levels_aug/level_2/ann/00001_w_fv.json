@@ -1,0 +1,188 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "red",
+      "center": [
+        151,
+        210
+      ],
+      "size": 17,
+      "bbox": [
+        143,
+        202,
+        159,
+        218
+      ],
+      "patch_indices": [
+        154,
+        155,
+        156,
+        178,
+        179,
+        180,
+        202,
+        203,
+        204
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        95,
+        140
+      ],
+      "size": 28,
+      "bbox": [
+        81,
+        126,
+        109,
+        154
+      ],
+      "patch_indices": [
+        270,
+        271,
+        272,
+        294,
+        295,
+        296,
+        318,
+        319,
+        320
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red square is right of the pink square.",
+    "The red square is below the pink square.",
+    "The pink square is left of the red square.",
+    "The pink square is above the red square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red square is above the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red square is right of the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink square is to the left of the red square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink square is below the red square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red square right of the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square left of the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square above the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink square right of the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink square left of the red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square below the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square below the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square below the pink square?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "cyan",
+      "center": [
+        161,
+        119
+      ],
+      "size": 10,
+      "bbox": [
+        156,
+        114,
+        166,
+        124
+      ],
+      "patch_indices": [
+        204
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        189,
+        119
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        114,
+        194,
+        124
+      ],
+      "patch_indices": [
+        202
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan triangle is left of the orange triangle.",
+    "The orange triangle is right of the cyan triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange triangle is to the left of the cyan triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan triangle is right of the orange triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the orange triangle below the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle right of the cyan triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan triangle right of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan triangle left of the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange triangle right of the cyan triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan triangle below the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle above the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan triangle left of the orange triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

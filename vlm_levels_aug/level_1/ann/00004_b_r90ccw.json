@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "blue",
+      "center": [
+        258,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        253,
+        310,
+        263,
+        320
+      ],
+      "patch_indices": [
+        142
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "orange",
+      "center": [
+        286,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        281,
+        310,
+        291,
+        320
+      ],
+      "patch_indices": [
+        94
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue circle is right of the orange circle.",
+    "The orange circle is left of the blue circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange circle is above the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue circle is below the orange circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the orange circle above the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle below the orange circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle right of the orange circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle right of the orange circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange circle left of the blue circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle above the orange circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange circle right of the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange circle left of the blue circle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

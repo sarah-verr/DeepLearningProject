@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "blue",
+      "center": [
+        119,
+        85
+      ],
+      "size": 25,
+      "bbox": [
+        107,
+        73,
+        131,
+        97
+      ],
+      "patch_indices": [
+        184,
+        185,
+        186,
+        208,
+        209,
+        210,
+        232,
+        233,
+        234
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        189,
+        29
+      ],
+      "size": 24,
+      "bbox": [
+        177,
+        17,
+        201,
+        41
+      ],
+      "patch_indices": [
+        308,
+        309,
+        310,
+        332,
+        333,
+        334,
+        356,
+        357,
+        358
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue circle is above the pink square.",
+    "The blue circle is right of the pink square.",
+    "The pink square is below the blue circle.",
+    "The pink square is left of the blue circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue circle is to the left of the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue circle is above the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink square is below the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink square is to the right of the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink square below the blue circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square above the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle right of the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square right of the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle right of the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle below the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle left of the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle above the pink square?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "purple",
+      "center": [
+        47,
+        295
+      ],
+      "size": 10,
+      "bbox": [
+        42,
+        290,
+        52,
+        300
+      ],
+      "patch_indices": [
+        51
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        47,
+        253
+      ],
+      "size": 10,
+      "bbox": [
+        42,
+        248,
+        52,
+        258
+      ],
+      "patch_indices": [
+        123
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple star is below the pink triangle.",
+    "The pink triangle is above the purple star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink triangle is below the purple star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple star is above the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink triangle below the purple star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle right of the purple star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle above the purple star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple star left of the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple star below the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple star above the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple star below the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink triangle above the purple star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        245,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        240,
+        250,
+        250
+      ],
+      "patch_indices": [
+        425
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "pink",
+      "center": [
+        245,
+        259
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        254,
+        250,
+        264
+      ],
+      "patch_indices": [
+        449
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink star is below the yellow square.",
+    "The yellow square is above the pink star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink star is below the yellow square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow square is above the pink star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink star below the yellow square?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the pink star above the yellow square?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the yellow square above the pink star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the yellow square below the pink star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

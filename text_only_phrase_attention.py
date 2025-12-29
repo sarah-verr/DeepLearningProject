@@ -12,7 +12,8 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration
 
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
-DEFAULT_BASE_DATA_PATH = "/home/{user}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+DEFAULT_BASE_DATA_PATH = "/Users/sarah/GitHub/DeepLearningProject/Synthetic-Data/vlm_levels"
+
 
 
 def _pick_model_input_device(model) -> torch.device:

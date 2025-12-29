@@ -1,0 +1,337 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "orange",
+      "center": [
+        273,
+        9
+      ],
+      "size": 19,
+      "bbox": [
+        264,
+        0,
+        282,
+        18
+      ],
+      "patch_indices": [
+        18,
+        19,
+        20,
+        42,
+        43,
+        44,
+        66,
+        67,
+        68
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        217,
+        149
+      ],
+      "size": 21,
+      "bbox": [
+        207,
+        139,
+        227,
+        159
+      ],
+      "patch_indices": [
+        254,
+        255,
+        256,
+        278,
+        279,
+        280,
+        302,
+        303,
+        304
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        245,
+        10
+      ],
+      "size": 24,
+      "bbox": [
+        233,
+        0,
+        257,
+        21
+      ],
+      "patch_indices": [
+        16,
+        17,
+        18,
+        40,
+        41,
+        42,
+        64,
+        65,
+        66
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 1
+    }
+  ],
+  "captions": [
+    "The orange star is right of the green star.",
+    "The orange star is above the green star.",
+    "The orange star is right of the lime square.",
+    "The green star is left of the orange star.",
+    "The green star is below the orange star.",
+    "The green star is left of the lime square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange star is above the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime square is to the left of the orange star.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The green star is to the left of the lime square.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The green star is below the lime square.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The lime square is above the green star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The orange star is to the right of the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The green star is below the orange star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The green star is to the left of the orange star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The lime square is right of the green star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The orange star is to the right of the lime square.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green star below the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square left of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square above the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange star left of the lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star left of the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square above the orange star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange star below the lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange star above the green star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
