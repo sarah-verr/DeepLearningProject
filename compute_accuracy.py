@@ -213,7 +213,7 @@ def predict_text_only(model, processor, prompt: str) -> tuple[str, str, float | 
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--levels", type=int, nargs="+", default=[0,1,2,3,4,5,6])
+    ap.add_argument("--levels", type=int, nargs="+", default=[0,1,2,3,4])
     ap.add_argument("--output_json", type=str, default="evaluation_results.json")
     ap.add_argument("--log_file", type=str, default="model_calls_log.csv")
     ap.add_argument("--text_only", action="store_true", help="Evaluate text-only relational reasoning (no image).")

@@ -1,10 +1,12 @@
-level: 3
-id: "00011_b"
+level: 4
+id: "00010_b"
 
-# num_questions: 5
+num_questions: 15
 
-# Modes: None, decision_simple, decision_detailed, phrase_simple, phrase_detailed
-attention_mode: decision_simple
+# Attention source: first_generated_token, rel_phrase
+attention_source: first_generated_token
+# Attention detail level: simple, detailed
+attention_mode: simple
 
 # Optional overrides
 model_id: "llava-hf/llava-v1.6-mistral-7b-hf"
