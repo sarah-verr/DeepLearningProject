@@ -16,6 +16,6 @@ llava_detailed_*.pdf
 patch_reference_grid.png
 evaluation_*
 *.csv
-*.png
+# *.png
 evaluation_summary*.txt
 logs/
