@@ -1,7 +1,5 @@
 /Synthetic-Data/V1/base_scenes
 /Synthetic-Data/V1/synthetic_vlm_rel_aug
-Synthetic-Data/vlm_levels
-Synthetic-Data/vlm_levels_aug
 pycache/
 *.pyc
 *.pyo
