@@ -40,10 +40,12 @@ REL_PHRASE_CANDIDATES = [
 ]
 
 
-def _find_ann_paths(base_dir: str) -> list[str]:
+def _find_ann_paths(base_dir: str, allowed_levels: set[str] | None = None) -> list[str]:
     paths = []
     for entry in os.listdir(base_dir):
         if not entry.startswith("level_"):
+            continue
+        if allowed_levels is not None and entry not in allowed_levels:
             continue
         ann_dir = os.path.join(base_dir, entry, "ann")
         if not os.path.isdir(ann_dir):
@@ -164,6 +166,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--max_files", type=int, default=None, help="Limit number of *_b.json files.")
     ap.add_argument("--max_questions", type=int, default=None, help="Limit QAs per file.")
     ap.add_argument(
+        "--levels",
+        nargs="*",
+        default=None,
+        help="Only process these level_* directories (e.g., level_1 level_2).",
+    )
+    ap.add_argument(
         "--plot_examples",
         type=int,
         default=3,
@@ -176,7 +184,8 @@ def main() -> None:
     args = parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
 
-    ann_paths = _find_ann_paths(args.base_data_path)
+    allowed_levels = set(args.levels) if args.levels else None
+    ann_paths = _find_ann_paths(args.base_data_path, allowed_levels=allowed_levels)
     if args.max_files is not None:
         ann_paths = ann_paths[: args.max_files]
     if not ann_paths:
