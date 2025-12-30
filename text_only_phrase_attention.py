@@ -510,11 +510,17 @@ def main() -> None:
     if args.prompt_mode == "scene":
         evidence_kind = "scene"
         evidence_text = scene_to_text(ann)
-        prompt = build_scene_yesno_prompt(evidence_text, ex.question)
+        conversation = build_scene_yesno_prompt(evidence_text, ex.question)
     else:
         evidence_kind = "caption"
         evidence_text = ex.caption
-        prompt = build_caption_yesno_prompt(evidence_text, ex.question)
+        conversation = build_caption_yesno_prompt(evidence_text, ex.question)
+
+    prompt = processor.apply_chat_template(
+        conversation,
+        add_generation_prompt=True,
+        tokenize=False,
+    )
 
     tok = tokenizer(prompt, return_tensors="pt")
 

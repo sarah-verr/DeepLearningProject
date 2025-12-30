@@ -693,9 +693,16 @@ def main():
         rel_group = qa_item.get("rel_group", None)
         rel_phrase = qa_item.get("rel_phrase", None)  # NEW
 
-        prompt_text = build_visual_yesno_prompt(question_text)
+        conversation = build_visual_yesno_prompt(question_text)
+        prompt_text = processor.apply_chat_template(
+            conversation,
+            add_generation_prompt=True,
+            tokenize=False,
+        )
         inputs = processor(text=prompt_text, images=image, return_tensors="pt")
         inputs = _move_processor_inputs(inputs, model)
+        # Index of the first generated token in the full sequence (prompt + generation)
+        prompt_len = inputs["input_ids"].shape[1]
 
         with torch.no_grad():
             outputs = model.generate(
@@ -706,6 +713,16 @@ def main():
                 output_attentions=False,
                 pad_token_id=processor.tokenizer.eos_token_id
             )
+
+        # Debug: inspect the first generated token (used for yes/no decision)
+        try:
+            seq_full = outputs.sequences[0]
+            if i < 10 and seq_full.shape[0] > prompt_len:
+                first_gen_id = int(seq_full[prompt_len].item())
+                first_gen_text = processor.tokenizer.decode([first_gen_id], skip_special_tokens=False)
+                tqdm.write(f"Q{i}: first generated token id={first_gen_id}, text={repr(first_gen_text)}")
+        except Exception as e:
+            tqdm.write(f"  [Debug] Could not decode first generated token for Q{i}: {e}")
 
         # Eval
         prediction, confidence, p_yes, p_no = get_yes_no_probability(outputs, processor.tokenizer)
@@ -902,7 +919,10 @@ def main():
 
             for layer_idx, layer_attn_tensor in iterator:
                 try:
-                    heads_raw = layer_attn_tensor[0, :, -1, :] 
+                    # Use the FIRST generated token as the query position for attention
+                    seq_len_layer = layer_attn_tensor.shape[2]
+                    query_idx = prompt_len if prompt_len < seq_len_layer else seq_len_layer - 1
+                    heads_raw = layer_attn_tensor[0, :, query_idx, :]
                     
                     if end_idx > heads_raw.shape[1]:
                         image_heads_flat = heads_raw[:, -num_patches:]

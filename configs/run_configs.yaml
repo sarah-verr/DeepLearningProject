@@ -1,10 +1,10 @@
-level: 4
-id: "00017_w"
+level: 3
+id: "00011_b"
 
 # num_questions: 5
 
 # Modes: None, decision_simple, decision_detailed, phrase_simple, phrase_detailed
-# attention_mode: None
+attention_mode: decision_simple
 
 # Optional overrides
 model_id: "llava-hf/llava-v1.6-mistral-7b-hf"

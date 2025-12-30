@@ -312,15 +312,26 @@ def main():
                 if args.text_only:
                     caption = get_caption_for_qa(data, qa)
                     if caption is not None:
-                        prompt = build_caption_yesno_prompt(caption, question)
+                        conversation = build_caption_yesno_prompt(caption, question)
                     else:
                         # Backward-compatible fallback when caption linkage is missing.
-                        prompt = build_scene_yesno_prompt(scene_text or "", question)
-                    pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt)
+                        conversation = build_scene_yesno_prompt(scene_text or "", question)
+
+                    prompt_text = processor.apply_chat_template(
+                        conversation,
+                        add_generation_prompt=True,
+                        tokenize=False,
+                    )
+                    pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt_text)
                 else:
                     caption = None
-                    prompt = build_visual_yesno_prompt(question)
-                    inputs = processor(text=prompt, images=image, return_tensors="pt")
+                    conversation = build_visual_yesno_prompt(question)
+                    prompt_text = processor.apply_chat_template(
+                        conversation,
+                        add_generation_prompt=True,
+                        tokenize=False,
+                    )
+                    inputs = processor(text=prompt_text, images=image, return_tensors="pt")
                     inputs = _move_to_device(inputs, _pick_model_input_device(model))
 
                     with torch.no_grad():
@@ -343,7 +354,7 @@ def main():
                         completion = ""
 
                 # Store a single transcript in Prompt column for easier debugging.
-                transcript = f"{prompt}\nMODEL: {completion}" if completion else prompt
+                transcript = f"{prompt_text}\nMODEL: {completion}" if completion else prompt_text
 
                 total_questions += 1
                 is_correct = (pred == gt)
