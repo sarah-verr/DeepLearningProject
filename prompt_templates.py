@@ -28,7 +28,7 @@ def build_visual_yesno_prompt(question: str) -> Conversation:
                     "text": (
                         'Use the spatial layout in the image to answer the following '
                         'relational reasoning question with either "yes" or "no".\n'
-                        f"{q}"
+                        f"QUESTION: {q}"
                     ),
                 },
                 {"type": "image"},

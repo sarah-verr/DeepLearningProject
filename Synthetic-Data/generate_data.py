@@ -9,7 +9,7 @@ def parse_list(s: str):
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base_dir", type=str, default="vlm_levels")
-    ap.add_argument("--levels", type=int, nargs="+", default=[0,1,2,3,4,5,6])
+    ap.add_argument("--levels", type=int, nargs="+", default=[0,1,2,3,4])
     ap.add_argument("--scenes_per_level", type=int, default=20)
     
     ap.add_argument("--img_size", type=int, default=336)
