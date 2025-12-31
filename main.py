@@ -373,7 +373,7 @@ def main():
         output_folder_name = f"{timestamp}_all_images_level_{args.level}"
         print(f"Processing Level: {args.level} | All Images")
     else:
-    output_folder_name = f"{timestamp}_{args.id}"
+        output_folder_name = f"{timestamp}_{args.id}"
         print(f"Processing Level: {args.level} | ID: {args.id}")
     
     current_output_dir = os.path.join(BASE_OUTPUT_DIR, output_folder_name)
@@ -409,231 +409,231 @@ def main():
             print(f"Error: Files not found at constructed paths.")
             return
 
-    # Data Prep
-    image = Image.open(image_path).convert('RGB')
-    
-    # --- PREPARE GROUP METADATA ---
-    target_groups_meta = []
-    image_attention_data = []  
+        # Data Prep
+        image = Image.open(image_path).convert('RGB')
+        
+        # --- PREPARE GROUP METADATA ---
+        target_groups_meta = []
+        image_attention_data = []  
 
-    # Only need to prepare this if we are plotting visual grids
-    if args.plot_attention:
-        vis_image = image.resize((336, 336), resample=Image.BICUBIC)
-        for i, group_indices in enumerate(TARGET_GROUPS):
-            group_color = GROUP_COLORS[i % len(GROUP_COLORS)]
-            group_patches = []
-            for idx in group_indices:
-                row = idx // 24
-                col = idx % 24
-                group_patches.append({'row': int(row), 'col': int(col), 'idx': idx})
-            
-            target_groups_meta.append({
-                'group_id': i,
-                'color': group_color,
-                'patches': group_patches
-            })
+        # Only need to prepare this if we are plotting visual grids
+        if args.plot_attention:
+            vis_image = image.resize((336, 336), resample=Image.BICUBIC)
+            for i, group_indices in enumerate(TARGET_GROUPS):
+                group_color = GROUP_COLORS[i % len(GROUP_COLORS)]
+                group_patches = []
+                for idx in group_indices:
+                    row = idx // 24
+                    col = idx % 24
+                    group_patches.append({'row': int(row), 'col': int(col), 'idx': idx})
+                
+                target_groups_meta.append({
+                    'group_id': i,
+                    'color': group_color,
+                    'patches': group_patches
+                })
 
-    with open(json_path, 'r') as f:
-        full_qa_list = json.load(f).get('qa', [])
+        with open(json_path, 'r') as f:
+            full_qa_list = json.load(f).get('qa', [])
 
-    if args.num_questions is not None and args.num_questions > 0:
-        if args.num_questions < len(full_qa_list):
-            print(f"Randomly sampling {args.num_questions} questions from {len(full_qa_list)} total available.")
-            qa_list = random.sample(full_qa_list, args.num_questions)
+        if args.num_questions is not None and args.num_questions > 0:
+            if args.num_questions < len(full_qa_list):
+                print(f"Randomly sampling {args.num_questions} questions from {len(full_qa_list)} total available.")
+                qa_list = random.sample(full_qa_list, args.num_questions)
+            else:
+                qa_list = full_qa_list
         else:
             qa_list = full_qa_list
-    else:
-        qa_list = full_qa_list
 
-    results_summary = []
-    
-    # --- NEW: Accumulators for Correct vs Incorrect Analysis ---
-    correct_runs_layerwise = []   # Will store lists of [sum_layer_0, sum_layer_1, ...]
-    incorrect_runs_layerwise = [] 
-
-    print("\nStarting Inference...")
-    print(f"{'Idx':<4} | {'Correct':<7} | {'Pred':<5} | {'GT':<5} | {'Conf':<6} | Question")
-    print("-" * 80)
-
-    for i, qa_item in tqdm(enumerate(qa_list), total=len(qa_list), desc="Total Progress"):
-        question_text = qa_item['question']
-        ground_truth = qa_item['answer'].lower() 
-        prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
+        results_summary = []
         
-        inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
+        # --- NEW: Accumulators for Correct vs Incorrect Analysis ---
+        correct_runs_layerwise = []   # Will store lists of [sum_layer_0, sum_layer_1, ...]
+        incorrect_runs_layerwise = [] 
 
-        with torch.no_grad():
-            outputs = model.generate(
-                **inputs, 
-                max_new_tokens=50, 
-                return_dict_in_generate=True,
-                output_scores=True,
-                output_attentions=REQUIRES_ATTENTION # Pass True if either flag is set
-            )
+        print("\nStarting Inference...")
+        print(f"{'Idx':<4} | {'Correct':<7} | {'Pred':<5} | {'GT':<5} | {'Conf':<6} | Question")
+        print("-" * 80)
 
-        # Eval
-        prediction, confidence, p_yes, p_no = get_yes_no_probability(outputs, processor.tokenizer)
-        is_correct = (prediction == ground_truth)
-        status_icon = "✅" if is_correct else "❌"
-        
-        tqdm.write(f"{i:<4} | {status_icon:<7} | {prediction:<5} | {ground_truth:<5} | {confidence:.2f}   | {question_text}")
+        for i, qa_item in tqdm(enumerate(qa_list), total=len(qa_list), desc="Total Progress"):
+            question_text = qa_item['question']
+            ground_truth = qa_item['answer'].lower() 
+            prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
+            
+            inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
 
-        results_summary.append({
-            "id": i,
-            "question": question_text,
-            "gt": ground_truth,
-            "prediction": prediction,
-            "confidence": float(confidence),
-            "is_correct": is_correct
-        })
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs, 
+                    max_new_tokens=50, 
+                    return_dict_in_generate=True,
+                    output_scores=True,
+                    output_attentions=REQUIRES_ATTENTION # Pass True if either flag is set
+                )
 
-        # --- ATTENTION PROCESSING ---
-        if REQUIRES_ATTENTION:
-            q_safe_text = "".join(x for x in question_text[:20] if x.isalnum() or x in " _-").strip()
-            q_dir = os.path.join(current_output_dir, f"Q{i}_{q_safe_text}")
-            os.makedirs(q_dir, exist_ok=True)
+            # Eval
+            prediction, confidence, p_yes, p_no = get_yes_no_probability(outputs, processor.tokenizer)
+            is_correct = (prediction == ground_truth)
+            status_icon = "✅" if is_correct else "❌"
+            
+            tqdm.write(f"{i:<4} | {status_icon:<7} | {prediction:<5} | {ground_truth:<5} | {confidence:.2f}   | {question_text}")
 
-            # Initialize variables before try block
-            current_question_image_mass = []
-            current_question_layer_totals = []
-            group_scores_layerwise = {g_idx: [] for g_idx in range(len(TARGET_GROUPS))}
+            results_summary.append({
+                "id": i,
+                "question": question_text,
+                "gt": ground_truth,
+                "prediction": prediction,
+                "confidence": float(confidence),
+                "is_correct": is_correct
+            })
 
-            try:
-                # Check if attentions are available
-                if outputs.attentions is None or len(outputs.attentions) == 0:
-                    tqdm.write(f"  [Warning] No attentions returned for question {i}. output_attentions may not be working.")
+            # --- ATTENTION PROCESSING ---
+            if REQUIRES_ATTENTION:
+                q_safe_text = "".join(x for x in question_text[:20] if x.isalnum() or x in " _-").strip()
+                q_dir = os.path.join(current_output_dir, f"Q{i}_{q_safe_text}")
+                os.makedirs(q_dir, exist_ok=True)
+
+                # Initialize variables before try block
+                current_question_image_mass = []
+                current_question_layer_totals = []
+                group_scores_layerwise = {g_idx: [] for g_idx in range(len(TARGET_GROUPS))}
+
+                try:
+                    # Check if attentions are available
+                    if outputs.attentions is None or len(outputs.attentions) == 0:
+                        tqdm.write(f"  [Warning] No attentions returned for question {i}. output_attentions may not be working.")
+                        image_attention_data.append({
+                            "question_idx": i,
+                            "question_text": question_text,
+                            "layers": []
+                        })
+                    else:
+                        # --- VRAM OPTIMIZATION START ---
+                        raw_layers_gpu = outputs.attentions[0]
+                        # Move to CPU immediately
+                        all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in raw_layers_gpu]
+                        # Delete GPU tensors
+                        del outputs
+                        del raw_layers_gpu
+                        torch.cuda.empty_cache()
+                        # --- VRAM OPTIMIZATION END ---
+
+                        start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
+                        end_idx = start_idx + 576
+
+                        # Iterate layers
+                        iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
+
+                        for layer_idx, layer_attn_tensor in iterator:
+                            try:
+                                heads_raw = layer_attn_tensor[0, :, -1, :] 
+                                
+                                if end_idx > heads_raw.shape[1]:
+                                    image_heads_flat = heads_raw[:, -576:]
+                                else:
+                                    image_heads_flat = heads_raw[:, start_idx : end_idx]
+                                
+                                # 1. ALWAYS Calculate Trends
+                                avg_attention_flat = image_heads_flat.mean(dim=0).numpy()
+
+                                image_attention_mass = float(avg_attention_flat.sum())
+                                total_seq_attention = float(heads_raw.mean(dim=0).sum())
+                                image_attention_percentage = (image_attention_mass / total_seq_attention * 100) if total_seq_attention > 0 else 0.0
+
+                                current_question_image_mass.append({
+                                    "layer": layer_idx,
+                                    "image_mass": image_attention_mass,
+                                    "image_percentage": image_attention_percentage,
+                                    "total_seq_mass": total_seq_attention
+                                })
+
+                                layer_total_target_attn = 0.0
+
+                                for g_idx, g_indices in enumerate(TARGET_GROUPS):
+                                    group_sum = 0.0
+                                    for pid in g_indices:
+                                        val = avg_attention_flat[pid] if pid < len(avg_attention_flat) else 0.0
+                                        group_sum += float(val)
+                                    
+                                    group_scores_layerwise[g_idx].append(group_sum)
+                                    layer_total_target_attn += group_sum
+                                
+                                # Store the sum of ALL groups for this layer
+                                current_question_layer_totals.append(layer_total_target_attn)
+
+                                # 2. ONLY Plot Heavy Grids if asked
+                                if args.plot_attention:
+                                    current_num_heads = image_heads_flat.shape[0]
+                                    heads_map_2d = image_heads_flat.view(current_num_heads, 24, 24).float().numpy()
+                                    avg_map_2d = heads_map_2d.mean(axis=0)
+
+                                    fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta)
+                                    plt.savefig(os.path.join(q_dir, f"layer_{layer_idx:02d}.png"), bbox_inches='tight')
+                                    plt.close(fig)
+
+                            except Exception as e:
+                                tqdm.write(f"  [Warning] Error processing layer {layer_idx}: {e}")
+                        
+                        # --- ACCUMULATE DATA FOR COMPARISON PLOT ---
+                        if is_correct:
+                            correct_runs_layerwise.append(current_question_layer_totals)
+                        else:
+                            incorrect_runs_layerwise.append(current_question_layer_totals)
+
+                        # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
+                        if args.plot_trends:
+                            plot_attention_trends(group_scores_layerwise, q_dir, i)
+                        
+                        image_attention_data.append({
+                            "question_idx": i,
+                            "question_text": question_text,
+                            "layers": current_question_image_mass
+                        })
+                except Exception as e:
+                    tqdm.write(f"  [Error] Failed to extract attention for question {i}: {e}")
+                    import traceback
+                    tqdm.write(f"  [Error] Traceback: {traceback.format_exc()}")
+                    # Still append empty data so we know this question was processed
                     image_attention_data.append({
                         "question_idx": i,
                         "question_text": question_text,
                         "layers": []
                     })
-                else:
-                    # --- VRAM OPTIMIZATION START ---
-                    raw_layers_gpu = outputs.attentions[0]
-                    # Move to CPU immediately
-                    all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in raw_layers_gpu]
-                    # Delete GPU tensors
-                    del outputs
-                    del raw_layers_gpu
-                    torch.cuda.empty_cache()
-                    # --- VRAM OPTIMIZATION END ---
 
-                    start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
-                    end_idx = start_idx + 576
-
-                    # Iterate layers
-                    iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
-
-                    for layer_idx, layer_attn_tensor in iterator:
-                        try:
-                            heads_raw = layer_attn_tensor[0, :, -1, :] 
-                            
-                            if end_idx > heads_raw.shape[1]:
-                                image_heads_flat = heads_raw[:, -576:]
-                            else:
-                                image_heads_flat = heads_raw[:, start_idx : end_idx]
-                            
-                            # 1. ALWAYS Calculate Trends
-                            avg_attention_flat = image_heads_flat.mean(dim=0).numpy()
-
-                            image_attention_mass = float(avg_attention_flat.sum())
-                            total_seq_attention = float(heads_raw.mean(dim=0).sum())
-                            image_attention_percentage = (image_attention_mass / total_seq_attention * 100) if total_seq_attention > 0 else 0.0
-
-                            current_question_image_mass.append({
-                                "layer": layer_idx,
-                                "image_mass": image_attention_mass,
-                                "image_percentage": image_attention_percentage,
-                                "total_seq_mass": total_seq_attention
-                            })
-
-                            layer_total_target_attn = 0.0
-
-                            for g_idx, g_indices in enumerate(TARGET_GROUPS):
-                                group_sum = 0.0
-                                for pid in g_indices:
-                                    val = avg_attention_flat[pid] if pid < len(avg_attention_flat) else 0.0
-                                    group_sum += float(val)
-                                
-                                group_scores_layerwise[g_idx].append(group_sum)
-                                layer_total_target_attn += group_sum
-                            
-                            # Store the sum of ALL groups for this layer
-                            current_question_layer_totals.append(layer_total_target_attn)
-
-                            # 2. ONLY Plot Heavy Grids if asked
-                            if args.plot_attention:
-                                current_num_heads = image_heads_flat.shape[0]
-                                heads_map_2d = image_heads_flat.view(current_num_heads, 24, 24).float().numpy()
-                                avg_map_2d = heads_map_2d.mean(axis=0)
-
-                                fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta)
-                                plt.savefig(os.path.join(q_dir, f"layer_{layer_idx:02d}.png"), bbox_inches='tight')
-                                plt.close(fig)
-
-                        except Exception as e:
-                            tqdm.write(f"  [Warning] Error processing layer {layer_idx}: {e}")
-                    
-                    # --- ACCUMULATE DATA FOR COMPARISON PLOT ---
-                    if is_correct:
-                        correct_runs_layerwise.append(current_question_layer_totals)
-                    else:
-                        incorrect_runs_layerwise.append(current_question_layer_totals)
-
-                    # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
-                    if args.plot_trends:
-                        plot_attention_trends(group_scores_layerwise, q_dir, i)
-                    
-                    image_attention_data.append({
-                        "question_idx": i,
-                        "question_text": question_text,
-                        "layers": current_question_image_mass
-                    })
-            except Exception as e:
-                tqdm.write(f"  [Error] Failed to extract attention for question {i}: {e}")
-                import traceback
-                tqdm.write(f"  [Error] Traceback: {traceback.format_exc()}")
-                # Still append empty data so we know this question was processed
-                image_attention_data.append({
-                    "question_idx": i,
-                    "question_text": question_text,
-                    "layers": []
-                })
-
-    # --- SAVE SUMMARY ---
-    final_metadata = {
-        "timestamp": timestamp,
-        "level": args.level,
-            "id": args.id if not args.use_all_images else "all_images",
-        "results": results_summary,
-        "accuracy": sum(r['is_correct'] for r in results_summary) / len(results_summary) if results_summary else 0,
-        "image_attention_mass": image_attention_data  
-    }
-    
-    with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
-        json.dump(final_metadata, f, indent=4)
-
-    if results_summary:
-            plot_evaluation_results(results_summary, current_output_dir, f"{args.id if not args.use_all_images else 'All Images'} (Level {args.level})")
-    
-    # --- GENERATE THE COMPARISON PLOT ---
-    if args.plot_trends:
-        plot_correct_vs_incorrect_trends(correct_runs_layerwise, incorrect_runs_layerwise, current_output_dir)
-    else:
-        # Initialize empty metadata for multi-image probing
+        # --- SAVE SUMMARY ---
         final_metadata = {
             "timestamp": timestamp,
             "level": args.level,
-            "id": "all_images",
-            "results": [],
-            "accuracy": 0,
-            "image_attention_mass": []
+            "id": args.id if not args.use_all_images else "all_images",
+            "results": results_summary,
+            "accuracy": sum(r['is_correct'] for r in results_summary) / len(results_summary) if results_summary else 0,
+            "image_attention_mass": image_attention_data  
         }
+        
+        with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+            json.dump(final_metadata, f, indent=4)
+
+        if results_summary:
+            plot_evaluation_results(results_summary, current_output_dir, f"{args.id if not args.use_all_images else 'All Images'} (Level {args.level})")
+        
+        # --- GENERATE THE COMPARISON PLOT ---
+        if args.plot_trends:
+            plot_correct_vs_incorrect_trends(correct_runs_layerwise, incorrect_runs_layerwise, current_output_dir)
     
     # --- PROBING ANALYSIS ---
     if args.probe_layers or args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
         # Check if we should use all images
         if args.use_all_images:
+            # Initialize metadata for multi-image mode
+            final_metadata = {
+                "timestamp": timestamp,
+                "level": args.level,
+                "id": "all_images",
+                "results": [],
+                "accuracy": 0,
+                "image_attention_mass": []
+            }
+            
             print("\n" + "="*60)
             print("Collecting data from ALL images in level for multi-image probing...")
             print("="*60)
@@ -758,24 +758,24 @@ def main():
                     print("Multi-image head-level probing completed.")
         else:
             # Single image mode (original behavior)
-    if args.probe_layers:
-        print("\n" + "="*60)
-        print("Starting Layer-Level Probing Analysis...")
-        print("="*60)
-        print("Probing residual stream (4096 dims) at generation-step-1 position")
+            if args.probe_layers:
+                print("\n" + "="*60)
+                print("Starting Layer-Level Probing Analysis...")
+                print("="*60)
+                print("Probing residual stream (4096 dims) at generation-step-1 position")
                 print("Using cross-validation on single image")
-        layer_probing_scores = compute_layer_probing_scores(
-            model, processor, image, qa_list, results_summary, debug=True
-        )
-        plot_layer_probing_scores(
-            layer_probing_scores, current_output_dir, f"{args.id} (Level {args.level})"
-        )
-        # Save probing scores to metadata
+                layer_probing_scores = compute_layer_probing_scores(
+                    model, processor, image, qa_list, results_summary, debug=True
+                )
+                plot_layer_probing_scores(
+                    layer_probing_scores, current_output_dir, f"{args.id} (Level {args.level})"
+                )
+                # Save probing scores to metadata
                 final_metadata["layer_probing_scores"] = {str(k): v for k, v in layer_probing_scores.items()}
-        # Re-save JSON with probing scores
-        with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
-            json.dump(final_metadata, f, indent=4)
-        print("Layer-level probing completed.")
+                # Re-save JSON with probing scores
+                with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                    json.dump(final_metadata, f, indent=4)
+                print("Layer-level probing completed.")
                 
                 # --- AUTOMATIC HOT ZONE HEAD PROBING ---
                 # Identify top layers (hot zone) and probe all heads in those layers
@@ -826,45 +826,45 @@ def main():
                         
                         print(f"\nHot zone head probing completed for layers {target_layers}")
                         print(f"Total heads probed: {len(hot_zone_head_scores)}")
-    
-    if args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
-        print("\n" + "="*60)
-        print("Starting Head-Level Probing Analysis...")
-        print("="*60)
-        
-        # Determine if we're probing a single head/layer
-        single_layer = None
-        single_head = None
-        if args.probe_single_head is not None:
-            single_layer, single_head = args.probe_single_head
-            print(f"Probing single head: Layer {single_layer}, Head {single_head}")
-        elif args.probe_single_layer is not None:
-            single_layer = args.probe_single_layer
-            print(f"Probing single layer: Layer {single_layer} (all heads)")
-        else:
-            print("NOTE: This may take a while as it probes each head individually.")
-        
-        # Enable debug mode for single head probing
-        enable_debug = (single_layer is not None and single_head is not None)
-        head_probing_scores = compute_head_probing_scores(
-            model, processor, image, qa_list, results_summary, 
-            debug=enable_debug,
-            single_layer=single_layer,
-            single_head=single_head
-        )
-        
-        # Only plot heatmap if we probed multiple heads
-        if single_layer is None or single_head is None:
-            plot_head_probing_heatmap(
-                head_probing_scores, current_output_dir, f"{args.id} (Level {args.level})"
-            )
-        
-        # Save probing scores to metadata
-        final_metadata["head_probing_scores"] = {f"L{k[0]}_H{k[1]}": v for k, v in head_probing_scores.items()}
-        # Re-save JSON with probing scores
-        with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
-            json.dump(final_metadata, f, indent=4)
-        print("Head-level probing completed.")
+            
+            if args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
+                print("\n" + "="*60)
+                print("Starting Head-Level Probing Analysis...")
+                print("="*60)
+                
+                # Determine if we're probing a single head/layer
+                single_layer = None
+                single_head = None
+                if args.probe_single_head is not None:
+                    single_layer, single_head = args.probe_single_head
+                    print(f"Probing single head: Layer {single_layer}, Head {single_head}")
+                elif args.probe_single_layer is not None:
+                    single_layer = args.probe_single_layer
+                    print(f"Probing single layer: Layer {single_layer} (all heads)")
+                else:
+                    print("NOTE: This may take a while as it probes each head individually.")
+                
+                # Enable debug mode for single head probing
+                enable_debug = (single_layer is not None and single_head is not None)
+                head_probing_scores = compute_head_probing_scores(
+                    model, processor, image, qa_list, results_summary, 
+                    debug=enable_debug,
+                    single_layer=single_layer,
+                    single_head=single_head
+                )
+                
+                # Only plot heatmap if we probed multiple heads
+                if single_layer is None or single_head is None:
+                    plot_head_probing_heatmap(
+                        head_probing_scores, current_output_dir, f"{args.id} (Level {args.level})"
+                    )
+                
+                # Save probing scores to metadata
+                final_metadata["head_probing_scores"] = {f"L{k[0]}_H{k[1]}": v for k, v in head_probing_scores.items()}
+                # Re-save JSON with probing scores
+                with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                    json.dump(final_metadata, f, indent=4)
+                print("Head-level probing completed.")
         
     print(f"\nCompleted. Results saved to: {os.path.abspath(current_output_dir)}")
 
