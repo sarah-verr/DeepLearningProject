@@ -1,0 +1,7 @@
+Python: /home/tenkhtuvshin/DeepLearningProject/venv/bin/python
+HF_HOME=/work/scratch/tenkhtuvshin
+Starting probing run at Tue Dec 30 10:57:09 CET 2025
+Processing Level: 1 | All Images
+Output: vis_results/20251230-105715_all_images_level_1
+Loading model: llava-hf/llava-1.5-7b-hf...
+Finished at Tue Dec 30 10:57:27 CET 2025

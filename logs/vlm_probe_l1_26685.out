@@ -1,0 +1,95 @@
+Python: /home/tenkhtuvshin/DeepLearningProject/venv/bin/python
+HF_HOME=/work/scratch/tenkhtuvshin
+Starting probing run at Tue Dec 30 10:59:28 CET 2025
+Processing Level: 1 | All Images
+Output: vis_results/20251230-105934_all_images_level_1
+Loading model: llava-hf/llava-1.5-7b-hf...
+
+============================================================
+Collecting data from ALL images in level for multi-image probing...
+============================================================
+
+Processing 40 images for multi-image probing...
+This may take a while - running inference on all questions for all images...
+  Processed 5/40 images...
+  Processed 10/40 images...
+  Processed 15/40 images...
+  Processed 20/40 images...
+  Processed 25/40 images...
+  Processed 30/40 images...
+  Processed 35/40 images...
+  Processed 40/40 images...
+
+Successfully processed 40 images
+Total questions: 400
+Total correct: 176 (44.0%)
+
+============================================================
+Starting Multi-Image Layer-Level Probing Analysis...
+============================================================
+Probing residual stream (4096 dims) at generation-step-1 position
+Using cross-validation with pooled data from all images
+
+[DEBUG] Layer Probing Configuration:
+  num_layers: 32
+  Number of images: 40
+  Total questions across all images: 400
+  Probing residual stream (4096 dims) at generation-step-1 position
+
+Computing layer-level probing scores across 40 images...
+Probing residual stream after each layer (4096 dims)
+
+[DEBUG] Extracting representations from 40 images for Layer 0...
+  Image 0: 10 questions, (10, 4096), [6 4]
+  Image 1: 10 questions, (10, 4096), [2 8]
+  Image 2: 10 questions, (10, 4096), [6 4]
+  Pooled data: X.shape=(400, 4096), y distribution=[224 176]
+
+[DEBUG] Layer Probe Training - Layer 0:
+  X.shape: (400, 4096)
+  y distribution: [224 176] (0s: 224, 1s: 176)
+  X mean: 0.000638, std: 0.034241
+  CV folds: 5, CV scores: [0.55   0.5625 0.5625 0.5625 0.5625]
+  Average accuracy: 0.560000 (std: 0.005000)
+
+Layer 0 accuracy: 0.560000
+
+[DEBUG] Layer Probing Summary:
+  Score range: [0.560000, 0.777500]
+  Mean score: 0.688438, Std: 0.065740
+  Top 5 layers: [(15, np.float64(0.7775000000000001)), (19, np.float64(0.7625000000000001)), (20, np.float64(0.7625)), (18, np.float64(0.755)), (23, np.float64(0.7500000000000001))]
+Layer probing plot saved to: vis_results/20251230-105934_all_images_level_1/layer_probing_scores.png
+Multi-image layer-level probing completed.
+
+============================================================
+Auto-detecting 'Hot Zone' layers for detailed head analysis...
+============================================================
+Hot Zone Layers: [13, 14, 15, 16]
+  Scores: [(13, np.float64(0.725)), (14, np.float64(0.735)), (15, np.float64(0.7775000000000001)), (16, np.float64(0.7400000000000001))]
+
+Probing all heads in Layer 13...
+
+Computing head-level probing scores across 40 images...
+Probing Layer 13 only (all 32 heads)
+
+Probing all heads in Layer 14...
+
+Computing head-level probing scores across 40 images...
+Probing Layer 14 only (all 32 heads)
+
+Probing all heads in Layer 15...
+
+Computing head-level probing scores across 40 images...
+Probing Layer 15 only (all 32 heads)
+
+Probing all heads in Layer 16...
+
+Computing head-level probing scores across 40 images...
+Probing Layer 16 only (all 32 heads)
+Head probing heatmap saved to: vis_results/20251230-105934_all_images_level_1/head_probing_heatmap.png
+
+Hot zone head probing completed for layers [13, 14, 15, 16]
+Total heads probed: 128
+
+Completed. Results saved to: /home/tenkhtuvshin/DeepLearningProject/vis_results/20251230-105934_all_images_level_1
+Finished at Tue Dec 30 15:29:01 CET 2025

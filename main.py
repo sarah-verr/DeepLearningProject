@@ -15,6 +15,8 @@ from tqdm import tqdm
 from probing import (
     compute_head_probing_scores,
     compute_layer_probing_scores,
+    compute_head_probing_scores_multi,
+    compute_layer_probing_scores_multi,
     plot_head_probing_heatmap,
     plot_layer_probing_scores
 )
@@ -197,6 +199,115 @@ def get_yes_no_probability(outputs, tokenizer, prompt_context="ASSISTANT:"):
     
     return prediction, confidence, norm_yes, norm_no
 
+def process_all_images_for_probing(model, processor, level, base_data_path, num_questions=None):
+    """
+    Processes all images in a level and collects data for multi-image probing.
+    
+    Returns:
+        images_list: List of PIL Images
+        questions_list: List of question lists (one per image)
+        results_list: List of result lists (one per image)
+    """
+    level_dir = f"level_{level}"
+    images_dir = os.path.join(base_data_path, level_dir, "images")
+    ann_dir = os.path.join(base_data_path, level_dir, "ann")
+    
+    if not os.path.exists(images_dir) or not os.path.exists(ann_dir):
+        print(f"Error: Level directory not found: {level_dir}")
+        return [], [], []
+    
+    # Get all image files
+    image_files = sorted([f for f in os.listdir(images_dir) if f.endswith('.png')])
+    
+    if len(image_files) == 0:
+        print(f"Warning: No images found in {images_dir}")
+        return [], [], []
+    
+    print(f"\nProcessing {len(image_files)} images for multi-image probing...")
+    print("This may take a while - running inference on all questions for all images...")
+    
+    images_list = []
+    questions_list = []
+    results_list = []
+    
+    for img_idx, img_file in enumerate(tqdm(image_files, desc="Processing images")):
+        img_path = os.path.join(images_dir, img_file)
+        json_path = os.path.join(ann_dir, img_file.replace('.png', '.json'))
+        
+        if not os.path.exists(json_path):
+            tqdm.write(f"Warning: No annotation file for {img_file}, skipping")
+            continue
+        
+        # Load image
+        try:
+            image = Image.open(img_path).convert('RGB')
+        except Exception as e:
+            tqdm.write(f"Warning: Failed to load {img_file}: {e}, skipping")
+            continue
+        
+        # Load questions
+        try:
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+                qa_list = data.get('qa', [])
+        except Exception as e:
+            tqdm.write(f"Warning: Failed to load questions for {img_file}: {e}, skipping")
+            continue
+        
+        if len(qa_list) == 0:
+            continue
+        
+        # Sample questions if needed
+        if num_questions is not None and num_questions > 0:
+            if num_questions < len(qa_list):
+                qa_list = random.sample(qa_list, num_questions)
+        
+        # Run inference to get results
+        image_results = []
+        for qa_item in tqdm(qa_list, desc=f"  Image {img_idx+1}/{len(image_files)} questions", leave=False):
+            question_text = qa_item['question']
+            ground_truth = qa_item['answer'].lower()
+            prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
+            
+            inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
+            
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=50,
+                    return_dict_in_generate=True,
+                    output_scores=True,
+                    output_attentions=False  # Not needed for probing
+                )
+            
+            # Evaluate
+            prediction, confidence, p_yes, p_no = get_yes_no_probability(outputs, processor.tokenizer)
+            is_correct = (prediction == ground_truth)
+            
+            image_results.append({
+                "question": question_text,
+                "gt": ground_truth,
+                "prediction": prediction,
+                "confidence": float(confidence),
+                "is_correct": is_correct
+            })
+        
+        images_list.append(image)
+        questions_list.append(qa_list)
+        results_list.append(image_results)
+        
+        # Print progress every 5 images
+        if (img_idx + 1) % 5 == 0:
+            tqdm.write(f"  Processed {img_idx + 1}/{len(image_files)} images...")
+    
+    print(f"\nSuccessfully processed {len(images_list)} images")
+    total_questions = sum(len(q) for q in questions_list)
+    print(f"Total questions: {total_questions}")
+    total_correct = sum(sum(1 for r in res if r['is_correct']) for res in results_list)
+    print(f"Total correct: {total_correct} ({100*total_correct/total_questions:.1f}%)")
+    
+    return images_list, questions_list, results_list
+
 def plot_evaluation_results(results, output_dir, title_id):
     questions = [f"Q{r['id']}" for r in results]
     confidences = [r['confidence'] for r in results]
@@ -228,7 +339,7 @@ def plot_evaluation_results(results, output_dir, title_id):
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run Batch LLaVA Inference")
     parser.add_argument("--level", type=str, required=True, help="Level number (e.g., '1')")
-    parser.add_argument("--id", type=str, required=True, help="File ID (e.g., '00000_b')")
+    parser.add_argument("--id", type=str, default=None, help="File ID (e.g., '00000_b'). Not required if --use_all_images is set.")
     parser.add_argument("--num_questions", type=int, default=None, help="Number of questions to sample randomly (default: all)")
     
     # SPLIT ARGUMENTS
@@ -238,6 +349,7 @@ def parse_arguments():
     # PROBING ARGUMENTS
     parser.add_argument("--probe_heads", action="store_true", help="Compute head-level probing scores (mechanistic analysis)")
     parser.add_argument("--probe_layers", action="store_true", help="Compute layer-level probing scores (mechanistic analysis)")
+    parser.add_argument("--use_all_images", action="store_true", help="Use all images in level for probing (pools data across images)")
     
     # DEBUG PROBING ARGUMENTS (for testing single head/layer)
     parser.add_argument("--probe_single_head", type=int, nargs=2, metavar=('LAYER', 'HEAD'), 
@@ -250,22 +362,22 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     
-    # Path Construction
-    level_dir = f"level_{args.level}"
-    image_path = os.path.join(BASE_DATA_PATH, level_dir, "images", f"{args.id}.png")
-    json_path = os.path.join(BASE_DATA_PATH, level_dir, "ann", f"{args.id}.json")
-
-    if not os.path.exists(image_path) or not os.path.exists(json_path):
-        print(f"Error: Files not found at constructed paths.")
+    # Validate arguments
+    if not args.use_all_images and args.id is None:
+        print("Error: --id is required when not using --use_all_images")
         return
 
     # Output Setup
     timestamp = time.strftime("%Y%m%d-%H%M%S")
+    if args.use_all_images:
+        output_folder_name = f"{timestamp}_all_images_level_{args.level}"
+        print(f"Processing Level: {args.level} | All Images")
+    else:
     output_folder_name = f"{timestamp}_{args.id}"
+        print(f"Processing Level: {args.level} | ID: {args.id}")
+    
     current_output_dir = os.path.join(BASE_OUTPUT_DIR, output_folder_name)
     os.makedirs(current_output_dir, exist_ok=True)
-    
-    print(f"Processing Level: {args.level} | ID: {args.id}")
     print(f"Output: {current_output_dir}")
     
     # LOGIC: We need attention from model if EITHER flag is true
@@ -284,6 +396,18 @@ def main():
         MODEL_ID, dtype=torch.float16, device_map="auto", attn_implementation="eager"
     )
     processor = AutoProcessor.from_pretrained(MODEL_ID)
+
+    # Single image processing (only if not using all images)
+    # When using all images, we skip this and rely on multi-image probing paths.
+    if not args.use_all_images:
+        # Path Construction for single image
+        level_dir = f"level_{args.level}"
+        image_path = os.path.join(BASE_DATA_PATH, level_dir, "images", f"{args.id}.png")
+        json_path = os.path.join(BASE_DATA_PATH, level_dir, "ann", f"{args.id}.json")
+
+        if not os.path.exists(image_path) or not os.path.exists(json_path):
+            print(f"Error: Files not found at constructed paths.")
+            return
 
     # Data Prep
     image = Image.open(image_path).convert('RGB')
@@ -475,35 +599,171 @@ def main():
                     "question_text": question_text,
                     "layers": []
                 })
-            
 
     # --- SAVE SUMMARY ---
     final_metadata = {
         "timestamp": timestamp,
         "level": args.level,
-        "id": args.id,
+            "id": args.id if not args.use_all_images else "all_images",
         "results": results_summary,
         "accuracy": sum(r['is_correct'] for r in results_summary) / len(results_summary) if results_summary else 0,
         "image_attention_mass": image_attention_data  
-
     }
     
     with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
         json.dump(final_metadata, f, indent=4)
 
     if results_summary:
-        plot_evaluation_results(results_summary, current_output_dir, f"{args.id} (Level {args.level})")
+            plot_evaluation_results(results_summary, current_output_dir, f"{args.id if not args.use_all_images else 'All Images'} (Level {args.level})")
     
     # --- GENERATE THE COMPARISON PLOT ---
     if args.plot_trends:
         plot_correct_vs_incorrect_trends(correct_runs_layerwise, incorrect_runs_layerwise, current_output_dir)
+    else:
+        # Initialize empty metadata for multi-image probing
+        final_metadata = {
+            "timestamp": timestamp,
+            "level": args.level,
+            "id": "all_images",
+            "results": [],
+            "accuracy": 0,
+            "image_attention_mass": []
+        }
     
     # --- PROBING ANALYSIS ---
+    if args.probe_layers or args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
+        # Check if we should use all images
+        if args.use_all_images:
+            print("\n" + "="*60)
+            print("Collecting data from ALL images in level for multi-image probing...")
+            print("="*60)
+            images_list, questions_list, results_list = process_all_images_for_probing(
+                model, processor, args.level, BASE_DATA_PATH, args.num_questions
+            )
+            
+            if len(images_list) == 0:
+                print("Error: No images processed. Cannot run multi-image probing.")
+            else:
+                # Determine if we're probing a single head/layer
+                single_layer = None
+                single_head = None
+                if args.probe_single_head is not None:
+                    single_layer, single_head = args.probe_single_head
+                elif args.probe_single_layer is not None:
+                    single_layer = args.probe_single_layer
+                
+                # Layer probing
+                if args.probe_layers:
+                    print("\n" + "="*60)
+                    print("Starting Multi-Image Layer-Level Probing Analysis...")
+                    print("="*60)
+                    print("Probing residual stream (4096 dims) at generation-step-1 position")
+                    print("Using cross-validation with pooled data from all images")
+                    layer_probing_scores = compute_layer_probing_scores_multi(
+                        model, processor, images_list, questions_list, results_list, debug=True
+                    )
+                    plot_layer_probing_scores(
+                        layer_probing_scores, current_output_dir, f"All Images (Level {args.level})"
+                    )
+                    # Save probing scores to metadata
+                    final_metadata["layer_probing_scores"] = {str(k): v for k, v in layer_probing_scores.items()}
+                    # Re-save JSON with probing scores
+                    with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                        json.dump(final_metadata, f, indent=4)
+                    print("Multi-image layer-level probing completed.")
+                    
+                    # --- AUTOMATIC HOT ZONE HEAD PROBING ---
+                    # Identify top layers (hot zone) and probe all heads in those layers
+                    if not args.probe_heads:  # Only if head probing wasn't already requested
+                        print("\n" + "="*60)
+                        print("Auto-detecting 'Hot Zone' layers for detailed head analysis...")
+                        print("="*60)
+                        
+                        # Use predefined hot zone based on analysis (layers 13-16 show highest scores)
+                        target_layers = [13, 14, 15, 16]
+                        
+                        # Alternative: Auto-detect top 4 layers
+                        # sorted_layers = sorted(layer_probing_scores.items(), key=lambda x: x[1], reverse=True)
+                        # top_4_layers = sorted_layers[:4]
+                        # target_layers = [layer_idx for layer_idx, score in top_4_layers]
+                        
+                        print(f"Hot Zone Layers: {target_layers}")
+                        print(f"  Scores: {[(l, layer_probing_scores[l]) for l in target_layers]}")
+                        
+                        # Probe all heads in hot zone layers
+                        hot_zone_head_scores = {}
+                        for layer_idx in target_layers:
+                            print(f"\nProbing all heads in Layer {layer_idx}...")
+                            layer_head_scores = compute_head_probing_scores_multi(
+                                model, processor, images_list, questions_list, results_list,
+                                debug=False,
+                                single_layer=layer_idx,
+                                single_head=None  # Probe all heads
+                            )
+                            hot_zone_head_scores.update(layer_head_scores)
+                        
+                        # Plot heatmap for hot zone layers only
+                        if hot_zone_head_scores:
+                            plot_head_probing_heatmap(
+                                hot_zone_head_scores, current_output_dir, 
+                                f"Hot Zone Layers {target_layers} (Level {args.level})"
+                            )
+                            
+                            # Save hot zone head scores
+                            final_metadata["hot_zone_head_probing_scores"] = {
+                                f"L{k[0]}_H{k[1]}": v for k, v in hot_zone_head_scores.items()
+                            }
+                            final_metadata["hot_zone_layers"] = target_layers
+                            
+                            # Re-save JSON
+                            with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                                json.dump(final_metadata, f, indent=4)
+                            
+                            print(f"\nHot zone head probing completed for layers {target_layers}")
+                            print(f"Total heads probed: {len(hot_zone_head_scores)}")
+                
+                # Head probing
+                if args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
+                    print("\n" + "="*60)
+                    print("Starting Multi-Image Head-Level Probing Analysis...")
+                    print("="*60)
+                    
+                    if args.probe_single_head is not None:
+                        print(f"Probing single head: Layer {single_layer}, Head {single_head}")
+                    elif args.probe_single_layer is not None:
+                        print(f"Probing single layer: Layer {single_layer} (all heads)")
+                    else:
+                        print("NOTE: This may take a while as it probes each head individually.")
+                    
+                    # Enable debug mode for single head probing
+                    enable_debug = (single_layer is not None and single_head is not None)
+                    head_probing_scores = compute_head_probing_scores_multi(
+                        model, processor, images_list, questions_list, results_list,
+                        debug=enable_debug,
+                        single_layer=single_layer,
+                        single_head=single_head
+                    )
+                    
+                    # Only plot heatmap if we probed multiple heads
+                    if single_layer is None or single_head is None:
+                        plot_head_probing_heatmap(
+                            head_probing_scores, current_output_dir, f"All Images (Level {args.level})"
+                        )
+                    
+                    # Save probing scores to metadata
+                    final_metadata["head_probing_scores"] = {f"L{k[0]}_H{k[1]}": v for k, v in head_probing_scores.items()}
+                    # Re-save JSON with probing scores
+                    with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                        json.dump(final_metadata, f, indent=4)
+                    print("Multi-image head-level probing completed.")
+        else:
+            # Single image mode (original behavior)
     if args.probe_layers:
         print("\n" + "="*60)
         print("Starting Layer-Level Probing Analysis...")
         print("="*60)
         print("Probing residual stream (4096 dims) at generation-step-1 position")
+                print("Using cross-validation on single image")
         layer_probing_scores = compute_layer_probing_scores(
             model, processor, image, qa_list, results_summary, debug=True
         )
@@ -511,11 +771,61 @@ def main():
             layer_probing_scores, current_output_dir, f"{args.id} (Level {args.level})"
         )
         # Save probing scores to metadata
-        final_metadata["layer_probing_scores"] = layer_probing_scores
+                final_metadata["layer_probing_scores"] = {str(k): v for k, v in layer_probing_scores.items()}
         # Re-save JSON with probing scores
         with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
             json.dump(final_metadata, f, indent=4)
         print("Layer-level probing completed.")
+                
+                # --- AUTOMATIC HOT ZONE HEAD PROBING ---
+                # Identify top layers (hot zone) and probe all heads in those layers
+                if not args.probe_heads:  # Only if head probing wasn't already requested
+                    print("\n" + "="*60)
+                    print("Auto-detecting 'Hot Zone' layers for detailed head analysis...")
+                    print("="*60)
+                    
+                    # Use predefined hot zone based on analysis (layers 13-16 show highest scores)
+                    target_layers = [13, 14, 15, 16]
+                    
+                    # Alternative: Auto-detect top 4 layers
+                    # sorted_layers = sorted(layer_probing_scores.items(), key=lambda x: x[1], reverse=True)
+                    # top_4_layers = sorted_layers[:4]
+                    # target_layers = [layer_idx for layer_idx, score in top_4_layers]
+                    
+                    print(f"Hot Zone Layers: {target_layers}")
+                    print(f"  Scores: {[(l, layer_probing_scores[l]) for l in target_layers]}")
+                    
+                    # Probe all heads in hot zone layers
+                    hot_zone_head_scores = {}
+                    for layer_idx in target_layers:
+                        print(f"\nProbing all heads in Layer {layer_idx}...")
+                        layer_head_scores = compute_head_probing_scores(
+                            model, processor, image, qa_list, results_summary,
+                            debug=False,
+                            single_layer=layer_idx,
+                            single_head=None  # Probe all heads
+                        )
+                        hot_zone_head_scores.update(layer_head_scores)
+                    
+                    # Plot heatmap for hot zone layers only
+                    if hot_zone_head_scores:
+                        plot_head_probing_heatmap(
+                            hot_zone_head_scores, current_output_dir,
+                            f"Hot Zone Layers {target_layers} - {args.id} (Level {args.level})"
+                        )
+                        
+                        # Save hot zone head scores
+                        final_metadata["hot_zone_head_probing_scores"] = {
+                            f"L{k[0]}_H{k[1]}": v for k, v in hot_zone_head_scores.items()
+                        }
+                        final_metadata["hot_zone_layers"] = target_layers
+                        
+                        # Re-save JSON
+                        with open(os.path.join(current_output_dir, "batch_results.json"), "w") as f:
+                            json.dump(final_metadata, f, indent=4)
+                        
+                        print(f"\nHot zone head probing completed for layers {target_layers}")
+                        print(f"Total heads probed: {len(hot_zone_head_scores)}")
     
     if args.probe_heads or args.probe_single_head is not None or args.probe_single_layer is not None:
         print("\n" + "="*60)

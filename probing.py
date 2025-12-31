@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
@@ -366,10 +366,66 @@ def extract_hidden_states_after_head(model, processor, image, questions, layer_i
     
     return result
 
+def _run_cv_probe(X, y, layer_idx, head_idx, debug, probe_type):
+    """
+    Internal helper function to run cross-validation probe.
+    
+    Args:
+        X: Feature matrix (num_samples, feature_dim)
+        y: Labels (num_samples,)
+        layer_idx: Layer index (for debug messages)
+        head_idx: Head index (for debug messages, None for layer probing)
+        debug: Whether to print debug info
+        probe_type: "Head" or "Layer" (for debug messages)
+    """
+    if debug:
+        prefix = f"Layer {layer_idx}"
+        if head_idx is not None:
+            prefix += f", Head {head_idx}"
+        print(f"\n[DEBUG] {probe_type} Probe Training - {prefix}:")
+        print(f"  X.shape: {X.shape}")
+        print(f"  y distribution: {np.bincount(y)} (0s: {np.sum(y==0)}, 1s: {np.sum(y==1)})")
+        print(f"  X mean: {X.mean():.6f}, std: {X.std():.6f}")
+    
+    # SAFETY CHECK: Do we have enough data?
+    if len(y) < 5:
+        if debug:
+            print(f"  [WARNING] Not enough data for CV (n={len(y)}). Returning 0.5")
+        return 0.5
+    
+    # SAFETY CHECK: Do we have both classes?
+    if len(np.unique(y)) < 2:
+        if debug:
+            print(f"  [WARNING] Only one class in labels (all Yes or all No). Returning 0.5")
+        return 0.5
+    
+    # Use Stratified Cross-Validation instead of simple split
+    # Adaptive number of folds based on data size
+    num_folds = min(5, max(3, len(y) // 2))  # At least 2 samples per fold, max 5 folds
+    
+    # Use liblinear solver for small datasets (more stable)
+    probe = LogisticRegression(max_iter=1000, solver='liblinear', random_state=42)
+    
+    try:
+        cv_scores = cross_val_score(probe, X, y, cv=num_folds, scoring='accuracy')
+        avg_score = cv_scores.mean()
+        
+        if debug:
+            print(f"  CV folds: {num_folds}, CV scores: {cv_scores}")
+            print(f"  Average accuracy: {avg_score:.6f} (std: {cv_scores.std():.6f})")
+    except Exception as e:
+        if debug:
+            print(f"  [ERROR] CV failed: {e}")
+        avg_score = 0.5
+    
+    return avg_score
+
 def probe_head_representations(model, processor, image, questions, results, layer_idx, head_idx, debug=False):
     """
     Trains a probe on representations from a specific head to predict correctness.
-    Returns probe accuracy.
+    Returns probe accuracy using cross-validation for reliability.
+    
+    For single image use. For multiple images, use probe_head_representations_multi.
     """
     # Extract representations
     X = extract_hidden_states_after_head(model, processor, image, questions, layer_idx, head_idx, debug=debug)
@@ -378,41 +434,45 @@ def probe_head_representations(model, processor, image, questions, results, laye
     y = np.array([1 if r['is_correct'] else 0 for r in results])
     
     if debug:
-        print(f"\n[DEBUG] Probe Training - Layer {layer_idx}, Head {head_idx}:")
-        print(f"  X.shape: {X.shape}")
-        print(f"  y distribution: {np.bincount(y)} (0s: {np.sum(y==0)}, 1s: {np.sum(y==1)})")
-        print(f"  X mean across all examples: {X.mean():.6f}, std: {X.std():.6f}")
         print(f"  X unique values count: {len(np.unique(X.flatten()))}")
         print(f"  X sample (first 10 values): {X[0][:10] if len(X) > 0 else 'N/A'}")
     
-    if len(np.unique(y)) < 2:  # Need both classes
-        if debug:
-            print(f"  [WARNING] Only one class in labels, returning 0.0")
-        return 0.0
+    return _run_cv_probe(X, y, layer_idx, head_idx, debug, "Head")
+
+def probe_head_representations_multi(model, processor, images, questions_list, results_list, layer_idx, head_idx, debug=False):
+    """
+    Trains a probe on representations from multiple images to predict correctness.
+    Pools all data together before running cross-validation.
     
-    # Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42, stratify=y
-    )
-    
-    if debug:
-        print(f"  Train size: {len(X_train)}, Test size: {len(X_test)}")
-        print(f"  Train labels: {np.bincount(y_train)}, Test labels: {np.bincount(y_test)}")
-    
-    # Train probe (simple logistic regression)
-    probe = LogisticRegression(max_iter=1000, random_state=42)
-    probe.fit(X_train, y_train)
-    
-    # Evaluate
-    y_pred = probe.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
+    Args:
+        images: List of PIL Images
+        questions_list: List of question lists (one per image)
+        results_list: List of result lists (one per image)
+    """
+    all_X = []
+    all_y = []
     
     if debug:
-        print(f"  Accuracy: {accuracy:.6f}")
-        print(f"  Predictions: {y_pred}, True: {y_test}")
-        print(f"  Probe coefficients mean: {probe.coef_.mean():.6f}, std: {probe.coef_.std():.6f}")
+        print(f"\n[DEBUG] Extracting representations from {len(images)} images for Layer {layer_idx}, Head {head_idx}...")
     
-    return accuracy
+    for img_idx, (image, questions, results) in enumerate(zip(images, questions_list, results_list)):
+        X = extract_hidden_states_after_head(model, processor, image, questions, layer_idx, head_idx, debug=False)
+        y = np.array([1 if r['is_correct'] else 0 for r in results])
+        
+        all_X.append(X)
+        all_y.append(y)
+        
+        if debug and img_idx < 3:
+            print(f"  Image {img_idx}: {len(questions)} questions, {X.shape}, {np.bincount(y)}")
+    
+    # Pool all data
+    X_pooled = np.vstack(all_X)
+    y_pooled = np.concatenate(all_y)
+    
+    if debug:
+        print(f"  Pooled data: X.shape={X_pooled.shape}, y distribution={np.bincount(y_pooled)}")
+    
+    return _run_cv_probe(X_pooled, y_pooled, layer_idx, head_idx, debug, "Head")
 
 def compute_head_probing_scores(model, processor, image, questions, results, debug=False, single_layer=None, single_head=None):
     """
@@ -679,9 +739,11 @@ def extract_hidden_states_after_layer(model, processor, image, questions, layer_
 def probe_layer_representations(model, processor, image, questions, results, layer_idx, debug=False):
     """
     Trains a probe on representations from a specific layer to predict correctness.
-    Returns probe accuracy.
+    Returns probe accuracy using cross-validation for reliability.
     
     This probes the residual stream (4096 dims) at generation-step-1 position.
+    
+    For single image use. For multiple images, use probe_layer_representations_multi.
     """
     # Extract representations
     X = extract_hidden_states_after_layer(model, processor, image, questions, layer_idx, debug=debug)
@@ -690,37 +752,44 @@ def probe_layer_representations(model, processor, image, questions, results, lay
     y = np.array([1 if r['is_correct'] else 0 for r in results])
     
     if debug and layer_idx == 0:
-        print(f"\n[DEBUG] Layer {layer_idx} Probe Training:")
         print(f"  X.shape: {X.shape} (expected: (num_questions, 4096))")
-        print(f"  y distribution: {np.bincount(y)} (0s: {np.sum(y==0)}, 1s: {np.sum(y==1)})")
-        print(f"  X mean: {X.mean():.6f}, std: {X.std():.6f}")
     
-    if len(np.unique(y)) < 2:  # Need both classes
-        if debug:
-            print(f"  [WARNING] Only one class in labels, returning 0.0")
-        return 0.0
+    return _run_cv_probe(X, y, layer_idx, None, debug, "Layer")
+
+def probe_layer_representations_multi(model, processor, images, questions_list, results_list, layer_idx, debug=False):
+    """
+    Trains a probe on representations from multiple images to predict correctness.
+    Pools all data together before running cross-validation.
     
-    # Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42, stratify=y
-    )
-    
-    if debug and layer_idx == 0:
-        print(f"  Train size: {len(X_train)}, Test size: {len(X_test)}")
-    
-    # Train probe (linear probe - logistic regression)
-    probe = LogisticRegression(max_iter=1000, random_state=42)
-    probe.fit(X_train, y_train)
-    
-    # Evaluate
-    y_pred = probe.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
+    Args:
+        images: List of PIL Images
+        questions_list: List of question lists (one per image)
+        results_list: List of result lists (one per image)
+    """
+    all_X = []
+    all_y = []
     
     if debug and layer_idx == 0:
-        print(f"  Accuracy: {accuracy:.6f}")
-        print(f"  Predictions: {y_pred}, True: {y_test}")
+        print(f"\n[DEBUG] Extracting representations from {len(images)} images for Layer {layer_idx}...")
     
-    return accuracy
+    for img_idx, (image, questions, results) in enumerate(zip(images, questions_list, results_list)):
+        X = extract_hidden_states_after_layer(model, processor, image, questions, layer_idx, debug=False)
+        y = np.array([1 if r['is_correct'] else 0 for r in results])
+        
+        all_X.append(X)
+        all_y.append(y)
+        
+        if debug and layer_idx == 0 and img_idx < 3:
+            print(f"  Image {img_idx}: {len(questions)} questions, {X.shape}, {np.bincount(y)}")
+    
+    # Pool all data
+    X_pooled = np.vstack(all_X)
+    y_pooled = np.concatenate(all_y)
+    
+    if debug and layer_idx == 0:
+        print(f"  Pooled data: X.shape={X_pooled.shape}, y distribution={np.bincount(y_pooled)}")
+    
+    return _run_cv_probe(X_pooled, y_pooled, layer_idx, None, debug, "Layer")
 
 
 def compute_layer_probing_scores(model, processor, image, questions, results, debug=False):
@@ -758,6 +827,149 @@ def compute_layer_probing_scores(model, processor, image, questions, results, de
         enable_debug = debug and layer_idx == 0
         accuracy = probe_layer_representations(
             model, processor, image, questions, results, layer_idx, debug=enable_debug
+        )
+        probing_scores[layer_idx] = accuracy
+        
+        if debug and layer_idx == 0:
+            print(f"\nLayer {layer_idx} accuracy: {accuracy:.6f}")
+    
+    if debug:
+        scores = list(probing_scores.values())
+        print(f"\n[DEBUG] Layer Probing Summary:")
+        print(f"  Score range: [{min(scores):.6f}, {max(scores):.6f}]")
+        print(f"  Mean score: {np.mean(scores):.6f}, Std: {np.std(scores):.6f}")
+        print(f"  Top 5 layers: {sorted(probing_scores.items(), key=lambda x: x[1], reverse=True)[:5]}")
+    
+    return probing_scores
+
+def compute_head_probing_scores_multi(model, processor, images, questions_list, results_list, debug=False, single_layer=None, single_head=None):
+    """
+    Computes probing accuracy for each head across multiple images.
+    Pools all data together before running cross-validation.
+    
+    Args:
+        images: List of PIL Images
+        questions_list: List of question lists (one per image)
+        results_list: List of result lists (one per image)
+    """
+    # Get model config (same as before)
+    text_config = getattr(model.config, 'text_config', None)
+    if text_config is not None:
+        num_layers = text_config.num_hidden_layers
+        num_heads = text_config.num_attention_heads
+    else:
+        if hasattr(model, 'language_model') and hasattr(model.language_model, 'config'):
+            num_layers = model.language_model.config.num_hidden_layers
+            num_heads = model.language_model.config.num_attention_heads
+        else:
+            num_layers = model.config.num_hidden_layers
+            num_heads = model.config.num_attention_heads
+    
+    # Validate single head/layer arguments
+    if single_layer is not None:
+        if single_layer < 0 or single_layer >= num_layers:
+            raise ValueError(f"single_layer must be between 0 and {num_layers-1}, got {single_layer}")
+        if single_head is not None:
+            if single_head < 0 or single_head >= num_heads:
+                raise ValueError(f"single_head must be between 0 and {num_heads-1}, got {single_head}")
+    
+    if debug:
+        print(f"\n[DEBUG] Model Configuration:")
+        print(f"  num_layers: {num_layers}, num_heads: {num_heads}")
+        print(f"  Number of images: {len(images)}")
+        total_questions = sum(len(q) for q in questions_list)
+        print(f"  Total questions across all images: {total_questions}")
+        if single_layer is not None:
+            if single_head is not None:
+                print(f"  Probing: Layer {single_layer}, Head {single_head} only")
+            else:
+                print(f"  Probing: Layer {single_layer} only (all {num_heads} heads)")
+        else:
+            print(f"  Total heads to probe: {num_layers * num_heads}")
+    
+    probing_scores = {}
+    
+    # Determine which layers/heads to probe
+    if single_layer is not None:
+        layers_to_probe = [single_layer]
+    else:
+        layers_to_probe = range(num_layers)
+    
+    if single_head is not None:
+        heads_to_probe = [single_head]
+    else:
+        heads_to_probe = range(num_heads)
+    
+    print(f"\nComputing head-level probing scores across {len(images)} images...")
+    if single_layer is not None and single_head is not None:
+        print(f"Probing Layer {single_layer}, Head {single_head} only")
+    elif single_layer is not None:
+        print(f"Probing Layer {single_layer} only (all {num_heads} heads)")
+    
+    for layer_idx in layers_to_probe:
+        if debug:
+            print(f"\n[DEBUG] Processing Layer {layer_idx}...")
+        
+        for head_idx in heads_to_probe:
+            # Enable full debug for single head probing
+            enable_debug = debug or (single_layer is not None and single_head is not None)
+            accuracy = probe_head_representations_multi(
+                model, processor, images, questions_list, results_list, 
+                layer_idx, head_idx, debug=enable_debug
+            )
+            probing_scores[(layer_idx, head_idx)] = accuracy
+            
+            if single_layer is not None and single_head is not None:
+                print(f"\nResult: Layer {single_layer}, Head {single_head} accuracy = {accuracy:.6f}")
+    
+    if debug or (single_layer is not None and single_head is not None):
+        scores = list(probing_scores.values())
+        unique_scores = np.unique(scores)
+        print(f"\n[DEBUG] Probing Scores Summary:")
+        print(f"  Unique accuracy values: {len(unique_scores)}")
+        print(f"  Score range: [{min(scores):.6f}, {max(scores):.6f}]")
+        print(f"  Mean score: {np.mean(scores):.6f}, Std: {np.std(scores):.6f}")
+    
+    return probing_scores
+
+def compute_layer_probing_scores_multi(model, processor, images, questions_list, results_list, debug=False):
+    """
+    Computes probing accuracy for each layer across multiple images.
+    Pools all data together before running cross-validation.
+    
+    Args:
+        images: List of PIL Images
+        questions_list: List of question lists (one per image)
+        results_list: List of result lists (one per image)
+    """
+    # Get model config
+    text_config = getattr(model.config, 'text_config', None)
+    if text_config is not None:
+        num_layers = text_config.num_hidden_layers
+    else:
+        if hasattr(model, 'language_model') and hasattr(model.language_model, 'config'):
+            num_layers = model.language_model.config.num_hidden_layers
+        else:
+            num_layers = model.config.num_hidden_layers
+    
+    if debug:
+        print(f"\n[DEBUG] Layer Probing Configuration:")
+        print(f"  num_layers: {num_layers}")
+        print(f"  Number of images: {len(images)}")
+        total_questions = sum(len(q) for q in questions_list)
+        print(f"  Total questions across all images: {total_questions}")
+        print(f"  Probing residual stream (4096 dims) at generation-step-1 position")
+    
+    probing_scores = {}
+    
+    print(f"\nComputing layer-level probing scores across {len(images)} images...")
+    print("Probing residual stream after each layer (4096 dims)")
+    
+    for layer_idx in tqdm(range(num_layers), desc="Layers"):
+        # Enable debug for first layer only
+        enable_debug = debug and layer_idx == 0
+        accuracy = probe_layer_representations_multi(
+            model, processor, images, questions_list, results_list, layer_idx, debug=enable_debug
         )
         probing_scores[layer_idx] = accuracy
         
