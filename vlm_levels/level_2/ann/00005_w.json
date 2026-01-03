@@ -1,0 +1,158 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        105,
+        77
+      ],
+      "size": 18,
+      "bbox": [
+        96,
+        68,
+        114,
+        86
+      ],
+      "patch_indices": [
+        102,
+        103,
+        104,
+        126,
+        127,
+        128,
+        150,
+        151,
+        152
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "green",
+      "center": [
+        77,
+        77
+      ],
+      "size": 29,
+      "bbox": [
+        63,
+        63,
+        91,
+        91
+      ],
+      "patch_indices": [
+        100,
+        101,
+        102,
+        124,
+        125,
+        126,
+        148,
+        149,
+        150
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green square is to the left of the orange triangle.",
+    "The orange triangle is to the right of the green square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green square is to the left of the orange triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange triangle is to the right of the green square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green square left of the orange triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the green square right of the orange triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the orange triangle right of the green square?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the orange triangle left of the green square?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
