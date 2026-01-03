@@ -1,0 +1,159 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "orange",
+      "center": [
+        245,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        30,
+        250,
+        40
+      ],
+      "patch_indices": [
+        65
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "yellow",
+      "center": [
+        245,
+        91
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        86,
+        250,
+        96
+      ],
+      "patch_indices": [
+        161
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "There is a orange circle at coordinates (245, 35). There is a yellow triangle at coordinates (245, 91)."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "There is a orange circle at coordinates (245, 35). There is a yellow triangle at coordinates (245, 91).",
+      "subject_id": null,
+      "object_id": null,
+      "rel_type": null,
+      "rel_group": null,
+      "rel_phrase": null,
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow triangle below the orange circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the yellow triangle above the orange circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the orange circle above the yellow triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 0,
+      "id": 2
+    },
+    {
+      "question": "Is the orange circle below the yellow triangle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 0,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24,
+    "objective_caption": "There is a orange circle at coordinates (245, 35). There is a yellow triangle at coordinates (245, 91)."
+  },
+  "orig_captions": [
+    "The yellow triangle is below the orange circle.",
+    "The orange circle is above the yellow triangle."
+  ],
+  "orig_captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow triangle is below the orange circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange circle is above the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ]
+}

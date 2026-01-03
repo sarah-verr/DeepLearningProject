@@ -1,0 +1,159 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        273,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        30,
+        278,
+        40
+      ],
+      "patch_indices": [
+        67
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        315,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        310,
+        30,
+        320,
+        40
+      ],
+      "patch_indices": [
+        70
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "There is a pink circle at coordinates (273, 35). There is a yellow circle at coordinates (315, 35)."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "There is a pink circle at coordinates (273, 35). There is a yellow circle at coordinates (315, 35).",
+      "subject_id": null,
+      "object_id": null,
+      "rel_type": null,
+      "rel_group": null,
+      "rel_phrase": null,
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink circle to the left of the yellow circle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the pink circle right of the yellow circle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the yellow circle right of the pink circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 2
+    },
+    {
+      "question": "Is the yellow circle to the left of the pink circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24,
+    "objective_caption": "There is a pink circle at coordinates (273, 35). There is a yellow circle at coordinates (315, 35)."
+  },
+  "orig_captions": [
+    "The pink circle is to the left of the yellow circle.",
+    "The yellow circle is right of the pink circle."
+  ],
+  "orig_captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink circle is to the left of the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is right of the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ]
+}

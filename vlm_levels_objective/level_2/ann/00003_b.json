@@ -1,0 +1,175 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        119,
+        35
+      ],
+      "size": 19,
+      "bbox": [
+        110,
+        26,
+        128,
+        44
+      ],
+      "patch_indices": [
+        31,
+        32,
+        33,
+        55,
+        56,
+        57,
+        79,
+        80,
+        81
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "yellow",
+      "center": [
+        189,
+        35
+      ],
+      "size": 21,
+      "bbox": [
+        179,
+        25,
+        199,
+        45
+      ],
+      "patch_indices": [
+        36,
+        37,
+        38,
+        60,
+        61,
+        62,
+        84,
+        85,
+        86
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "There is a blue triangle at coordinates (119, 35). There is a yellow star at coordinates (189, 35)."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "There is a blue triangle at coordinates (119, 35). There is a yellow star at coordinates (189, 35).",
+      "subject_id": null,
+      "object_id": null,
+      "rel_type": null,
+      "rel_group": null,
+      "rel_phrase": null,
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow star right of the blue triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the yellow star left of the blue triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the blue triangle to the left of the yellow star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 2
+    },
+    {
+      "question": "Is the blue triangle right of the yellow star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24,
+    "objective_caption": "There is a blue triangle at coordinates (119, 35). There is a yellow star at coordinates (189, 35)."
+  },
+  "orig_captions": [
+    "The yellow star is to the right of the blue triangle.",
+    "The blue triangle is to the left of the yellow star."
+  ],
+  "orig_captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow star is to the right of the blue triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue triangle is to the left of the yellow star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ]
+}
