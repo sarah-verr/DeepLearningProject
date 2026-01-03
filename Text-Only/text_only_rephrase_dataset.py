@@ -21,7 +21,7 @@ from text_only_phrase_attention import (
 )
 
 
-MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+MODEL_ID = "llava-hf/llava-1.6-7b-hf"
 
 
 def _read_jsonl(path: str) -> list[dict]:

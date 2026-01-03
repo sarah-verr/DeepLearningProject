@@ -1,0 +1,159 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        231,
+        147
+      ],
+      "size": 10,
+      "bbox": [
+        226,
+        142,
+        236,
+        152
+      ],
+      "patch_indices": [
+        256
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "green",
+      "center": [
+        175,
+        147
+      ],
+      "size": 10,
+      "bbox": [
+        170,
+        142,
+        180,
+        152
+      ],
+      "patch_indices": [
+        252
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "There is a cyan circle at coordinates (231, 147). There is a green circle at coordinates (175, 147)."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "There is a cyan circle at coordinates (231, 147). There is a green circle at coordinates (175, 147).",
+      "subject_id": null,
+      "object_id": null,
+      "rel_type": null,
+      "rel_group": null,
+      "rel_phrase": null,
+      "entailed_qa_ids": [],
+      "contradicted_qa_ids": []
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green circle left of the cyan circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the green circle right of the cyan circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the cyan circle right of the green circle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 2
+    },
+    {
+      "question": "Is the cyan circle left of the green circle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24,
+    "objective_caption": "There is a cyan circle at coordinates (231, 147). There is a green circle at coordinates (175, 147)."
+  },
+  "orig_captions": [
+    "The green circle is left of the cyan circle.",
+    "The cyan circle is right of the green circle."
+  ],
+  "orig_captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green circle is left of the cyan circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan circle is right of the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ]
+}
