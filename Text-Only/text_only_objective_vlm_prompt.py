@@ -1,14 +1,35 @@
 import argparse
 import json
 import os
+import sys
 
 import torch
 
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 
+from prompt_templates import build_scene_yesno_prompt
+from logit_lens import logit_lens_yesno
 
-MODEL_ID = "llava-hf/llava-1.6-7b-hf"
+
+MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+REL_PHRASE_CANDIDATES = [
+    "to the left of",
+    "to the right of",
+    "left of",
+    "right of",
+    "above",
+    "below",
+    "touching",
+    "overlapping",
+    "inside",
+    "around",
+    "next to",
+    "beside",
+]
 
 
 def _find_b_ann_paths(base_dir: str, level: str) -> list[str]:
@@ -80,8 +101,111 @@ def _get_yesno_from_scores(outputs, tokenizer) -> tuple[str | None, float | None
     return pred, p_yes_n, p_no_n
 
 
-def _build_vlm_style_prompt(caption: str, question: str) -> str:
-    return f"USER: {caption}\n{question}\nASSISTANT:"
+def _find_subsequence(haystack: list[int], needle: list[int]) -> int | None:
+    if not needle or not haystack or len(needle) > len(haystack):
+        return None
+    for i in range(len(haystack) - len(needle) + 1):
+        if haystack[i : i + len(needle)] == needle:
+            return i
+    return None
+
+
+def _locate_span(tokenizer, full_ids: list[int], span_text: str) -> list[int]:
+    span_ids_a = tokenizer(span_text, add_special_tokens=False).input_ids
+    span_ids_b = tokenizer(" " + span_text, add_special_tokens=False).input_ids
+
+    start = _find_subsequence(full_ids, span_ids_a)
+    span_ids = span_ids_a
+    if start is None:
+        start = _find_subsequence(full_ids, span_ids_b)
+        span_ids = span_ids_b
+    if start is None:
+        return []
+    return list(range(start, start + len(span_ids)))
+
+
+def _locate_rel_phrase_token_positions(tokenizer, full_ids: list[int], question_text: str, rel_phrase: str) -> list[int]:
+    if not question_text or not rel_phrase:
+        return []
+    q_ids = tokenizer(question_text, add_special_tokens=False).input_ids
+    q_start = _find_subsequence(full_ids, q_ids)
+
+    phrase_ids_a = tokenizer(rel_phrase, add_special_tokens=False).input_ids
+    phrase_ids_b = tokenizer(" " + rel_phrase, add_special_tokens=False).input_ids
+
+    if q_start is not None:
+        p_start = _find_subsequence(q_ids, phrase_ids_a)
+        p_len = len(phrase_ids_a)
+        if p_start is None:
+            p_start = _find_subsequence(q_ids, phrase_ids_b)
+            p_len = len(phrase_ids_b)
+        if p_start is None:
+            return []
+        abs_start = q_start + p_start
+        return list(range(abs_start, abs_start + p_len))
+
+    p_start = _find_subsequence(full_ids, phrase_ids_a)
+    p_len = len(phrase_ids_a)
+    if p_start is None:
+        p_start = _find_subsequence(full_ids, phrase_ids_b)
+        p_len = len(phrase_ids_b)
+    if p_start is None:
+        return []
+    return list(range(p_start, p_start + p_len))
+
+
+def _infer_rel_phrase(question: str) -> str | None:
+    q = f" {question.lower()} "
+    for phrase in REL_PHRASE_CANDIDATES:
+        if f" {phrase} " in q:
+            return phrase
+    return None
+
+
+def _mean(xs: list[float]) -> float | None:
+    return float(sum(xs) / len(xs)) if xs else None
+
+
+def _compute_attention_masses(
+    *,
+    model,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor | None,
+    pairs: dict[str, tuple[list[int], list[int]]],
+) -> dict[str, dict]:
+    with torch.no_grad():
+        out = model(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            output_attentions=True,
+            use_cache=False,
+            return_dict=True,
+        )
+
+    attns = out.attentions
+    if not attns:
+        return {}
+
+    seq_len = int(input_ids.shape[1])
+    results: dict[str, dict] = {}
+    for name, (q_pos, k_pos) in pairs.items():
+        q_pos = [p for p in q_pos if 0 <= p < seq_len]
+        k_pos = [p for p in k_pos if 0 <= p < seq_len]
+        if not q_pos or not k_pos:
+            continue
+        per_layer = []
+        for layer_attn in attns:
+            layer = layer_attn[0]  # [heads, seq, seq]
+            sub = layer[:, q_pos, :][:, :, k_pos]
+            mass = sub.sum(dim=-1).mean().item()
+            per_layer.append(float(mass))
+        results[name] = {"per_layer": per_layer, "mean": _mean(per_layer)}
+    return results
+
+
+def _build_vlm_style_prompt(processor, caption: str, question: str) -> str:
+    convo = build_scene_yesno_prompt(caption, question)
+    return processor.apply_chat_template(convo, add_generation_prompt=True, tokenize=False)
 
 
 def parse_args() -> argparse.Namespace:
@@ -102,6 +226,16 @@ def parse_args() -> argparse.Namespace:
         default=os.path.join(_REPO_ROOT, "Text-Only", "vis_results_caption", "objective_vlm_prompt"),
     )
     ap.add_argument("--max_new_tokens", type=int, default=5)
+    ap.add_argument(
+        "--no_attention_summary",
+        action="store_true",
+        help="Disable attention summary computation (faster).",
+    )
+    ap.add_argument(
+        "--no_logit_lens",
+        action="store_true",
+        help="Disable per-layer logit-lens computation (faster).",
+    )
     return ap.parse_args()
 
 
@@ -141,6 +275,9 @@ def main() -> None:
     tokenizer = processor.tokenizer
     model.eval()
 
+    include_attention = not args.no_attention_summary
+    include_logit_lens = not args.no_logit_lens
+
     for lvl in levels:
         ann_paths = _find_b_ann_paths(args.base_data_path, lvl)
         if args.max_files is not None:
@@ -175,7 +312,7 @@ def main() -> None:
                     if not question or answer not in ("yes", "no"):
                         continue
 
-                    prompt = _build_vlm_style_prompt(caption, question)
+                    prompt = _build_vlm_style_prompt(processor, caption, question)
                     tok = tokenizer(prompt, return_tensors="pt")
                     tok = {k: (v.to(model.device) if hasattr(v, "to") else v) for k, v in tok.items()}
 
@@ -198,6 +335,72 @@ def main() -> None:
                     num_total += 1
                     num_correct += int(is_correct)
 
+                    logit_lens = None
+                    if include_logit_lens:
+                        logit_lens = logit_lens_yesno(
+                            model=model,
+                            tokenizer=tokenizer,
+                            input_ids=tok["input_ids"],
+                            attention_mask=tok.get("attention_mask"),
+                        )
+
+                    attention_summary = None
+                    if include_attention:
+                        full_ids = tok["input_ids"][0]
+                        full_ids_list = full_ids.detach().cpu().tolist()
+                        caption_positions = _locate_span(tokenizer, full_ids_list, caption)
+                        question_positions = _locate_span(tokenizer, full_ids_list, question)
+                        rel_phrase = _infer_rel_phrase(question)
+                        phrase_positions = []
+                        if rel_phrase:
+                            phrase_positions = _locate_rel_phrase_token_positions(
+                                tokenizer, full_ids_list, question_text=question, rel_phrase=rel_phrase
+                            )
+
+                        entity_positions = []
+                        for obj in ann.get("objects", []):
+                            color = obj.get("color")
+                            shape = obj.get("shape")
+                            if color and shape:
+                                phrase = f"{color} {shape}"
+                                entity_positions.extend(_locate_span(tokenizer, full_ids_list, phrase))
+
+                        if caption_positions and question_positions:
+                            seq_len = int(tok["input_ids"].shape[1])
+                            pos_set = set(caption_positions) | set(question_positions)
+                            other_positions = [i for i in range(seq_len) if i not in pos_set]
+
+                            pairs = {
+                                "caption": (question_positions, caption_positions),
+                                "question": (question_positions, question_positions),
+                                "other": (question_positions, other_positions),
+                            }
+                            if entity_positions:
+                                pairs["entity"] = (question_positions, entity_positions)
+                            if phrase_positions and entity_positions:
+                                pairs["rel_entity"] = (phrase_positions, entity_positions)
+
+                            masses = _compute_attention_masses(
+                                model=model,
+                                input_ids=tok["input_ids"],
+                                attention_mask=tok.get("attention_mask"),
+                                pairs=pairs,
+                            )
+
+                            attention_summary = {
+                                "caption_mass_per_layer": masses.get("caption", {}).get("per_layer"),
+                                "caption_mass_mean": masses.get("caption", {}).get("mean"),
+                                "question_mass_per_layer": masses.get("question", {}).get("per_layer"),
+                                "question_mass_mean": masses.get("question", {}).get("mean"),
+                                "other_mass_per_layer": masses.get("other", {}).get("per_layer"),
+                                "other_mass_mean": masses.get("other", {}).get("mean"),
+                                "entity_mass_per_layer": masses.get("entity", {}).get("per_layer"),
+                                "entity_mass_mean": masses.get("entity", {}).get("mean"),
+                                "rel_entity_mass_per_layer": masses.get("rel_entity", {}).get("per_layer"),
+                                "rel_entity_mass_mean": masses.get("rel_entity", {}).get("mean"),
+                                "rel_phrase": rel_phrase,
+                            }
+
                     record = {
                         "ann_path": ann_path,
                         "qa_index": qi,
@@ -208,6 +411,8 @@ def main() -> None:
                         "is_correct": is_correct,
                         "p_yes": p_yes,
                         "p_no": p_no,
+                        "logit_lens": logit_lens,
+                        "attention_summary": attention_summary,
                     }
                     f.write(json.dumps(record) + "\n")
 
