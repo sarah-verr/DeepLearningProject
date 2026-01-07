@@ -5,16 +5,15 @@ import sys
 
 import torch
 
-from transformers import AutoProcessor, LlavaForConditionalGeneration
-
-from prompt_templates import build_scene_yesno_prompt
-from logit_lens import logit_lens_yesno
-
-
 MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
+
+from transformers import AutoProcessor, LlavaForConditionalGeneration
+
+from prompt_templates import build_scene_yesno_prompt
+from logit_lens import logit_lens_yesno
 
 REL_PHRASE_CANDIDATES = [
     "to the left of",
