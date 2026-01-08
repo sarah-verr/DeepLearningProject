@@ -9,6 +9,7 @@ MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _TEXT_ONLY_DIR = os.path.dirname(os.path.abspath(__file__))
 _ANALYSIS_DIR = os.path.join(_TEXT_ONLY_DIR, "Analysis")
+_RESULTS_DIR = os.path.join(_TEXT_ONLY_DIR, "Results")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
@@ -231,7 +232,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out_dir",
         type=str,
-        default=os.path.join(_ANALYSIS_DIR, "vis_results_caption", "objective_vlm_prompt"),
+        default=os.path.join(_RESULTS_DIR, "objective_vlm_prompt"),
     )
     ap.add_argument("--max_new_tokens", type=int, default=5)
     ap.add_argument(

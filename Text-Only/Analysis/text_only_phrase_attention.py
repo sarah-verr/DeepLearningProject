@@ -14,6 +14,7 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 _TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _REPO_ROOT = os.path.dirname(_TEXT_ONLY_DIR)
+_RESULTS_DIR = os.path.join(_TEXT_ONLY_DIR, "Results")
 
 
 def _pick_first_existing(candidates: list[str]) -> str:
@@ -393,7 +394,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out_dir",
         type=str,
-        default=os.path.join(_TEXT_ONLY_DIR, "Analysis", "text_only_phrase_attention"),
+        default=os.path.join(_RESULTS_DIR, "text_only_phrase_attention"),
     )
 
     return ap.parse_args()
