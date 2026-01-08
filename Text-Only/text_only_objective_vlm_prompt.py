@@ -5,15 +5,17 @@ import sys
 
 import torch
 
-MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
+MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_TEXT_ONLY_DIR = os.path.dirname(os.path.abspath(__file__))
+_ANALYSIS_DIR = os.path.join(_TEXT_ONLY_DIR, "Analysis")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 
-from prompt_templates import build_scene_yesno_prompt
-from logit_lens import logit_lens_yesno
+from utils.prompt_templates import build_caption_text_yesno_prompt
+from utils.logit_lens import logit_lens_yesno
 
 REL_PHRASE_CANDIDATES = [
     "to the left of",
@@ -29,6 +31,13 @@ REL_PHRASE_CANDIDATES = [
     "next to",
     "beside",
 ]
+
+
+def _pick_first_existing(candidates: list[str]) -> str:
+    for path in candidates:
+        if path and os.path.isdir(path):
+            return path
+    return candidates[0] if candidates else ""
 
 
 def _find_b_ann_paths(base_dir: str, level: str) -> list[str]:
@@ -203,7 +212,7 @@ def _compute_attention_masses(
 
 
 def _build_vlm_style_prompt(processor, caption: str, question: str) -> str:
-    convo = build_scene_yesno_prompt(caption, question)
+    convo = build_caption_text_yesno_prompt(caption, question)
     return processor.apply_chat_template(convo, add_generation_prompt=True, tokenize=False)
 
 
@@ -212,7 +221,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--base_data_path",
         type=str,
-        default=os.path.join(_REPO_ROOT, "vlm_levels_objective"),
+        default=os.path.join(_REPO_ROOT, "data", "vlm_levels_objective"),
         help="Base objective dataset path (expects level_*/ann/*_b.json).",
     )
     ap.add_argument("--levels", nargs="*", default=None, help="Levels to process (e.g., level_1 level_2).")
@@ -222,7 +231,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out_dir",
         type=str,
-        default=os.path.join(_REPO_ROOT, "Text-Only", "vis_results_caption", "objective_vlm_prompt"),
+        default=os.path.join(_ANALYSIS_DIR, "vis_results_caption", "objective_vlm_prompt"),
     )
     ap.add_argument("--max_new_tokens", type=int, default=5)
     ap.add_argument(
@@ -240,6 +249,14 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    if not os.path.isdir(args.base_data_path):
+        args.base_data_path = _pick_first_existing(
+            [
+                args.base_data_path,
+                os.path.join(_REPO_ROOT, "data", "vlm_levels_objective"),
+                os.path.join(_REPO_ROOT, "Synthetic-Data", "vlm_levels_objective"),
+            ]
+        )
     if not os.path.isdir(args.base_data_path):
         raise SystemExit(f"Objective dataset path not found: {args.base_data_path}")
 

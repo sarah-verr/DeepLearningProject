@@ -30,5 +30,5 @@ mkdir -p "\$HF_HUB_CACHE" "\$TRANSFORMERS_CACHE" "\$HF_DATASETS_CACHE" "\$TORCH_
 source venv/bin/activate
 
 python3 Text-Only/text_only_objective_vlm_prompt.py --levels level_1
-python3 Text-Only/analyze_objective_attention.py
+python3 Text-Only/Analysis/analyze_objective_attention.py
 EOF
