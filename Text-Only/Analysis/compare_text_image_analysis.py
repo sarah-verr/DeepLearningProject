@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 
 _TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_ANALYSIS_DIR = os.path.dirname(os.path.abspath(__file__))
+_RESULTS_DIR = os.path.join(_TEXT_ONLY_DIR, "Results")
 _REPO_ROOT = os.path.dirname(_TEXT_ONLY_DIR)
 
 
@@ -193,11 +193,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--text_dir",
         type=str,
-        default=os.path.join(
-            _ANALYSIS_DIR,
-            "vis_results_caption",
-            "objective_vlm_prompt",
-        ),
+        default=os.path.join(_RESULTS_DIR, "objective_vlm_prompt"),
     )
     ap.add_argument(
         "--image_dir",
@@ -207,11 +203,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out_dir",
         type=str,
-        default=os.path.join(
-            _ANALYSIS_DIR,
-            "vis_results_caption",
-            "analysis_compare_text_image",
-        ),
+        default=os.path.join(_RESULTS_DIR, "analysis_compare_text_image"),
     )
     return ap.parse_args()
 
