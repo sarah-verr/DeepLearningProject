@@ -7,28 +7,59 @@ import json
 import argparse
 import random
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
-from matplotlib.cm import ScalarMappable
-from matplotlib.colors import Normalize
 from PIL import Image
-from transformers import AutoProcessor, LlavaForConditionalGeneration
+from transformers import AutoProcessor, LlavaNextForConditionalGeneration
 from tqdm import tqdm
 from types import SimpleNamespace
+from transformers import BitsAndBytesConfig
+
+from prompt_templates import build_visual_yesno_prompt
+from metrics import compute_bbox_attention_fraction
+from plot_utils import (
+    draw_target_highlights,
+    add_heatmap_colorbar,
+    overlay_heatmap,
+    create_layer_grid_plot,
+    plot_attention_trends,
+    plot_subject_object_attention,
+    plot_correct_vs_incorrect_trends,
+    plot_evaluation_results,
+    create_phrase_thirds_plot,
+    create_decision_thirds_plot,
+    create_phrase_layer_grid_plot,
+    plot_head_layer_fraction_heatmaps,
+)
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+
+def _pick_model_input_device(model) -> torch.device:
+    """Best-effort device for placing input tensors with device_map='auto'."""
+    try:
+        emb = model.get_input_embeddings()
+        if emb is not None and hasattr(emb, "weight"):
+            return emb.weight.device
+    except Exception:
+        pass
+    try:
+        return next(model.parameters()).device
+    except Exception:
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def _move_processor_inputs(inputs, model):
+    dev = _pick_model_input_device(model)
+    return inputs.to(dev)
 
 # --- Configuration ---
-MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
-
-# Heatmap visualization tuning
-HEATMAP_CMAP = "viridis"  # perceptually-uniform, colorblind-friendly
-HEATMAP_TRANSPARENCY_THRESHOLD = 0.05  # normalized attention in [0,1] below this is transparent
-HEATMAP_NONZERO_ALPHA = 0.55  # opacity for any non-zero attention
-
-# Patch marker drawing (target highlight rectangles)
-# If False, overlay heatmaps will not draw patch rectangles (cleaner overlays).
-DRAW_PATCH_MARKERS_ON_OVERLAY = False
 
 # ---------------------- Config Loader (YAML/JSON) ----------------------
 def _load_config_file(path: str) -> dict:
@@ -69,19 +100,30 @@ def _normalize_config(cfg: dict) -> dict:
 
     # defaults (match your existing CLI defaults)
     out.setdefault("num_questions", None)
-    out.setdefault("plot_attention", False)
     out.setdefault("plot_trends", False)
-    out.setdefault("plot_relational_phrase_attention", False)
 
-    # optional: if you later want simple vs detailed phrase plots
-    out.setdefault("relational_phrase_attention_mode", "detailed")  # "simple"|"detailed"
-    if out["relational_phrase_attention_mode"] not in {"simple", "detailed"}:
-        raise ValueError("relational_phrase_attention_mode must be one of: simple, detailed")
+    # attention_mode controls attention extraction detail level
+    # None     -> no attention plots
+    # simple   -> lightweight summaries (e.g., layer-thirds maps), no per-layer grids
+    # detailed -> full per-layer grids (and optional summaries)
+    out.setdefault("attention_mode", None)
+    if out["attention_mode"] not in {None, "simple", "detailed"}:
+        raise ValueError("attention_mode must be one of: None, simple, detailed")
 
     # optional overrides for paths/model
     out.setdefault("model_id", None)
     out.setdefault("base_output_dir", None)
     out.setdefault("base_data_path", None)
+
+    # attention_source controls which token(s) act as the query for
+    # image attention when building maps/trends.
+    #   - "first_generated_token" (default): use first generated token
+    #   - "rel_phrase": use relational phrase tokens from the prompt
+    out.setdefault("attention_source", "first_generated_token")
+    if out["attention_source"] not in {"first_generated_token", "rel_phrase"}:
+        raise ValueError(
+            "attention_source must be one of: first_generated_token, rel_phrase"
+        )
 
     # normalize types
     out["level"] = str(out["level"])
@@ -89,11 +131,33 @@ def _normalize_config(cfg: dict) -> dict:
     if out["num_questions"] is not None:
         out["num_questions"] = int(out["num_questions"])
 
-    out["plot_attention"] = bool(out["plot_attention"])
     out["plot_trends"] = bool(out["plot_trends"])
-    out["plot_relational_phrase_attention"] = bool(out["plot_relational_phrase_attention"])
 
     return out
+
+
+def _get_query_positions_for_layer(
+    source_mode: str,
+    *,
+    prompt_len: int,
+    seq_len: int,
+    phrase_positions: list[int] | None = None,
+) -> list[int]:
+    """Return token indices in [0, seq_len) to use as query positions.
+
+    - first_generated_token: single index at the first generated token
+    - rel_phrase: all relational-phrase token indices that fall in range
+    Falls back to first_generated_token if nothing is found.
+    """
+
+    if source_mode == "rel_phrase" and phrase_positions:
+        in_range = [p for p in phrase_positions if 0 <= p < seq_len]
+        if in_range:
+            return in_range
+
+    # Default / fallback: first generated token
+    idx = prompt_len if prompt_len < seq_len else seq_len - 1
+    return [idx]
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run LLaVA inference (config-driven)")
@@ -153,216 +217,23 @@ def extract_target_groups_from_annotation(annotation_data, grid_dim: int):
 
     return target_groups, group_metadata, obj_id_to_patch_indices
 
-# --- HELPER: Visualization ---
-def draw_target_highlights(ax, target_groups_meta, patch_size: int):
-    if not target_groups_meta: return
-    for group in target_groups_meta:
-        color = group['color']
-        for patch in group['patches']:
-            row, col = patch['row'], patch['col']
-            x = col * patch_size
-            y = row * patch_size
-            rect = patches.Rectangle(
-                (x, y), patch_size, patch_size,
-                linewidth=2, edgecolor=color, facecolor='none'
-            )
-            ax.add_patch(rect)
-
-def add_heatmap_colorbar(fig, axes, *, cmap: str = HEATMAP_CMAP, label: str = "Normalized attention (0=low, 1=high)"):
-    """Add a single colorbar that explains the heatmap colors.
-
-    Note: heatmaps are normalized per-map in overlay_heatmap, so the legend is 0..1.
-    """
-    sm = ScalarMappable(norm=Normalize(0.0, 1.0), cmap=cmap)
-    sm.set_array([])
-    cbar = fig.colorbar(sm, ax=axes, fraction=0.025, pad=0.01)
-    cbar.set_label(label, fontsize=9)
-    cbar.ax.tick_params(labelsize=8)
-    return cbar
-
-def overlay_heatmap(ax, base_image, heatmap_data, title, target_groups_meta=None, patch_size: int = 14):
-    if heatmap_data.max() > heatmap_data.min():
-        norm_map = (heatmap_data - heatmap_data.min()) / (heatmap_data.max() - heatmap_data.min())
-    else:
-        norm_map = heatmap_data
-
-    attn_image = Image.fromarray((norm_map * 255).astype('uint8'))
-    attn_image = attn_image.resize(base_image.size, resample=Image.NEAREST)
-
-    ax.imshow(base_image)
-
-    # Binary opacity: exactly-zero attention is transparent; any non-zero attention
-    # uses a constant opacity so the underlying shapes remain visible.
-    attn_resized = (np.asarray(attn_image).astype(np.float32) / 255.0)
-    attn_resized = np.clip(attn_resized, 0.0, 1.0)
-    cmap = plt.get_cmap(HEATMAP_CMAP)
-    rgba = cmap(attn_resized)
-    mask_resized = (attn_resized > HEATMAP_TRANSPARENCY_THRESHOLD)
-    rgba[..., 3] = np.where(mask_resized, HEATMAP_NONZERO_ALPHA, 0.0)
-    im = ax.imshow(rgba, interpolation="nearest")
-    ax.set_title(title, fontsize=8)
-    ax.axis('off')
-    if target_groups_meta and DRAW_PATCH_MARKERS_ON_OVERLAY:
-        draw_target_highlights(ax, target_groups_meta, patch_size=patch_size)
-
-    return im
-
-def create_layer_grid_plot(image, heads_data, avg_data, layer_idx, target_groups_meta, patch_size: int = 14):
-    num_heads = heads_data.shape[0]
-    total_plots = num_heads + 2
-    cols = 6
-    rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
-
-    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows), constrained_layout=True)
-    fig.suptitle(f"Layer {layer_idx} Attention", fontsize=16, weight='bold')
-    axes_flat = axes.flatten()
-
-    axes_flat[0].imshow(image)
-    axes_flat[0].set_title("Original Image", fontsize=10, weight='bold')
-    axes_flat[0].axis('off')
-
-    if target_groups_meta:
-        draw_target_highlights(axes_flat[0], target_groups_meta, patch_size=patch_size)
-        from matplotlib.lines import Line2D
-        legend_elements = [
-            Line2D([0], [0], color=g['color'], lw=2, label=f"Obj{g['object_id']}: {g['color']} {g['shape']}")
-            for i, g in enumerate(target_groups_meta)
-        ]
-        axes_flat[0].legend(handles=legend_elements, loc='upper right', fontsize='small')
-
-    overlay_heatmap(axes_flat[1], image, avg_data, "AVERAGE (All Heads)", target_groups_meta, patch_size=patch_size)
-
-    for spine in axes_flat[1].spines.values():
-        spine.set_edgecolor('red')
-        spine.set_linewidth(2)
-
-    for i in range(num_heads):
-        if i + 2 < len(axes_flat):
-            overlay_heatmap(axes_flat[i+2], image, heads_data[i], f"Head {i}", target_groups_meta, patch_size=patch_size)
-
-    for i in range(num_heads + 2, len(axes_flat)):
-        axes_flat[i].axis('off')
-
-    add_heatmap_colorbar(fig, axes_flat[1:total_plots])
-    return fig
-
-# --- PLOT 1: PER-QUESTION TREND ---
-def plot_attention_trends(group_scores_history, group_metadata, output_dir, question_idx, question_text, rel_group=None, rel_type=None):
-    plt.figure(figsize=(12, 7))
-    for group_idx, scores in group_scores_history.items():
-        layers = range(len(scores))
-        
-        # Use metadata for color and label
-        if group_idx < len(group_metadata):
-            meta = group_metadata[group_idx]
-            color = meta['color']  # Real color from annotation
-            label = f"Obj {meta['object_id']}: {meta['color']} {meta['shape']}"
-        else:
-            color = 'gray'  # Fallback
-            label = f"Group {group_idx}"
-        
-        plt.plot(layers, scores, marker='o', color=color, linewidth=2, label=label)
-    
-    # Question as title with wrapping
-    wrapped_question = "\n".join([question_text[i:i+80] for i in range(0, len(question_text), 80)])
-    suffix = ""
-    if rel_group:
-        suffix += f" | group={rel_group}"
-    if rel_type:
-        suffix += f" | rel={rel_type}"
-    plt.title(f"Q{question_idx}: {wrapped_question}{suffix}", fontsize=11, pad=20)
-    plt.xlabel("Layer Index")
-    plt.ylabel("Total Attention")
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, "attention_trend_analysis.png"), bbox_inches='tight', dpi=100)
-    plt.close()
-
-def plot_subject_object_attention(subject_scores, object_scores, output_dir, question_idx, question_text, subject_id, object_id, rel_group=None, rel_type=None):
-    """Per-question plot of attention on subject vs object patches over layers."""
-    if not subject_scores and not object_scores:
-        return
-
-    layers = range(len(subject_scores))
-    plt.figure(figsize=(10, 5))
-    plt.plot(layers, subject_scores, marker='o', linewidth=2, label=f"subject_id={subject_id}")
-    plt.plot(layers, object_scores, marker='o', linewidth=2, label=f"object_id={object_id}")
-
-    wrapped_question = "\n".join([question_text[i:i+80] for i in range(0, len(question_text), 80)])
-    suffix = ""
-    if rel_group:
-        suffix += f" | group={rel_group}"
-    if rel_type:
-        suffix += f" | rel={rel_type}"
-    plt.title(f"Q{question_idx}: {wrapped_question}{suffix}", fontsize=10)
-    plt.xlabel("Layer Index")
-    plt.ylabel("Total Attention (avg over heads)")
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, "subject_object_attention.png"), bbox_inches='tight', dpi=120)
-    plt.close()
-
-# --- NEW PLOT: CORRECT VS INCORRECT COMPARISON ---
-def plot_correct_vs_incorrect_trends(correct_runs, incorrect_runs, output_dir):
-    """
-    Plots the mean attention trend (sum of all target groups) for correct vs incorrect answers.
-    Includes shaded error bands for standard deviation.
-    """
-    if not correct_runs and not incorrect_runs:
-        print("No data to compare.")
-        return
-
-    plt.figure(figsize=(12, 6))
-    
-    # Determine x-axis based on available data
-    layers = range(len(correct_runs[0])) if correct_runs else range(len(incorrect_runs[0]))
-
-    # Helper to calculate mean and std deviation
-    def get_stats(runs_matrix):
-        if not runs_matrix: return None, None
-        arr = np.array(runs_matrix) # Shape: [num_samples, num_layers]
-        mean = np.mean(arr, axis=0)
-        std = np.std(arr, axis=0)
-        return mean, std
-
-    # Plot Correct Curve (Green)
-    mean_corr, std_corr = get_stats(correct_runs)
-    if mean_corr is not None:
-        plt.plot(layers, mean_corr, color='green', linewidth=3, label=f"Correct (n={len(correct_runs)})")
-        plt.fill_between(layers, mean_corr - std_corr, mean_corr + std_corr, color='green', alpha=0.2)
-
-    # Plot Incorrect Curve (Red)
-    mean_inc, std_inc = get_stats(incorrect_runs)
-    if mean_inc is not None:
-        plt.plot(layers, mean_inc, color='red', linewidth=3, label=f"Incorrect (n={len(incorrect_runs)})")
-        plt.fill_between(layers, mean_inc - std_inc, mean_inc + std_inc, color='red', alpha=0.2)
-
-    plt.title("Attention on All Targets: Correct vs Incorrect Answers")
-    plt.xlabel("Layer Index (0=Shallow, 32=Deep)")
-    plt.ylabel("Avg Total Attention on Targets")
-    plt.legend()
-    plt.grid(True, alpha=0.4)
-    
-    save_path = os.path.join(output_dir, "comparison_correct_vs_incorrect.png")
-    plt.savefig(save_path, bbox_inches='tight')
-    print(f"Comparison plot saved to: {save_path}")
-    plt.close()
 
 # --- HELPER: Probability Extraction ---
-def get_yes_no_probability(outputs, tokenizer, prompt_context="ASSISTANT:"):
+def get_yes_no_probability(outputs, tokenizer):
     first_token_logits = outputs.scores[0][0]
     probs = torch.softmax(first_token_logits, dim=-1)
 
-    yes_tokens = [
-        tokenizer.encode(f"{prompt_context} Yes", add_special_tokens=False)[-1],
-        tokenizer.encode(f"{prompt_context} yes", add_special_tokens=False)[-1]
-    ]
-    no_tokens = [
-        tokenizer.encode(f"{prompt_context} No", add_special_tokens=False)[-1],
-        tokenizer.encode(f"{prompt_context} no", add_special_tokens=False)[-1]
-    ]
+    # Do NOT depend on a particular chat template prefix like "ASSISTANT:".
+    # Across LLaVA 1.6 variants (Vicuna/Mistral), the prompt formatting can differ,
+    # but the first generated token is typically a variant of " yes"/" no".
+    def _last_token_id(text: str) -> int | None:
+        ids = tokenizer.encode(text, add_special_tokens=False)
+        return ids[-1] if ids else None
+
+    yes_variants = [" yes", " Yes", "yes", "Yes"]
+    no_variants = [" no", " No", "no", "No"]
+    yes_tokens = [tid for tid in (_last_token_id(v) for v in yes_variants) if tid is not None]
+    no_tokens = [tid for tid in (_last_token_id(v) for v in no_variants) if tid is not None]
 
     prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)])
     prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)])
@@ -376,33 +247,6 @@ def get_yes_no_probability(outputs, tokenizer, prompt_context="ASSISTANT:"):
     
     return prediction, confidence, norm_yes, norm_no
 
-def plot_evaluation_results(results, output_dir, title_id):
-    questions = [f"Q{r['id']}" for r in results]
-    confidences = [r['confidence'] for r in results]
-    colors = ['green' if r['is_correct'] else 'red' for r in results]
-    
-    plt.figure(figsize=(12, 6))
-    bars = plt.bar(questions, confidences, color=colors, alpha=0.7)
-    
-    plt.axhline(y=0.5, color='gray', linestyle='--', alpha=0.5)
-    plt.ylim(0, 1.1)
-    plt.ylabel("Model Confidence")
-    plt.title(f"Evaluation Results: {title_id}\nTotal Accuracy: {sum([r['is_correct'] for r in results])/len(results):.1%}")
-    
-    for bar, result in zip(bars, results):
-        height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2., height,
-                f"{result['prediction']}\n({result['gt']})",
-                ha='center', va='bottom', fontsize=9)
-
-    from matplotlib.lines import Line2D
-    custom_lines = [Line2D([0], [0], color='green', lw=4),
-                    Line2D([0], [0], color='red', lw=4)]
-    plt.legend(custom_lines, ['Correct', 'Incorrect'], loc='upper right')
-
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, "evaluation_summary.png"))
-    plt.close()
 
 
 def _find_subsequence(haystack: list[int], needle: list[int]) -> int | None:
@@ -458,53 +302,6 @@ def _locate_rel_phrase_token_positions(tokenizer, full_input_ids_1d, question_te
         return []
     return list(range(p_start, p_start + p_len))
 
-def create_phrase_thirds_plot(image, maps_3, rel_phrase: str, patch_size: int = 14):
-    """
-    maps_3: dict with keys {"early","mid","late"} each a [grid_dim, grid_dim] numpy array
-    """
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6), constrained_layout=True)
-    fig.suptitle(f'Phrase→Image Attention (Layer Thirds) | "{rel_phrase}"', fontsize=14, weight="bold")
-
-    overlay_heatmap(axes[0], image, maps_3["early"], "Early (0–33%)", target_groups_meta=None, patch_size=patch_size)
-    overlay_heatmap(axes[1], image, maps_3["mid"],   "Mid (33–66%)", target_groups_meta=None, patch_size=patch_size)
-    overlay_heatmap(axes[2], image, maps_3["late"],  "Late (66–100%)", target_groups_meta=None, patch_size=patch_size)
-
-    add_heatmap_colorbar(fig, axes)
-    return fig
-
-def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_phrase: str, patch_size: int = 14):
-    """
-    Same layout as create_layer_grid_plot, but for phrase->image attention maps.
-    heads_data: [num_heads, grid_dim, grid_dim]
-    avg_data:   [grid_dim, grid_dim]
-    """
-    num_heads = heads_data.shape[0]
-    total_plots = num_heads + 2
-    cols = 6
-    rows = (total_plots // cols) + (1 if total_plots % cols != 0 else 0)
-
-    fig, axes = plt.subplots(rows, cols, figsize=(20, 4 * rows), constrained_layout=True)
-    fig.suptitle(f'Layer {layer_idx} | Phrase→Image Attention | "{rel_phrase}"', fontsize=14, weight="bold")
-    axes_flat = axes.flatten()
-
-    axes_flat[0].imshow(image)
-    axes_flat[0].set_title("Original Image", fontsize=10, weight="bold")
-    axes_flat[0].axis("off")
-
-    overlay_heatmap(axes_flat[1], image, avg_data, "AVERAGE (All Heads)", target_groups_meta=None, patch_size=patch_size)
-    for spine in axes_flat[1].spines.values():
-        spine.set_edgecolor("red")
-        spine.set_linewidth(2)
-
-    for i in range(num_heads):
-        if i + 2 < len(axes_flat):
-            overlay_heatmap(axes_flat[i + 2], image, heads_data[i], f"Head {i}", target_groups_meta=None, patch_size=patch_size)
-
-    for i in range(num_heads + 2, len(axes_flat)):
-        axes_flat[i].axis("off")
-
-    add_heatmap_colorbar(fig, axes_flat[1:total_plots])
-    return fig
 
 def main():
     cli = parse_arguments()
@@ -541,34 +338,37 @@ def main():
     # Create subdirectories
     overview_dir = os.path.join(image_output, "overview")
     trends_dir = os.path.join(image_output, "trend_analysis")
-    attention_dir = os.path.join(image_output, "full_attention")
+    attention_dir = os.path.join(image_output, "attention")
     phrase_attn_dir = os.path.join(image_output, "phrase_attention")
 
     os.makedirs(overview_dir, exist_ok=True)
     if args.plot_trends:
         os.makedirs(trends_dir, exist_ok=True)
-    if args.plot_attention:
+    if args.attention_mode is not None:
         os.makedirs(attention_dir, exist_ok=True)
-    if args.plot_relational_phrase_attention:
-        os.makedirs(phrase_attn_dir, exist_ok=True)
+        # Phrase-specific outputs only when relational phrase is the source
+        if args.attention_source == "rel_phrase":
+            os.makedirs(phrase_attn_dir, exist_ok=True)
 
-    # LOGIC: We need attention from model if ANY heavy/light attention plot is requested
-    REQUIRES_ATTENTION = args.plot_attention or args.plot_trends or args.plot_relational_phrase_attention
+    # LOGIC: We need attention if attention_mode is set or trends are requested
+    REQUIRES_ATTENTION = bool(args.attention_mode) or args.plot_trends
     if REQUIRES_ATTENTION:
         print("NOTE: Attention extraction is ENABLED.")
-        if args.plot_attention:
-            print("      -> Generating full heatmaps (Expect slower performance)")
+        if args.attention_mode:
+            print(f"      -> attention_mode={args.attention_mode}")
         if args.plot_trends:
             print("      -> Generating trend graphs")
-        if args.plot_relational_phrase_attention:
-            print(f"      -> Phrase→image attention enabled (mode={args.relational_phrase_attention_mode})")
 
     # Load Model
     print(f"Loading model: {MODEL_ID}...")
-    model = LlavaForConditionalGeneration.from_pretrained(
-        MODEL_ID, dtype=torch.float16, device_map="auto", attn_implementation="eager"
+    model = LlavaNextForConditionalGeneration.from_pretrained(
+        MODEL_ID,
+        dtype=torch.float16,
+        device_map="auto",
+        attn_implementation="eager",
+        quantization_config=bnb,
     )
-    processor = AutoProcessor.from_pretrained(MODEL_ID)
+    processor = AutoProcessor.from_pretrained(MODEL_ID, use_fast=False)
 
     # Data Prep
     image = Image.open(image_path).convert('RGB')
@@ -585,6 +385,8 @@ def main():
 
     # Extract per-object patch indices directly from JSON
     TARGET_GROUPS, group_metadata, obj_id_to_patch_indices = extract_target_groups_from_annotation(annotation_data, grid_dim=grid_dim)
+    # Map from object_id -> shape name for nicer plot titles
+    object_id_to_shape = {m["object_id"]: m.get("shape", "unknown") for m in group_metadata}
     
     print(f"\nDynamically extracted {len(TARGET_GROUPS)} target groups:")
     for i, meta in enumerate(group_metadata):
@@ -592,7 +394,7 @@ def main():
     
     # --- PREPARE GROUP METADATA FOR VISUALIZATION ---
     target_groups_meta = []
-    if args.plot_attention:
+    if args.attention_mode is not None:
         vis_image = image.resize((img_size, img_size), resample=Image.BICUBIC)
         for i, (group_indices, meta) in enumerate(zip(TARGET_GROUPS, group_metadata)):
             # Use the actual object color from annotation
@@ -640,17 +442,40 @@ def main():
         rel_group = qa_item.get("rel_group", None)
         rel_phrase = qa_item.get("rel_phrase", None)  # NEW
 
-        prompt_text = f"USER: <image>\n{question_text}\nASSISTANT:"
-        inputs = processor(text=prompt_text, images=image, return_tensors="pt").to(model.device)
+        conversation = build_visual_yesno_prompt(question_text)
+        prompt_text = processor.apply_chat_template(
+            conversation,
+            add_generation_prompt=True,
+            tokenize=False,
+        )
+        inputs = processor(text=prompt_text, images=image, return_tensors="pt")
+        inputs = _move_processor_inputs(inputs, model)
+        # Index of the first generated token in the full sequence (prompt + generation)
+        prompt_len = inputs["input_ids"].shape[1]
 
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=50,
+                max_new_tokens=1,
                 return_dict_in_generate=True,
                 output_scores=True,
-                output_attentions=REQUIRES_ATTENTION,
+                output_attentions=False,
+                pad_token_id=processor.tokenizer.eos_token_id
             )
+
+        # Decode the first generated token (used for yes/no decision & plot titles)
+        first_gen_text = None
+        try:
+            seq_full = outputs.sequences[0]
+            if seq_full.shape[0] > prompt_len:
+                first_gen_id = int(seq_full[prompt_len].item())
+                first_gen_text = processor.tokenizer.decode([first_gen_id], skip_special_tokens=False)
+                if i < 10:
+                    tqdm.write(
+                        f"Q{i}: first generated token id={first_gen_id}, text={repr(first_gen_text)}"
+                    )
+        except Exception as e:
+            tqdm.write(f"  [Debug] Could not decode first generated token for Q{i}: {e}")
 
         # Eval
         prediction, confidence, p_yes, p_no = get_yes_no_probability(outputs, processor.tokenizer)
@@ -672,10 +497,37 @@ def main():
             "rel_group": rel_group,
         })
 
-        # --- ATTENTION PROCESSING ---
+        # If attention plots are requested, compute attentions in a separate controlled forward pass.
+        # This avoids the large VRAM spike from `generate(output_attentions=True)`.
+        all_layers_data = None
         if REQUIRES_ATTENTION:
+            try:
+                seq = outputs.sequences.detach()
+                attn_inputs = dict(inputs)
+                attn_inputs["input_ids"] = seq
+                attn_inputs["attention_mask"] = torch.ones_like(seq, dtype=torch.long, device=seq.device)
+
+                with torch.no_grad():
+                    fwd = model(
+                        **attn_inputs,
+                        output_attentions=True,
+                        use_cache=False,
+                        return_dict=True,
+                    )
+                all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in fwd.attentions]
+                del fwd
+                torch.cuda.empty_cache()
+            except Exception as e:
+                tqdm.write(f"  [Warning] Could not compute attentions in forward pass: {e}")
+
+        # Free generation outputs early (keep only derived scalars above).
+        del outputs
+        torch.cuda.empty_cache()
+
+        # --- ATTENTION PROCESSING ---
+        if REQUIRES_ATTENTION and all_layers_data is not None:
             # Choose where to store per-question artifacts
-            if args.plot_attention:
+            if args.attention_mode:
                 q_dir = os.path.join(attention_dir, f"Q{i}")
             elif args.plot_trends:
                 q_dir = os.path.join(trends_dir, f"Q{i}")
@@ -683,41 +535,25 @@ def main():
                 q_dir = os.path.join(overview_dir, f"Q{i}")
             os.makedirs(q_dir, exist_ok=True)
 
-            # --- VRAM OPTIMIZATION START ---
-            raw_layers_gpu = outputs.attentions[0]  # first generation step attentions
-            all_layers_data = [layer_tensor.detach().cpu() for layer_tensor in raw_layers_gpu]
-            del outputs
-            del raw_layers_gpu
-            torch.cuda.empty_cache()
-            # --- VRAM OPTIMIZATION END ---
-
-            # Optional: prompt self-attention for phrase->image maps.
-            # This is the only reliable way to get attention FROM phrase tokens
-            # (which are in the prompt) TO image patch tokens.
-            prompt_attn_layers = None
-            phrase_positions = []
-            if rel_phrase and (args.plot_attention or args.plot_relational_phrase_attention):
+            # We use `all_layers_data` (CPU) which comes from a forward pass over
+            # prompt + generated token. This includes:
+            # - last token query (generated yes/no) -> image keys
+            # - phrase token queries -> image keys
+            prompt_attn_layers = all_layers_data
+            phrase_positions: list[int] = []
+            decision_per_layer_maps: list[np.ndarray] = []
+            # Compute relational-phrase token positions if needed either by
+            # attention_mode (phrase*) or by attention_source configuration.
+            if rel_phrase and (
+                (args.attention_mode and args.attention_mode.startswith("phrase"))
+                or args.attention_source == "rel_phrase"
+            ):
                 phrase_positions = _locate_rel_phrase_token_positions(
                     processor.tokenizer,
                     inputs.input_ids[0],
                     question_text=question_text,
                     rel_phrase=rel_phrase,
                 )
-
-                if phrase_positions:
-                    try:
-                        with torch.no_grad():
-                            fwd = model(
-                                **inputs,
-                                output_attentions=True,
-                                use_cache=False,
-                                return_dict=True,
-                            )
-                        prompt_attn_layers = [t.detach().cpu() for t in fwd.attentions]
-                        del fwd
-                        torch.cuda.empty_cache()
-                    except Exception as e:
-                        tqdm.write(f"  [Warning] Could not compute prompt attentions for phrase maps: {e}")
 
             group_scores_layerwise = {g_idx: [] for g_idx in range(len(TARGET_GROUPS))}
             
@@ -727,13 +563,18 @@ def main():
             # Per-question subject/object curves (dynamic targets from JSON)
             subject_layer_scores = []
             object_layer_scores = []
+            # Per-layer fractions of attention on subject/object bounding boxes (avg over heads)
+            subject_fraction_layers = []
+            object_fraction_layers = []
+            # Detailed per-layer, per-head fractions (filled inside the loop)
+            per_layer_head_fractions: list[dict] = []
             subj_patch_indices = obj_id_to_patch_indices.get(int(subject_id), []) if subject_id is not None else []
             obj_patch_indices = obj_id_to_patch_indices.get(int(object_id), []) if object_id is not None else []
 
             start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
             end_idx = start_idx + num_patches
 
-            if args.plot_relational_phrase_attention and rel_phrase:
+            if args.attention_mode and args.attention_source == "rel_phrase" and rel_phrase:
                 phrase_q_dir = os.path.join(phrase_attn_dir, f"Q{i}")
                 os.makedirs(phrase_q_dir, exist_ok=True)
                 if not phrase_positions:
@@ -781,7 +622,7 @@ def main():
                             per_layer_avg_maps.append(avg_map_2d)
 
                             # DETAILED mode: save per-layer grids
-                            if args.relational_phrase_attention_mode == "detailed":
+                            if args.attention_mode == "detailed":
                                 fig = create_phrase_layer_grid_plot(
                                     vis_image_phrase,
                                     heads_map_2d,
@@ -800,7 +641,7 @@ def main():
                             tqdm.write(f"  [Warning] Phrase-attn error layer {layer_idx}: {e}")
 
                     # SIMPLE mode: one plot aggregated into early/mid/late thirds
-                    if args.relational_phrase_attention_mode == "simple":
+                    if args.attention_mode == "simple":
                         if not per_layer_avg_maps:
                             tqdm.write(f"  [Warning] No per-layer phrase maps collected for Q{i}.")
                         else:
@@ -832,19 +673,52 @@ def main():
                             plt.close(fig3)
 
             # Iterate layers
-            iterator = tqdm(enumerate(all_layers_data), total=len(all_layers_data), desc=f"  > Processing Layers", leave=False) if args.plot_attention else enumerate(all_layers_data)
+            iterator = tqdm(
+                enumerate(all_layers_data),
+                total=len(all_layers_data),
+                desc=f"  > Processing Layers",
+                leave=False,
+            ) if args.attention_mode else enumerate(all_layers_data)
 
             for layer_idx, layer_attn_tensor in iterator:
                 try:
-                    heads_raw = layer_attn_tensor[0, :, -1, :] 
-                    
-                    if end_idx > heads_raw.shape[1]:
-                        image_heads_flat = heads_raw[:, -num_patches:]
+                    seq_len_layer = layer_attn_tensor.shape[2]
+                    # Determine which token positions act as the attention source
+                    query_positions = _get_query_positions_for_layer(
+                        args.attention_source,
+                        prompt_len=prompt_len,
+                        seq_len=seq_len_layer,
+                        phrase_positions=phrase_positions,
+                    )
+
+                    # Slice keys to image tokens
+                    if end_idx > seq_len_layer:
+                        img_key_slice = slice(seq_len_layer - num_patches, seq_len_layer)
                     else:
-                        image_heads_flat = heads_raw[:, start_idx : end_idx]
-                    
+                        img_key_slice = slice(start_idx, end_idx)
+
+                    layer_all = layer_attn_tensor[0]  # [heads, seq_len, seq_len]
+
+                    if len(query_positions) == 1:
+                        # Single-token query (e.g., first generated token)
+                        heads_raw = layer_all[:, query_positions[0], :]
+                        image_heads_flat = heads_raw[:, img_key_slice]
+                    else:
+                        # Multi-token query (e.g., relational phrase): average over phrase tokens
+                        phrase_to_img = layer_all[:, query_positions, img_key_slice]
+                        image_heads_flat = phrase_to_img.mean(dim=1)
                     # 1. ALWAYS Calculate Trends
                     avg_attention_flat = image_heads_flat.mean(dim=0).numpy()
+
+                    # For decision simple aggregation, keep per-layer avg map
+                    if (
+                        args.attention_source == "first_generated_token"
+                        and args.attention_mode == "simple"
+                    ):
+                        try:
+                            decision_per_layer_maps.append(avg_attention_flat.reshape(grid_dim, grid_dim))
+                        except Exception:
+                            pass
                     
                     layer_total_target_attn = 0.0
 
@@ -874,11 +748,49 @@ def main():
                     subject_layer_scores.append(subj_sum)
                     object_layer_scores.append(obj_sum)
 
-                    # 2. ONLY Plot Heavy Grids if asked
-                    if args.plot_attention:
-                        # If we have phrase token positions + prompt attentions, plot phrase->image maps.
-                        # Otherwise fall back to the original last-token->image attention.
-                        if prompt_attn_layers is not None and phrase_positions and layer_idx < len(prompt_attn_layers):
+                    # Also compute fractional attention on subject/object boxes (avg over heads)
+                    subj_frac = None
+                    obj_frac = None
+                    if subj_patch_indices:
+                        subj_frac = compute_bbox_attention_fraction(avg_attention_flat, subj_patch_indices)
+                        subject_fraction_layers.append(subj_frac)
+                    if obj_patch_indices:
+                        obj_frac = compute_bbox_attention_fraction(avg_attention_flat, obj_patch_indices)
+                        object_fraction_layers.append(obj_frac)
+
+                    # Per-layer, per-head fractions using the same definition
+                    layer_entry = {
+                        "layer_idx": int(layer_idx),
+                        "avg_subject_fraction": float(subj_frac) if subj_frac is not None else None,
+                        "avg_object_fraction": float(obj_frac) if obj_frac is not None else None,
+                        "heads": [],
+                    }
+                    num_heads_layer = image_heads_flat.shape[0]
+                    for h in range(num_heads_layer):
+                        head_vec = image_heads_flat[h].detach().cpu().numpy()
+                        h_subj = compute_bbox_attention_fraction(head_vec, subj_patch_indices) if subj_patch_indices else None
+                        h_obj = compute_bbox_attention_fraction(head_vec, obj_patch_indices) if obj_patch_indices else None
+                        layer_entry["heads"].append(
+                            {
+                                "head_idx": int(h),
+                                "subject_fraction": float(h_subj) if h_subj is not None else None,
+                                "object_fraction": float(h_obj) if h_obj is not None else None,
+                            }
+                        )
+                    per_layer_head_fractions.append(layer_entry)
+
+                    # 2. Plot per-layer grids depending on attention_mode
+                    if args.attention_mode:
+                        # Skip heavy per-layer grids in lightweight modes
+                        if args.attention_mode == "simple":
+                            continue
+
+                        if (
+                            args.attention_source == "rel_phrase"
+                            and prompt_attn_layers is not None
+                            and phrase_positions
+                            and layer_idx < len(prompt_attn_layers)
+                        ):
                             layer_prompt = prompt_attn_layers[layer_idx][0]  # [heads, seq_len, seq_len]
                             seq_len = layer_prompt.shape[1]
                             phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
@@ -902,18 +814,146 @@ def main():
                             heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
                             avg_map_2d = heads_map_2d.mean(axis=0)
 
-                        fig = create_layer_grid_plot(vis_image, heads_map_2d, avg_map_2d, layer_idx, target_groups_meta, patch_size=patch_size)
+                        fig = create_layer_grid_plot(
+                            vis_image,
+                            heads_map_2d,
+                            avg_map_2d,
+                            layer_idx,
+                            target_groups_meta,
+                            patch_size=patch_size,
+                            source_token_text=first_gen_text,
+                        )
                         plt.savefig(os.path.join(q_dir, f"layer_{layer_idx:02d}.png"), bbox_inches='tight')
                         plt.close(fig)
 
                 except Exception as e:
                     tqdm.write(f"  [Warning] Error layer {layer_idx}: {e}")
             
+            # --- STORE PER-QUESTION ATTENTION METRICS ---
+            try:
+                # Aggregate attention on all target patches across layers
+                total_targets_all_layers = float(sum(current_question_layer_totals)) if current_question_layer_totals else 0.0
+                mean_targets_per_layer = float(np.mean(current_question_layer_totals)) if current_question_layer_totals else 0.0
+
+                # Aggregate per-object attention across layers (absolute sums)
+                per_object_metrics = []
+                for g_idx, scores in group_scores_layerwise.items():
+                    total_obj = float(sum(scores)) if scores else 0.0
+                    mean_obj = float(np.mean(scores)) if scores else 0.0
+                    meta = group_metadata[g_idx] if g_idx < len(group_metadata) else {"object_id": g_idx}
+                    per_object_metrics.append(
+                        {
+                            "object_id": meta.get("object_id", g_idx),
+                            "total_attention_all_layers": total_obj,
+                            "mean_attention_per_layer": mean_obj,
+                        }
+                    )
+
+                subject_total = float(sum(subject_layer_scores)) if subject_layer_scores else 0.0
+                object_total = float(sum(object_layer_scores)) if object_layer_scores else 0.0
+
+                # Fractional attention on subject/object boxes averaged over layers
+                subject_fraction_mean = (
+                    float(np.mean(subject_fraction_layers)) if subject_fraction_layers else 0.0
+                )
+                object_fraction_mean = (
+                    float(np.mean(object_fraction_layers)) if object_fraction_layers else 0.0
+                )
+
+                # Attach metrics to the latest results_summary entry for this question
+                if results_summary:
+                    results_summary[-1]["attention_metrics"] = {
+                        "source_mode": args.attention_source,
+                        "total_targets_all_layers": total_targets_all_layers,
+                        "mean_targets_per_layer": mean_targets_per_layer,
+                        "per_object": per_object_metrics,
+                        "subject_total_all_layers": subject_total,
+                        "object_total_all_layers": object_total,
+                        "subject_fraction_mean": subject_fraction_mean,
+                        "object_fraction_mean": object_fraction_mean,
+                        "per_layer_head_fractions": per_layer_head_fractions,
+                    }
+
+                # Also build head x layer grids (subject/object fractions) for visualization
+                if per_layer_head_fractions:
+                    num_layers_plots = len(per_layer_head_fractions)
+                    max_heads = max(len(le["heads"]) for le in per_layer_head_fractions)
+
+                    if max_heads > 0 and num_layers_plots > 0:
+                        subj_grid = np.full((max_heads, num_layers_plots), np.nan, dtype=float)
+                        obj_grid = np.full((max_heads, num_layers_plots), np.nan, dtype=float)
+
+                        for li, layer_entry in enumerate(per_layer_head_fractions):
+                            for head_info in layer_entry.get("heads", []):
+                                h_idx = int(head_info.get("head_idx", -1))
+                                if 0 <= h_idx < max_heads:
+                                    sf = head_info.get("subject_fraction", None)
+                                    of = head_info.get("object_fraction", None)
+                                    if sf is not None:
+                                        subj_grid[h_idx, li] = float(sf)
+                                    if of is not None:
+                                        obj_grid[h_idx, li] = float(of)
+
+                        # Lookup human-readable shapes for subject/object (if available)
+                        subj_shape = None
+                        obj_shape = None
+                        try:
+                            if subject_id is not None:
+                                subj_shape = object_id_to_shape.get(int(subject_id))
+                            if object_id is not None:
+                                obj_shape = object_id_to_shape.get(int(object_id))
+                        except Exception:
+                            pass
+
+                        # Save per-question heatmaps into the same question directory
+                        plot_head_layer_fraction_heatmaps(
+                            subj_grid,
+                            obj_grid,
+                            q_dir,
+                            i,
+                            question_text,
+                            subject_id=subject_id,
+                            object_id=object_id,
+                            subject_shape=subj_shape,
+                            object_shape=obj_shape,
+                        )
+            except Exception as e:
+                tqdm.write(f"  [Warning] Could not compute attention metrics for Q{i}: {e}")
+
             # --- ACCUMULATE DATA FOR COMPARISON PLOT ---
             if is_correct:
                 correct_runs_layerwise.append(current_question_layer_totals)
             else:
                 incorrect_runs_layerwise.append(current_question_layer_totals)
+
+            # Decision simple: aggregate thirds and save
+            if (
+                args.attention_source == "first_generated_token"
+                and args.attention_mode == "simple"
+                and decision_per_layer_maps
+            ):
+                L = len(decision_per_layer_maps)
+                a = L // 3
+                b = (2 * L) // 3
+
+                early_maps = decision_per_layer_maps[:a] if a > 0 else decision_per_layer_maps[:1]
+                mid_maps = decision_per_layer_maps[a:b] if b > a else decision_per_layer_maps[a : a + 1]
+                late_maps = decision_per_layer_maps[b:] if b < L else decision_per_layer_maps[-1:]
+
+                maps_3 = {
+                    "early": np.mean(np.stack(early_maps, axis=0), axis=0),
+                    "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
+                    "late": np.mean(np.stack(late_maps, axis=0), axis=0),
+                }
+
+                fig_dec = create_decision_thirds_plot(
+                    vis_image,
+                    maps_3,
+                    patch_size=patch_size,
+                    source_token_text=first_gen_text,
+                )
+                plt.savefig(os.path.join(q_dir, "decision_attention_thirds.png"), bbox_inches="tight", dpi=140)
+                plt.close(fig_dec)
 
             # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
             if args.plot_trends:
