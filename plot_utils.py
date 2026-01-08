@@ -6,6 +6,8 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from PIL import Image
 
+from metrics import attention_center_of_mass
+
 # Heatmap visualization tuning
 HEATMAP_CMAP = "viridis"  # perceptually-uniform, colorblind-friendly
 HEATMAP_TRANSPARENCY_THRESHOLD = 0.05  # normalized attention in [0,1] below this is transparent
@@ -14,6 +16,41 @@ HEATMAP_NONZERO_ALPHA = 0.55  # opacity for any non-zero attention
 # Patch marker drawing (target highlight rectangles)
 # If False, overlay heatmaps will not draw patch rectangles (cleaner overlays).
 DRAW_PATCH_MARKERS_ON_OVERLAY = False
+
+
+def _draw_com_marker(ax, heatmap_data: np.ndarray, patch_size: int) -> None:
+    """Draw a Center-of-Mass marker for a single head heatmap.
+
+    The CoM is computed in patch coordinates using attention_center_of_mass,
+    then mapped to pixel space using patch_size.
+    """
+
+    if heatmap_data.ndim != 2:
+        return
+
+    grid_dim = heatmap_data.shape[0]
+    try:
+        row_com, col_com = attention_center_of_mass(
+            heatmap_data.reshape(-1), grid_dim
+        )
+    except Exception:
+        return
+
+    if row_com is None or col_com is None:
+        return
+
+    # Map patch coordinates (row, col) to pixel center inside the image
+    x = (col_com + 0.5) * patch_size
+    y = (row_com + 0.5) * patch_size
+
+    ax.scatter(
+        [x],
+        [y],
+        marker="x",
+        s=40,
+        linewidths=1.5,
+        color="white",
+    )
 
 
 def draw_target_highlights(ax, target_groups_meta, patch_size: int) -> None:
@@ -121,7 +158,15 @@ def create_layer_grid_plot(
 
     for i in range(num_heads):
         if i + 2 < len(axes_flat):
-            overlay_heatmap(axes_flat[i + 2], image, heads_data[i], f"Head {i}", target_groups_meta, patch_size=patch_size)
+            overlay_heatmap(
+                axes_flat[i + 2],
+                image,
+                heads_data[i],
+                f"Head {i}",
+                target_groups_meta,
+                patch_size=patch_size,
+            )
+            _draw_com_marker(axes_flat[i + 2], heads_data[i], patch_size)
 
     for i in range(num_heads + 2, len(axes_flat)):
         axes_flat[i].axis("off")
@@ -321,7 +366,15 @@ def create_phrase_layer_grid_plot(image, heads_data, avg_data, layer_idx, rel_ph
 
     for i in range(num_heads):
         if i + 2 < len(axes_flat):
-            overlay_heatmap(axes_flat[i + 2], image, heads_data[i], f"Head {i}", target_groups_meta=None, patch_size=patch_size)
+            overlay_heatmap(
+                axes_flat[i + 2],
+                image,
+                heads_data[i],
+                f"Head {i}",
+                target_groups_meta=None,
+                patch_size=patch_size,
+            )
+            _draw_com_marker(axes_flat[i + 2], heads_data[i], patch_size)
 
     for i in range(num_heads + 2, len(axes_flat)):
         axes_flat[i].axis("off")

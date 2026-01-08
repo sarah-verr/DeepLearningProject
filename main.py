@@ -1,25 +1,21 @@
 import torch
-import sys
-import importlib.util
 import os
 import time
 import json
 import argparse
 import random
+
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-from transformers import AutoProcessor, LlavaNextForConditionalGeneration
 from tqdm import tqdm
 from types import SimpleNamespace
+from transformers import AutoProcessor, LlavaNextForConditionalGeneration
 from transformers import BitsAndBytesConfig
 
 from prompt_templates import build_visual_yesno_prompt
-from metrics import compute_bbox_attention_fraction
+from metrics import compute_bbox_attention_fraction, attention_center_of_mass
 from plot_utils import (
-    draw_target_highlights,
-    add_heatmap_colorbar,
-    overlay_heatmap,
     create_layer_grid_plot,
     plot_attention_trends,
     plot_subject_object_attention,
@@ -27,9 +23,9 @@ from plot_utils import (
     plot_evaluation_results,
     create_phrase_thirds_plot,
     create_decision_thirds_plot,
-    create_phrase_layer_grid_plot,
     plot_head_layer_fraction_heatmaps,
 )
+from config_utils import load_config_file, normalize_config
 
 bnb = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -51,7 +47,6 @@ def _pick_model_input_device(model) -> torch.device:
     except Exception:
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
 def _move_processor_inputs(inputs, model):
     dev = _pick_model_input_device(model)
     return inputs.to(dev)
@@ -61,80 +56,7 @@ MODEL_ID = "llava-hf/llava-v1.6-mistral-7b-hf"
 BASE_OUTPUT_DIR = "vis_results"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
 
-# ---------------------- Config Loader (YAML/JSON) ----------------------
-def _load_config_file(path: str) -> dict:
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Config file not found: {path}")
-
-    ext = os.path.splitext(path)[1].lower()
-    if ext in {".yaml", ".yml"}:
-        try:
-            import yaml  # requires: pip install pyyaml
-        except Exception as e:
-            raise RuntimeError(
-                "YAML config requested but PyYAML is not installed. "
-                "Install with: pip install pyyaml"
-            ) from e
-        with open(path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-            return data or {}
-
-    if ext == ".json":
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f) or {}
-
-    raise ValueError(f"Unsupported config extension '{ext}'. Use .yaml/.yml or .json")
-
-def _normalize_config(cfg: dict) -> dict:
-    """
-    Fills defaults and validates required fields.
-    """
-    if not isinstance(cfg, dict):
-        raise ValueError("Config must be a mapping/object at the top level.")
-
-    # required
-    if "level" not in cfg or "id" not in cfg:
-        raise ValueError("Config must include required keys: level, id")
-
-    out = dict(cfg)
-
-    # defaults (match your existing CLI defaults)
-    out.setdefault("num_questions", None)
-    out.setdefault("plot_trends", False)
-
-    # attention_mode controls attention extraction detail level
-    # None     -> no attention plots
-    # simple   -> lightweight summaries (e.g., layer-thirds maps), no per-layer grids
-    # detailed -> full per-layer grids (and optional summaries)
-    out.setdefault("attention_mode", None)
-    if out["attention_mode"] not in {None, "simple", "detailed"}:
-        raise ValueError("attention_mode must be one of: None, simple, detailed")
-
-    # optional overrides for paths/model
-    out.setdefault("model_id", None)
-    out.setdefault("base_output_dir", None)
-    out.setdefault("base_data_path", None)
-
-    # attention_source controls which token(s) act as the query for
-    # image attention when building maps/trends.
-    #   - "first_generated_token" (default): use first generated token
-    #   - "rel_phrase": use relational phrase tokens from the prompt
-    out.setdefault("attention_source", "first_generated_token")
-    if out["attention_source"] not in {"first_generated_token", "rel_phrase"}:
-        raise ValueError(
-            "attention_source must be one of: first_generated_token, rel_phrase"
-        )
-
-    # normalize types
-    out["level"] = str(out["level"])
-    out["id"] = str(out["id"])
-    if out["num_questions"] is not None:
-        out["num_questions"] = int(out["num_questions"])
-
-    out["plot_trends"] = bool(out["plot_trends"])
-
-    return out
-
+    # ---------------------- Config Loader (YAML/JSON) ----------------------
 
 def _get_query_positions_for_layer(
     source_mode: str,
@@ -158,6 +80,76 @@ def _get_query_positions_for_layer(
     # Default / fallback: first generated token
     idx = prompt_len if prompt_len < seq_len else seq_len - 1
     return [idx]
+
+
+def _compute_image_heads_flat(
+    layer_attn_tensor: torch.Tensor,
+    query_positions: list[int],
+    *,
+    start_idx: int,
+    end_idx: int,
+    num_patches: int,
+):
+    """Slice attention from query token(s) to image patches for one layer.
+
+    Args:
+        layer_attn_tensor: Tensor of shape [1, heads, seq_len, seq_len].
+        query_positions: Non-empty list of token indices to use as queries.
+        start_idx: Index of the first image token in the sequence.
+        end_idx: End index (start_idx + num_patches) in the sequence.
+        num_patches: Number of visual patches (grid_dim * grid_dim).
+
+    Returns:
+        image_heads_flat: Tensor [heads, num_patches] with attention to image tokens.
+        img_key_slice: slice object used for keys (for any downstream checks).
+        seq_len_layer: int actual sequence length for this layer.
+    """
+    if not query_positions:
+        raise ValueError("query_positions must be non-empty")
+
+    # layer_all: [heads, seq_len, seq_len]
+    layer_all = layer_attn_tensor[0]
+    seq_len_layer = layer_all.shape[1]
+
+    # Slice keys to image tokens
+    if end_idx > seq_len_layer:
+        img_key_slice = slice(seq_len_layer - num_patches, seq_len_layer)
+    else:
+        img_key_slice = slice(start_idx, end_idx)
+
+    # Queries -> image keys
+    if len(query_positions) == 1:
+        heads_raw = layer_all[:, query_positions[0], :]
+        image_heads_flat = heads_raw[:, img_key_slice]
+    else:
+        phrase_to_img = layer_all[:, query_positions, img_key_slice]
+        image_heads_flat = phrase_to_img.mean(dim=1)
+
+    return image_heads_flat, img_key_slice, seq_len_layer
+
+
+def _aggregate_thirds_maps(per_layer_maps: list[np.ndarray]) -> dict[str, np.ndarray]:
+    """Aggregate a list of [grid_dim, grid_dim] maps into early/mid/late thirds.
+
+    Uses the same splitting logic previously duplicated in decision and phrase paths.
+    Returns an empty dict if input is empty.
+    """
+    if not per_layer_maps:
+        return {}
+
+    L = len(per_layer_maps)
+    a = L // 3
+    b = (2 * L) // 3
+
+    early_maps = per_layer_maps[:a] if a > 0 else per_layer_maps[:1]
+    mid_maps = per_layer_maps[a:b] if b > a else per_layer_maps[a : a + 1]
+    late_maps = per_layer_maps[b:] if b < L else per_layer_maps[-1:]
+
+    return {
+        "early": np.mean(np.stack(early_maps, axis=0), axis=0),
+        "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
+        "late": np.mean(np.stack(late_maps, axis=0), axis=0),
+    }
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run LLaVA inference (config-driven)")
@@ -306,8 +298,8 @@ def _locate_rel_phrase_token_positions(tokenizer, full_input_ids_1d, question_te
 def main():
     cli = parse_arguments()
 
-    cfg_raw = _load_config_file(cli.config)
-    cfg = _normalize_config(cfg_raw)
+    cfg_raw = load_config_file(cli.config)
+    cfg = normalize_config(cfg_raw)
     args = SimpleNamespace(**cfg)  # preserves your existing args.* usage
 
     # Allow config to override globals (optional)
@@ -339,16 +331,12 @@ def main():
     overview_dir = os.path.join(image_output, "overview")
     trends_dir = os.path.join(image_output, "trend_analysis")
     attention_dir = os.path.join(image_output, "attention")
-    phrase_attn_dir = os.path.join(image_output, "phrase_attention")
 
     os.makedirs(overview_dir, exist_ok=True)
     if args.plot_trends:
         os.makedirs(trends_dir, exist_ok=True)
     if args.attention_mode is not None:
         os.makedirs(attention_dir, exist_ok=True)
-        # Phrase-specific outputs only when relational phrase is the source
-        if args.attention_source == "rel_phrase":
-            os.makedirs(phrase_attn_dir, exist_ok=True)
 
     # LOGIC: We need attention if attention_mode is set or trends are requested
     REQUIRES_ATTENTION = bool(args.attention_mode) or args.plot_trends
@@ -484,6 +472,30 @@ def main():
         
         tqdm.write(f"{i:<4} | {status_icon:<7} | {prediction:<5} | {ground_truth:<5} | {confidence:.2f}   | {question_text}")
 
+        # --- Geometric subject/object centers (average patch coordinates) ---
+        subj_center_row = None
+        subj_center_col = None
+        obj_center_row = None
+        obj_center_col = None
+
+        try:
+            if subject_id is not None:
+                subj_indices = obj_id_to_patch_indices.get(int(subject_id), [])
+                if subj_indices:
+                    subj_rows = [idx // grid_dim for idx in subj_indices]
+                    subj_cols = [idx % grid_dim for idx in subj_indices]
+                    subj_center_row = float(np.mean(subj_rows))
+                    subj_center_col = float(np.mean(subj_cols))
+            if object_id is not None:
+                obj_indices = obj_id_to_patch_indices.get(int(object_id), [])
+                if obj_indices:
+                    obj_rows = [idx // grid_dim for idx in obj_indices]
+                    obj_cols = [idx % grid_dim for idx in obj_indices]
+                    obj_center_row = float(np.mean(obj_rows))
+                    obj_center_col = float(np.mean(obj_cols))
+        except Exception:
+            pass
+
         results_summary.append({
             "id": i,
             "question": question_text,
@@ -495,6 +507,10 @@ def main():
             "object_id": object_id,
             "rel_type": rel_type,
             "rel_group": rel_group,
+            "subject_center_row": subj_center_row,
+            "subject_center_col": subj_center_col,
+            "object_center_row": obj_center_row,
+            "object_center_col": obj_center_col,
         })
 
         # If attention plots are requested, compute attentions in a separate controlled forward pass.
@@ -541,7 +557,8 @@ def main():
             # - phrase token queries -> image keys
             prompt_attn_layers = all_layers_data
             phrase_positions: list[int] = []
-            decision_per_layer_maps: list[np.ndarray] = []
+            # Per-layer avg attention maps (grid_dim x grid_dim) for the chosen source token(s)
+            source_per_layer_avg_maps: list[np.ndarray] = []
             # Compute relational-phrase token positions if needed either by
             # attention_mode (phrase*) or by attention_source configuration.
             if rel_phrase and (
@@ -574,104 +591,6 @@ def main():
             start_idx = (inputs.input_ids[0] == model.config.image_token_index).nonzero(as_tuple=True)[0][0].item()
             end_idx = start_idx + num_patches
 
-            if args.attention_mode and args.attention_source == "rel_phrase" and rel_phrase:
-                phrase_q_dir = os.path.join(phrase_attn_dir, f"Q{i}")
-                os.makedirs(phrase_q_dir, exist_ok=True)
-                if not phrase_positions:
-                    tqdm.write(
-                        f'  [Warning] Could not locate rel_phrase tokens for Q{i}: "{rel_phrase}". Skipping phrase plot.'
-                    )
-                elif prompt_attn_layers is None:
-                    tqdm.write(
-                        f"  [Warning] Prompt attentions unavailable for Q{i}; skipping phrase-attention plots."
-                    )
-                else:
-                    vis_image_phrase = image.resize((img_size, img_size), resample=Image.BICUBIC)
-
-                    # Collect per-layer avg maps for the "simple" thirds aggregation
-                    per_layer_avg_maps: list[np.ndarray] = []
-
-                    for layer_idx, layer_attn_tensor in enumerate(prompt_attn_layers):
-                        try:
-                            layer = layer_attn_tensor[0]  # [heads, seq_len, seq_len]
-
-                            seq_len = layer.shape[1]
-                            phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
-                            if not phrase_pos_in_range:
-                                continue
-
-                            # Slice keys to image tokens
-                            if end_idx > seq_len:
-                                img_key_slice = slice(seq_len - num_patches, seq_len)
-                            else:
-                                img_key_slice = slice(start_idx, end_idx)
-
-                            # phrase_to_img: [heads, phrase_len, num_patches]
-                            phrase_to_img = layer[:, phrase_pos_in_range, img_key_slice]
-
-                            # heads_flat: [heads, num_patches] (avg over phrase tokens)
-                            heads_flat = phrase_to_img.mean(dim=1).float().numpy()
-
-                            # heads_map_2d: [heads, grid_dim, grid_dim]
-                            heads_map_2d = heads_flat.reshape(heads_flat.shape[0], grid_dim, grid_dim)
-
-                            # avg_map_2d: [grid_dim, grid_dim] (avg over heads)
-                            avg_map_2d = heads_map_2d.mean(axis=0)
-
-                            # store for thirds plot
-                            per_layer_avg_maps.append(avg_map_2d)
-
-                            # DETAILED mode: save per-layer grids
-                            if args.attention_mode == "detailed":
-                                fig = create_phrase_layer_grid_plot(
-                                    vis_image_phrase,
-                                    heads_map_2d,
-                                    avg_map_2d,
-                                    layer_idx=layer_idx,
-                                    rel_phrase=rel_phrase,
-                                    patch_size=patch_size,
-                                )
-                                plt.savefig(
-                                    os.path.join(phrase_q_dir, f"layer_{layer_idx:02d}.png"),
-                                    bbox_inches="tight",
-                                )
-                                plt.close(fig)
-
-                        except Exception as e:
-                            tqdm.write(f"  [Warning] Phrase-attn error layer {layer_idx}: {e}")
-
-                    # SIMPLE mode: one plot aggregated into early/mid/late thirds
-                    if args.attention_mode == "simple":
-                        if not per_layer_avg_maps:
-                            tqdm.write(f"  [Warning] No per-layer phrase maps collected for Q{i}.")
-                        else:
-                            L = len(per_layer_avg_maps)
-                            a = L // 3
-                            b = (2 * L) // 3
-
-                            early_maps = per_layer_avg_maps[:a] if a > 0 else per_layer_avg_maps[:1]
-                            mid_maps = per_layer_avg_maps[a:b] if b > a else per_layer_avg_maps[a : a + 1]
-                            late_maps = per_layer_avg_maps[b:] if b < L else per_layer_avg_maps[-1:]
-
-                            maps_3 = {
-                                "early": np.mean(np.stack(early_maps, axis=0), axis=0),
-                                "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
-                                "late": np.mean(np.stack(late_maps, axis=0), axis=0),
-                            }
-
-                            fig3 = create_phrase_thirds_plot(
-                                vis_image_phrase,
-                                maps_3,
-                                rel_phrase=rel_phrase,
-                                patch_size=patch_size,
-                            )
-                            plt.savefig(
-                                os.path.join(phrase_q_dir, "phrase_attention_thirds.png"),
-                                bbox_inches="tight",
-                                dpi=140,
-                            )
-                            plt.close(fig3)
-
             # Iterate layers
             iterator = tqdm(
                 enumerate(all_layers_data),
@@ -691,34 +610,35 @@ def main():
                         phrase_positions=phrase_positions,
                     )
 
-                    # Slice keys to image tokens
-                    if end_idx > seq_len_layer:
-                        img_key_slice = slice(seq_len_layer - num_patches, seq_len_layer)
-                    else:
-                        img_key_slice = slice(start_idx, end_idx)
-
-                    layer_all = layer_attn_tensor[0]  # [heads, seq_len, seq_len]
-
-                    if len(query_positions) == 1:
-                        # Single-token query (e.g., first generated token)
-                        heads_raw = layer_all[:, query_positions[0], :]
-                        image_heads_flat = heads_raw[:, img_key_slice]
-                    else:
-                        # Multi-token query (e.g., relational phrase): average over phrase tokens
-                        phrase_to_img = layer_all[:, query_positions, img_key_slice]
-                        image_heads_flat = phrase_to_img.mean(dim=1)
+                    # Use shared helper to compute heads x patches for this layer
+                    image_heads_flat, _, _ = _compute_image_heads_flat(
+                        layer_attn_tensor,
+                        query_positions,
+                        start_idx=start_idx,
+                        end_idx=end_idx,
+                        num_patches=num_patches,
+                    )
                     # 1. ALWAYS Calculate Trends
                     avg_attention_flat = image_heads_flat.mean(dim=0).numpy()
 
-                    # For decision simple aggregation, keep per-layer avg map
-                    if (
-                        args.attention_source == "first_generated_token"
-                        and args.attention_mode == "simple"
-                    ):
-                        try:
-                            decision_per_layer_maps.append(avg_attention_flat.reshape(grid_dim, grid_dim))
-                        except Exception:
-                            pass
+                    # Center-of-mass for layer-averaged map (over patches)
+                    avg_com_row = None
+                    avg_com_col = None
+                    try:
+                        com_r, com_c = attention_center_of_mass(
+                            avg_attention_flat, grid_dim
+                        )
+                        if com_r is not None and com_c is not None:
+                            avg_com_row = float(com_r)
+                            avg_com_col = float(com_c)
+                    except Exception:
+                        pass
+
+                    # Keep per-layer avg map (grid_dim x grid_dim) for thirds aggregation
+                    try:
+                        source_per_layer_avg_maps.append(avg_attention_flat.reshape(grid_dim, grid_dim))
+                    except Exception:
+                        pass
                     
                     layer_total_target_attn = 0.0
 
@@ -763,11 +683,23 @@ def main():
                         "layer_idx": int(layer_idx),
                         "avg_subject_fraction": float(subj_frac) if subj_frac is not None else None,
                         "avg_object_fraction": float(obj_frac) if obj_frac is not None else None,
+                        "avg_com_row": avg_com_row,
+                        "avg_com_col": avg_com_col,
                         "heads": [],
                     }
                     num_heads_layer = image_heads_flat.shape[0]
                     for h in range(num_heads_layer):
                         head_vec = image_heads_flat[h].detach().cpu().numpy()
+                        # Center-of-mass per head (over patches)
+                        head_com_row = None
+                        head_com_col = None
+                        try:
+                            h_r, h_c = attention_center_of_mass(head_vec, grid_dim)
+                            if h_r is not None and h_c is not None:
+                                head_com_row = float(h_r)
+                                head_com_col = float(h_c)
+                        except Exception:
+                            pass
                         h_subj = compute_bbox_attention_fraction(head_vec, subj_patch_indices) if subj_patch_indices else None
                         h_obj = compute_bbox_attention_fraction(head_vec, obj_patch_indices) if obj_patch_indices else None
                         layer_entry["heads"].append(
@@ -775,6 +707,8 @@ def main():
                                 "head_idx": int(h),
                                 "subject_fraction": float(h_subj) if h_subj is not None else None,
                                 "object_fraction": float(h_obj) if h_obj is not None else None,
+                                "com_row": head_com_row,
+                                "com_col": head_com_col,
                             }
                         )
                     per_layer_head_fractions.append(layer_entry)
@@ -791,17 +725,19 @@ def main():
                             and phrase_positions
                             and layer_idx < len(prompt_attn_layers)
                         ):
-                            layer_prompt = prompt_attn_layers[layer_idx][0]  # [heads, seq_len, seq_len]
-                            seq_len = layer_prompt.shape[1]
+                            seq_len = prompt_attn_layers[layer_idx].shape[2]
                             phrase_pos_in_range = [p for p in phrase_positions if 0 <= p < seq_len]
-                            if end_idx > seq_len:
-                                img_key_slice = slice(seq_len - num_patches, seq_len)
-                            else:
-                                img_key_slice = slice(start_idx, end_idx)
 
                             if phrase_pos_in_range:
-                                phrase_to_img = layer_prompt[:, phrase_pos_in_range, img_key_slice]
-                                plot_heads_flat = phrase_to_img.mean(dim=1).float().numpy()  # [heads, num_patches]
+                                # Re-compute using prompt-only attention for phrase queries
+                                plot_heads_tensor, _, _ = _compute_image_heads_flat(
+                                    prompt_attn_layers[layer_idx],
+                                    phrase_pos_in_range,
+                                    start_idx=start_idx,
+                                    end_idx=end_idx,
+                                    num_patches=num_patches,
+                                )
+                                plot_heads_flat = plot_heads_tensor.float().numpy()  # [heads, num_patches]
                                 current_num_heads = plot_heads_flat.shape[0]
                                 heads_map_2d = plot_heads_flat.reshape(current_num_heads, grid_dim, grid_dim)
                                 avg_map_2d = heads_map_2d.mean(axis=0)
@@ -814,6 +750,7 @@ def main():
                             heads_map_2d = image_heads_flat.view(current_num_heads, grid_dim, grid_dim).float().numpy()
                             avg_map_2d = heads_map_2d.mean(axis=0)
 
+                        # Primary per-layer grid with target groups overlay
                         fig = create_layer_grid_plot(
                             vis_image,
                             heads_map_2d,
@@ -926,34 +863,43 @@ def main():
             else:
                 incorrect_runs_layerwise.append(current_question_layer_totals)
 
-            # Decision simple: aggregate thirds and save
-            if (
-                args.attention_source == "first_generated_token"
-                and args.attention_mode == "simple"
-                and decision_per_layer_maps
-            ):
-                L = len(decision_per_layer_maps)
-                a = L // 3
-                b = (2 * L) // 3
-
-                early_maps = decision_per_layer_maps[:a] if a > 0 else decision_per_layer_maps[:1]
-                mid_maps = decision_per_layer_maps[a:b] if b > a else decision_per_layer_maps[a : a + 1]
-                late_maps = decision_per_layer_maps[b:] if b < L else decision_per_layer_maps[-1:]
-
-                maps_3 = {
-                    "early": np.mean(np.stack(early_maps, axis=0), axis=0),
-                    "mid": np.mean(np.stack(mid_maps, axis=0), axis=0),
-                    "late": np.mean(np.stack(late_maps, axis=0), axis=0),
-                }
-
-                fig_dec = create_decision_thirds_plot(
-                    vis_image,
-                    maps_3,
-                    patch_size=patch_size,
-                    source_token_text=first_gen_text,
-                )
-                plt.savefig(os.path.join(q_dir, "decision_attention_thirds.png"), bbox_inches="tight", dpi=140)
-                plt.close(fig_dec)
+            # Simple mode: aggregate thirds for whichever source token is configured
+            if args.attention_mode == "simple":
+                maps_3 = _aggregate_thirds_maps(source_per_layer_avg_maps)
+                if not maps_3:
+                    tqdm.write(f"  [Warning] No per-layer maps collected for thirds aggregation in Q{i}.")
+                else:
+                    if args.attention_source == "first_generated_token":
+                        # Decision-token thirds plot
+                        fig_dec = create_decision_thirds_plot(
+                            vis_image,
+                            maps_3,
+                            patch_size=patch_size,
+                            source_token_text=first_gen_text,
+                        )
+                        plt.savefig(
+                            os.path.join(q_dir, "decision_attention_thirds.png"),
+                            bbox_inches="tight",
+                            dpi=140,
+                        )
+                        plt.close(fig_dec)
+                    elif args.attention_source == "rel_phrase" and rel_phrase:
+                        # Phrase-token thirds plot written into the main question directory
+                        try:
+                            fig3 = create_phrase_thirds_plot(
+                                vis_image,
+                                maps_3,
+                                rel_phrase=rel_phrase,
+                                patch_size=patch_size,
+                            )
+                            plt.savefig(
+                                os.path.join(q_dir, "phrase_attention_thirds.png"),
+                                bbox_inches="tight",
+                                dpi=140,
+                            )
+                            plt.close(fig3)
+                        except Exception as e:
+                            tqdm.write(f"  [Warning] Phrase-thirds plot error for Q{i}: {e}")
 
             # 3. SAVE INDIVIDUAL TREND PLOT (If requested)
             if args.plot_trends:

@@ -108,6 +108,23 @@ When attention extraction is enabled, it produces:
 
 ### Config file
 
+`main.py` takes a single config file (YAML or JSON) via `--config`. The top-level keys are:
+
+- `level` (required, int or str): dataset level, e.g. `4`.
+- `id` (required, str): image id without extension, e.g. `"00010_b"`.
+- `num_questions` (optional, int): if set, randomly sample at most this many questions from `qa`.
+- `plot_trends` (optional, bool): whether to generate per-object attention trend plots and the final correct vs incorrect comparison plot.
+- `attention_mode` (optional, one of `null`, `"simple"`, `"detailed"`):
+  - `null` / omitted → no attention extraction or plots.
+  - `"simple"` → lightweight summaries (early/mid/late layer-thirds heatmaps, no per-layer grids).
+  - `"detailed"` → full per-layer, per-head grids plus summaries.
+- `attention_source` (optional, `"first_generated_token"` or `"rel_phrase"`):
+  - `"first_generated_token"` (default) → use the first generated yes/no token as the query for all attention maps.
+  - `"rel_phrase"` → use the relational phrase tokens from `qa[*].rel_phrase` as the query.
+- `model_id` (optional, str): Hugging Face model id; defaults to `llava-hf/llava-v1.6-mistral-7b-hf`.
+- `base_data_path` (optional, str): root of the dataset, defaults to `Synthetic-Data/vlm_levels` under your repo.
+- `base_output_dir` (optional, str): root directory for visualization outputs, defaults to `vis_results`.
+
 Example (see `configs/run_configs.yaml`):
 ```yaml
 level: 4
@@ -116,18 +133,17 @@ id: "00010_b"
 num_questions: 5
 
 plot_trends: true
-plot_attention: false
 
-plot_relational_phrase_attention: true
-relational_phrase_attention_mode: "simple"  # "simple"|"detailed"
+attention_mode: "detailed"         # null | "simple" | "detailed"
+attention_source: "rel_phrase"      # "first_generated_token" | "rel_phrase"
 
 # Optional overrides
-model_id: "llava-hf/llava-1.5-7b-hf"
+model_id: "llava-hf/llava-v1.6-mistral-7b-hf"
 base_data_path: "/path/to/Synthetic-Data/vlm_levels"
 base_output_dir: "vis_results"
 ```
 
-When enabled, `plot_relational_phrase_attention` uses `qa[*].rel_phrase` and produces phrase→image attention visualizations.
+When `attention_mode` is not null, `attention_source: "rel_phrase"` uses `qa[*].rel_phrase` and produces phrase→image attention visualizations; `attention_source: "first_generated_token"` produces decision-token→image visualizations using the first generated yes/no token as the source.
 
 ---
 

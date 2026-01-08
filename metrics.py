@@ -31,3 +31,26 @@ def compute_bbox_attention_fraction(attention_flat, bbox_indices, eps: float = 1
 	if total_sum <= eps:
 		return 0.0
 	return bbox_sum / (total_sum + eps)
+
+def attention_center_of_mass(attn_flat, grid_dim):
+    """
+    attn_flat: 1D array-like, length == grid_dim * grid_dim
+    returns (row_com, col_com) in patch coordinates (0..grid_dim-1)
+    """
+    arr = np.asarray(attn_flat, dtype=float).reshape(-1)
+    if arr.size != grid_dim * grid_dim:
+        raise ValueError("attn_flat length must be grid_dim * grid_dim")
+
+    total = arr.sum()
+    if total <= 0:
+        return None  # or (np.nan, np.nan)
+
+    arr /= total  # normalize to a probability distribution
+
+    idxs = np.arange(arr.size)
+    rows = idxs // grid_dim
+    cols = idxs % grid_dim
+
+    row_com = float((arr * rows).sum())
+    col_com = float((arr * cols).sum())
+    return row_com, col_com

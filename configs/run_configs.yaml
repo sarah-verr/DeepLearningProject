@@ -1,10 +1,10 @@
 level: 4
 id: "00010_b"
 
-num_questions: 15
+# num_questions: 1
 
 # Attention source: first_generated_token, rel_phrase
-attention_source: first_generated_token
+attention_source: rel_phrase
 # Attention detail level: simple, detailed
 attention_mode: simple
 
