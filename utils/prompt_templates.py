@@ -27,9 +27,11 @@ def build_visual_yesno_prompt(question: str,) -> Conversation:
     ]
 
 
-def build_caption_yesno_prompt(caption: str, question: str) -> Conversation:
+def build_caption_yesno_prompt(annotation_data: dict, qa_item: dict) -> Conversation:
     """Return a chat-style conversation for caption-based yes/no answering."""
+    caption = get_caption_for_qa(annotation_data, qa_item)
     cap = (caption or "").strip()
+    question = qa_item.get("question", "")
     q = (question or "").strip()
     text = (
         "You are given a caption describing a synthetic scene.\n"
@@ -52,9 +54,9 @@ def build_caption_yesno_prompt(caption: str, question: str) -> Conversation:
     ]
 
     
-def build_scene_yesno_prompt(scene_text: str, question: str) -> Conversation:
+def build_scene_yesno_prompt(annotation_data: dict, question: str) -> Conversation:
     """Return a chat-style conversation for scene-description yes/no answering."""
-    scene = (scene_text or "").strip()
+    scene = scene_to_text(annotation_data)
     q = (question or "").strip()
     text = (
         "You are given a synthetic scene description.\n"
@@ -76,6 +78,7 @@ def build_scene_yesno_prompt(scene_text: str, question: str) -> Conversation:
     ]
 
 
+# TODO: simplify 
 def get_caption_for_qa(annotation_data: dict, qa_item: dict) -> str | None:
     """Fetch the caption text associated with this QA item, if available."""
     cap_id = qa_item.get("caption_id")
@@ -112,6 +115,7 @@ def get_caption_for_qa(annotation_data: dict, qa_item: dict) -> str | None:
 
     return None
 
+# TODO: simplify
 def scene_to_text(annotation_data: dict) -> str:
     """Convert annotation data to scene description text."""
     meta = annotation_data.get("meta", {}) or {}
