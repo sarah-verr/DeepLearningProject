@@ -8,6 +8,7 @@ from typing import Literal, Optional, Dict, Any, List, Tuple
 import torch
 from PIL import Image
 from transformers import LlavaProcessor, LlavaForConditionalGeneration
+from tqdm.auto import tqdm
 
 from .prompt_templates import (
     build_visual_yesno_prompt,
@@ -20,7 +21,7 @@ MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 def infer_model_for_levels(
     level_ids: List[str],
     prompt_strategy: Literal["visual", "caption", "scene"] = "visual",
-    show_llm_output: bool = True,
+    show_llm_output: bool = False,
     output_attentions: bool = False,
     output_hidden_states: bool = False,
     attention_source_token: Optional[Literal["entity", "relation", "last"]] = "last",
@@ -76,7 +77,13 @@ def infer_model_for_levels(
                 "results": [],
             }
             # Step 5: Run inference for each prompt
-            for idx, (prompt, qa_pair) in enumerate(zip(processed_prompts, qa_pairs)):
+            for idx, (prompt, qa_pair) in enumerate(
+                tqdm(
+                    list(zip(processed_prompts, qa_pairs)),
+                    desc=f"QAs for {image_id}",
+                    leave=False,
+                )
+            ):
                 inputs = processor(text=prompt, images=image, return_tensors="pt").to(device)
 
                 with torch.no_grad():
@@ -179,11 +186,10 @@ def _build_prompts(qa_pairs: List[Dict], annotation: Dict[str, Any], strategy: s
         if strategy == "visual":
             p = build_visual_yesno_prompt(question)
         elif strategy == "caption": # TODO
-            caption = annotation["captions"][0]  # Use first caption
-            p = build_caption_yesno_prompt(caption, question)
+            p = build_caption_yesno_prompt(annotation, qa)
         elif strategy == "scene": # TODO
             # TODO: Implement scene-based prompting
-            p = build_visual_yesno_prompt(question)
+            p = build_scene_yesno_prompt(annotation, question)
         else:
             p = build_visual_yesno_prompt(question)
         prompts.append(p)
