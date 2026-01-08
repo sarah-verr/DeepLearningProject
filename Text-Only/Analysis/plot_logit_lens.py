@@ -4,6 +4,9 @@ import os
 
 import matplotlib.pyplot as plt
 
+_TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ANALYSIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def _find_level_dirs(base_dir: str) -> list[str]:
     if not os.path.isdir(base_dir):
@@ -97,8 +100,7 @@ def parse_args() -> argparse.Namespace:
         "--base_dir",
         type=str,
         default=os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "Text-Only",
+            _ANALYSIS_DIR,
             "vis_results_caption",
             "objective_vlm_prompt",
         ),
@@ -107,8 +109,7 @@ def parse_args() -> argparse.Namespace:
         "--out_dir",
         type=str,
         default=os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "Text-Only",
+            _ANALYSIS_DIR,
             "vis_results_caption",
             "analysis_objective_attention",
         ),

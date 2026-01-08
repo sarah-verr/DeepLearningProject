@@ -3,6 +3,15 @@ import copy
 import json
 import os
 
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _pick_first_existing(candidates: list[str]) -> str:
+    for path in candidates:
+        if path and os.path.isdir(path):
+            return path
+    return candidates[0] if candidates else ""
+
 
 def _find_b_ann_paths(base_dir: str, level: str) -> list[str]:
     ann_dir = os.path.join(base_dir, level, "ann")
@@ -80,12 +89,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--base_data_path",
         type=str,
-        default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Synthetic-Data", "vlm_levels"),
+        default=os.path.join(_REPO_ROOT, "Synthetic-Data", "vlm_levels"),
     )
     ap.add_argument(
         "--out_base_path",
         type=str,
-        default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Synthetic-Data", "vlm_levels_objective"),
+        default=os.path.join(_REPO_ROOT, "data", "vlm_levels_objective"),
     )
     ap.add_argument("--levels", nargs="*", default=None, help="Levels to process (e.g., level_1 level_2).")
     ap.add_argument("--max_files", type=int, default=None, help="Limit number of *_b.json files per level.")
@@ -94,23 +103,21 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    alt = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vlm_levels")
-    if not os.path.isdir(args.base_data_path) and os.path.isdir(alt):
-        args.base_data_path = alt
-        if args.out_base_path.endswith(os.path.join("Synthetic-Data", "vlm_levels_objective")):
-            args.out_base_path = os.path.join(os.path.dirname(alt), "vlm_levels_objective")
+    if not os.path.isdir(args.base_data_path):
+        candidates = [
+            args.base_data_path,
+            os.path.join(_REPO_ROOT, "Synthetic-Data", "vlm_levels"),
+            os.path.join(_REPO_ROOT, "data", "vlm_levels"),
+        ]
+        picked = _pick_first_existing(candidates)
+        if picked and picked != args.base_data_path:
+            args.base_data_path = picked
     levels = args.levels
     if not levels:
         levels = [d for d in os.listdir(args.base_data_path) if d.startswith("level_")]
         levels = sorted(levels)
 
     if not levels:
-        if os.path.isdir(alt) and args.base_data_path != alt:
-            args.base_data_path = alt
-            if args.out_base_path.endswith(os.path.join("Synthetic-Data", "vlm_levels_objective")):
-                args.out_base_path = os.path.join(os.path.dirname(alt), "vlm_levels_objective")
-            levels = [d for d in os.listdir(args.base_data_path) if d.startswith("level_")]
-            levels = sorted(levels)
         if not levels:
             raise SystemExit(f"No level_* directories found in: {args.base_data_path}")
 

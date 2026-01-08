@@ -12,7 +12,15 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration
 
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
-DEFAULT_BASE_DATA_PATH = "/home/{user}/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+_TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_REPO_ROOT = os.path.dirname(_TEXT_ONLY_DIR)
+
+
+def _pick_first_existing(candidates: list[str]) -> str:
+    for path in candidates:
+        if path and os.path.isdir(path):
+            return path
+    return candidates[0] if candidates else ""
 
 
 def _pick_model_input_device(model) -> torch.device:
@@ -358,7 +366,12 @@ def parse_args() -> argparse.Namespace:
     )
 
     ap.add_argument("--ann_path", type=str, default=None, help="Path to ann JSON (overrides level/id)")
-    ap.add_argument("--base_data_path", type=str, default=None, help="Base dataset path (default: Synthetic-Data/vlm_levels)")
+    ap.add_argument(
+        "--base_data_path",
+        type=str,
+        default=None,
+        help="Base dataset path (defaults to repo Synthetic-Data/data).",
+    )
     ap.add_argument("--level", type=int, default=None)
     ap.add_argument("--id", type=str, default=None, help="Image id like 00001_w")
 
@@ -377,7 +390,11 @@ def parse_args() -> argparse.Namespace:
     )
 
     ap.add_argument("--model_id", type=str, default=MODEL_ID)
-    ap.add_argument("--out_dir", type=str, default="vis_results/text_only_phrase_attention")
+    ap.add_argument(
+        "--out_dir",
+        type=str,
+        default=os.path.join(_TEXT_ONLY_DIR, "Analysis", "text_only_phrase_attention"),
+    )
 
     return ap.parse_args()
 
@@ -390,7 +407,12 @@ def main() -> None:
     else:
         if args.level is None or args.id is None:
             raise SystemExit("Provide either --ann_path OR both --level and --id")
-        base = args.base_data_path or DEFAULT_BASE_DATA_PATH.format(user=os.environ.get("USER", "kkarthikeyan"))
+        base = args.base_data_path or _pick_first_existing(
+            [
+                os.path.join(_REPO_ROOT, "Synthetic-Data", "vlm_levels"),
+                os.path.join(_REPO_ROOT, "data", "vlm_levels"),
+            ]
+        )
         ann_path = os.path.join(base, f"level_{args.level}", "ann", f"{args.id}.json")
 
     if not os.path.exists(ann_path):

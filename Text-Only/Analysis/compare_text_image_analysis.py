@@ -4,6 +4,10 @@ import os
 
 import matplotlib.pyplot as plt
 
+_TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ANALYSIS_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_TEXT_ONLY_DIR)
+
 
 REL_PHRASE_CANDIDATES = [
     "to the left of",
@@ -190,8 +194,7 @@ def parse_args() -> argparse.Namespace:
         "--text_dir",
         type=str,
         default=os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "Text-Only",
+            _ANALYSIS_DIR,
             "vis_results_caption",
             "objective_vlm_prompt",
         ),
@@ -199,14 +202,13 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--image_dir",
         type=str,
-        default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vis_results"),
+        default=os.path.join(_REPO_ROOT, "vis_results"),
     )
     ap.add_argument(
         "--out_dir",
         type=str,
         default=os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "Text-Only",
+            _ANALYSIS_DIR,
             "vis_results_caption",
             "analysis_compare_text_image",
         ),
