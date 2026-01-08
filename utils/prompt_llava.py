@@ -15,13 +15,10 @@ from .prompt_templates import (
     build_scene_yesno_prompt,
 )
 
-# Model configuration
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 
-
-def run_prompt(
-    image_id: str,
-    level_id: str,
+def infer_model_for_levels(
+    level_ids: List[str],
     prompt_strategy: Literal["visual", "caption", "scene"] = "visual",
     show_llm_output: bool = True,
     output_attentions: bool = False,
@@ -29,7 +26,7 @@ def run_prompt(
     attention_source_token: Optional[Literal["entity", "relation", "last"]] = "last",
 ) -> Dict[str, Any]:
     """
-    Run batch inference on all QA pairs for a given image and level.
+    Run batch inference on all QA pairs in for the images in a level.
     
     Args:
         image_id: Image identifier (e.g., "00000_b")
@@ -41,18 +38,19 @@ def run_prompt(
     Returns:
         Dictionary with results for all QA pairs
     """
-    # Step 1: Load annotation and extract QA pairs
-    annotation = _load_annotation(level_id, image_id)
-    qa_pairs = annotation["qa"]
-    
-    # Step 2: Load image
-    image_path = _get_image_path(level_id, image_id, annotation.get("background"))
-    image = Image.open(image_path)
-    
-    # Step 3: Initialize model and processor
+    # Step 1: Load annotation and images for all levels
+    annotations_by_level = []
+    images_by_level = []
+    for level in level_ids:
+        annotations_by_level.append(_load_annotation(level))
+        images_by_level.append(_get_images(level))
+
+    # Step 2: Initialize model and processor
     processor = LlavaProcessor.from_pretrained(MODEL_ID)
     model = LlavaForConditionalGeneration.from_pretrained(
         MODEL_ID,
+        output_attentions=output_attentions,
+        output_hidden_states=output_hidden_states,
         dtype=torch.float16,
         low_cpu_mem_usage=True,
     )
@@ -60,47 +58,56 @@ def run_prompt(
     model.to(device)
     model.eval()
 
-    # Step 4: Build prompts for all QA pairs
-    prompts = _build_prompts(qa_pairs, annotation, prompt_strategy)
-    processed_prompts = [processor.apply_chat_template(prompt, add_generation_prompt=True) for prompt in prompts]
-    
-    results = {
-        "image_id": image_id,
-        "level_id": level_id,
-        "results": [],
-    }
-    # Step 5: Run inference for each prompt
-    for idx, (prompt, qa_pair) in enumerate(zip(processed_prompts, qa_pairs)):
-        inputs = processor(text=prompt, images=image, return_tensors="pt").to(device)
 
-        with torch.no_grad():
-                output = model.generate(**inputs, max_new_tokens=10, output_scores=True, 
-                return_dict_in_generate=True)
+    results_list = []
+    # Step 3: Infere model for all levels
+    for (level_id, annotation_for_level, images_for_level) in zip(level_ids, annotations_by_level, images_by_level):
+        print(f"Running inference for level: {level_id}")
+        for (image, annotation) in zip(images_for_level, annotation_for_level):
+            image_id = annotation['image_id']
+            print(f"Processing image... {image_id}")
+            qa_pairs = annotation["qa"]
+            prompts = _build_prompts(qa_pairs, annotation, prompt_strategy)
+            processed_prompts = [processor.apply_chat_template(prompt, add_generation_prompt=True) for prompt in prompts]
+            
+            results_for_level = {
+                "image_id": image_id,
+                "level_id": level_id,
+                "results": [],
+            }
+            # Step 5: Run inference for each prompt
+            for idx, (prompt, qa_pair) in enumerate(zip(processed_prompts, qa_pairs)):
+                inputs = processor(text=prompt, images=image, return_tensors="pt").to(device)
 
-        # Extract just the generated part (after the prompt)]
-        if show_llm_output:
-            if output == None:
-                print("No output generated.")
+                with torch.no_grad():
+                        output = model.generate(**inputs, max_new_tokens=10, output_scores=True, 
+                        return_dict_in_generate=True)
 
-            # Also decode full output to see prompt + answer
-            full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
-            print(f"\n--- Model Response {level_id} image: {image_id} ---")
-            print(f"{full_output}")
-            print("---" * 20)
+                # Extract just the generated part (after the prompt)]
+                if show_llm_output:
+                    if output == None:
+                        print("No output generated.")
 
-        prediction , confidence = get_yes_no_probability(output, tokenizer=processor.tokenizer)
+                    # Also decode full output to see prompt + answer
+                    full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
+                    print(f"\n--- Model Response {level_id} image: {image_id} ---")
+                    print(f"{full_output}")
+                    print("---" * 20)
 
-        result = {
-            "qa_id": qa_pair["id"],
-            "question": qa_pair["question"],
-            "ground_truth": qa_pair["answer"],
-            "prediction": prediction,
-            "confidence": confidence,
-        }
+                prediction , confidence = get_yes_no_probability(output, tokenizer=processor.tokenizer)
 
-        results["results"].append(result)
+                results_list.append({
+                    "level_id": level_id,
+                    "image_id": image_id,
+                    "qa_id": qa_pair["id"],
+                    "question": qa_pair["question"],
+                    "ground_truth": qa_pair["answer"],
+                    "prediction": prediction,
+                    "confidence": confidence,
+                })
 
-    return results
+
+    return results_list
 
 def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float]:
     """Extract yes/no prediction and confidence from model outputs."""
@@ -128,28 +135,41 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
     
     return prediction, confidence
 
-def _load_annotation(level_id: str, image_id: str) -> Dict[str, Any]:
-    """Load annotation JSON for a given image."""
-    ann_path = os.path.join(
+def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
+    """Load all annotation JSONs for all images in a given level."""
+    ann_dir = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "vlm_levels",
+        "data/vlm_levels",
         level_id,
         "ann",
-        f"{image_id}.json"
     )
-    with open(ann_path, "r") as f:
-        return json.load(f)
+    annotations = []
+    for filename in sorted(os.listdir(ann_dir)):
+        if filename.endswith(".json"):
+            ann_path = os.path.join(ann_dir, filename)
+            with open(ann_path, "r") as f:
+                annotations.append(json.load(f))
+            # get image id from filename (e.g., "00000_b.json" -> "00000_b")
+            image_id = os.path.splitext(filename)[0]
+            # add image_id to annotation
+            annotations[-1]["image_id"] = image_id
+    return annotations
 
-def _get_image_path(level_id: str, image_id: str, background: str) -> str:
-    """Construct path to image file."""
-    # Adjust this based on your actual image storage structure
-    base_dir = os.path.join(
+def _get_images(level_id: str) -> List[Image.Image]:
+    """Load all images for a given level."""
+    img_dir = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        "vlm_levels",
+        "data/vlm_levels",
         level_id,
         "images",
     )
-    return os.path.join(base_dir, f"{image_id}.png")  # Adjust extension as needed
+    images = []
+    for filename in sorted(os.listdir(img_dir)):
+        if filename.endswith((".png", ".jpg", ".jpeg")):
+            img_path = os.path.join(img_dir, filename)
+            image = Image.open(img_path) # .convert("RGB")
+            images.append(image)
+    return images
 
 def _build_prompts(qa_pairs: List[Dict], annotation: Dict[str, Any], strategy: str) -> List:
     """Build conversation prompts for all QA pairs based on strategy."""
