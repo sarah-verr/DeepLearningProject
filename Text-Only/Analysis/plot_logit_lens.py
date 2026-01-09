@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 _TEXT_ONLY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _RESULTS_DIR = os.path.join(_TEXT_ONLY_DIR, "Results")
+_REPO_ROOT = os.path.dirname(_TEXT_ONLY_DIR)
+_LOGIT_LENS_OUT_DIR = os.path.join(_REPO_ROOT, "data_analysis", "logit-lens", "text_only")
 
 
 def _find_level_dirs(base_dir: str) -> list[str]:
@@ -104,7 +106,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out_dir",
         type=str,
-        default=os.path.join(_RESULTS_DIR, "logit_lens"),
+        default=_LOGIT_LENS_OUT_DIR,
     )
     return ap.parse_args()
 

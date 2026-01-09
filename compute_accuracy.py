@@ -8,9 +8,14 @@ from tqdm import tqdm
 from PIL import Image
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 
+from utils.logit_lens import logit_lens_yesno
+
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
-BASE_DATA_PATH = "/home/kkarthikeyan/deep-learning/DeepLearningProject/Synthetic-Data/vlm_levels"
+_REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+BASE_DATA_PATH = os.path.join(_REPO_ROOT, "data", "vlm_levels")
+DEFAULT_RESULTS_DIR = os.path.join(_REPO_ROOT, "Text-Only", "Results", "visual_eval")
+DEFAULT_LOGIT_LENS_DIR = os.path.join(_REPO_ROOT, "data_analysis", "logit-lens", "visual_vlm_prompt")
 
 
 def infer_rel_group(rel_type: str | None) -> str:
@@ -212,9 +217,17 @@ def predict_text_only(model, processor, prompt: str, device: str) -> tuple[str, 
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--levels", type=int, nargs="+", default=[0,1,2,3,4,5,6])
-    ap.add_argument("--output_json", type=str, default="evaluation_results.json")
-    ap.add_argument("--log_file", type=str, default="model_calls_log.csv")
+    ap.add_argument("--base_data_path", type=str, default=BASE_DATA_PATH)
+    ap.add_argument("--output_json", type=str, default=os.path.join(DEFAULT_RESULTS_DIR, "evaluation_results.json"))
+    ap.add_argument("--log_file", type=str, default=os.path.join(DEFAULT_RESULTS_DIR, "model_calls_log.csv"))
     ap.add_argument("--text_only", action="store_true", help="Evaluate text-only relational reasoning (no image).")
+    ap.add_argument("--logit_lens", action="store_true", help="Store per-layer logit-lens outputs per question.")
+    ap.add_argument(
+        "--logit_lens_out_dir",
+        type=str,
+        default=DEFAULT_LOGIT_LENS_DIR,
+        help="Output directory for per-level summary.jsonl with logit-lens.",
+    )
     return ap.parse_args()
 
 def main():
@@ -229,6 +242,8 @@ def main():
     model.eval()
 
     level_results = {}
+    os.makedirs(os.path.dirname(args.output_json) or ".", exist_ok=True)
+    os.makedirs(os.path.dirname(args.log_file) or ".", exist_ok=True)
 
     # Initialize CSV Log File
     with open(args.log_file, mode="w", newline="", encoding="utf-8") as f:
@@ -253,7 +268,7 @@ def main():
         )
 
     for level in args.levels:
-        level_dir = os.path.join(BASE_DATA_PATH, f"level_{level}")
+        level_dir = os.path.join(args.base_data_path, f"level_{level}")
         ann_dir = os.path.join(level_dir, "ann")
         img_dir = os.path.join(level_dir, "images")
 
@@ -270,6 +285,12 @@ def main():
 
         mode_label = "text_only" if args.text_only else "visual"
         print(f"\n--- Processing Level {level}: {len(json_files)} images | mode={mode_label} ---")
+
+        summary_fp = None
+        if args.logit_lens:
+            level_out_dir = os.path.join(args.logit_lens_out_dir, f"level_{level}")
+            os.makedirs(level_out_dir, exist_ok=True)
+            summary_fp = open(os.path.join(level_out_dir, "summary.jsonl"), "w", encoding="utf-8")
 
         for filename in tqdm(json_files, desc=f"Level {level}"):
             file_id = filename.replace(".json", "")
@@ -312,6 +333,16 @@ def main():
                         # Backward-compatible fallback when caption linkage is missing.
                         prompt = build_text_only_prompt(scene_text or "", question)
                     pred, completion, confidence, p_yes, p_no = predict_text_only(model, processor, prompt, device=device)
+                    logit_lens = None
+                    if args.logit_lens:
+                        tok = processor.tokenizer(prompt, return_tensors="pt")
+                        tok = _move_to_device(tok, getattr(model, "device", device))
+                        logit_lens = logit_lens_yesno(
+                            model=model,
+                            tokenizer=processor.tokenizer,
+                            input_ids=tok["input_ids"],
+                            attention_mask=tok.get("attention_mask"),
+                        )
                 else:
                     caption = None
                     prompt = f"USER: <image>\n{question}\nASSISTANT:"
@@ -334,6 +365,18 @@ def main():
                         completion = processor.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
                     except Exception:
                         completion = ""
+                    logit_lens = None
+                    if args.logit_lens:
+                        model_kwargs = {
+                            k: v for k, v in inputs.items() if k not in ("input_ids", "attention_mask")
+                        }
+                        logit_lens = logit_lens_yesno(
+                            model=model,
+                            tokenizer=processor.tokenizer,
+                            input_ids=inputs["input_ids"],
+                            attention_mask=inputs.get("attention_mask"),
+                            model_kwargs=model_kwargs,
+                        )
 
                 # Store a single transcript in Prompt column for easier debugging.
                 transcript = f"{prompt}\nMODEL: {completion}" if completion else prompt
@@ -369,6 +412,25 @@ def main():
                         ]
                     )
 
+                if summary_fp is not None and logit_lens is not None:
+                    summary_record = {
+                        "level": level,
+                        "image_id": file_id,
+                        "ann_path": ann_path,
+                        "question": question,
+                        "answer": gt,
+                        "prediction": pred,
+                        "is_correct": is_correct,
+                        "p_yes": p_yes,
+                        "p_no": p_no,
+                        "logit_lens": logit_lens,
+                        "mode": mode_label,
+                    }
+                    summary_fp.write(json.dumps(summary_record) + "\n")
+
+        if summary_fp is not None:
+            summary_fp.close()
+
         accuracy = (correct_questions / total_questions) * 100 if total_questions > 0 else 0
 
         # Add per-group accuracies
@@ -394,7 +456,7 @@ def main():
     with open(args.output_json, "w") as jf:
         json.dump(level_results, jf, indent=4)
 
-    report_name = "evaluation_summary.txt"
+    report_name = os.path.join(os.path.dirname(args.output_json) or ".", "evaluation_summary.txt")
     with open(report_name, "w") as f:
         f.write(f"Evaluation Summary Report | Date: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write("=" * 45 + "\n")

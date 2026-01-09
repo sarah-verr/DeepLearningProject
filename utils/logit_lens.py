@@ -28,11 +28,13 @@ def logit_lens_yesno(
     input_ids: torch.Tensor,
     attention_mask: torch.Tensor | None = None,
     position: int | None = None,
+    model_kwargs: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Return per-layer yes/no probabilities at a specific position.
 
     Uses each layer's hidden state -> LM head projection.
     """
+    call_kwargs = dict(model_kwargs or {})
     with torch.no_grad():
         out = model(
             input_ids=input_ids,
@@ -40,6 +42,7 @@ def logit_lens_yesno(
             output_hidden_states=True,
             use_cache=False,
             return_dict=True,
+            **call_kwargs,
         )
 
     hidden_states = out.hidden_states
