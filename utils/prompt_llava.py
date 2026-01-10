@@ -16,18 +16,46 @@ from .prompt_templates import (
     build_scene_yesno_prompt,
 )
 
+from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
+
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
+
+
+# CORE FUNCTIONS: The below two functions ensure that model initialisation params and generation config are standardised across inferences
+def _init_model(MODEL_ID: str,
+    output_hidden_states: bool = False,
+):
+    processor = LlavaProcessor.from_pretrained(MODEL_ID)
+    model = LlavaForConditionalGeneration.from_pretrained(
+        MODEL_ID,
+        dtype=torch.float16,
+        low_cpu_mem_usage=True,
+        output_attentions=False,
+        attn_implementation = "eager",
+        output_hidden_states=output_hidden_states,
+    )
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+    model.eval()
+    return processor, model, device
+
+def generate_output_for_model(model, inputs):
+    generated_out = model.generate(
+                        **inputs,
+                        max_new_tokens=10,
+                        output_scores=True,
+                        output_attentions=False,
+                        return_dict_in_generate=True,)
+    
+    return generated_out
 
 def infer_model_for_levels(
     level_ids: List[str],
     prompt_strategy: Literal["visual", "caption", "scene"] = "visual",
     show_llm_output: bool = False,
-    output_attentions: bool = False,
-    output_hidden_states: bool = False,
-    attention_source_token: Optional[Literal["entity", "relation", "last"]] = "last",
 ) -> Dict[str, Any]:
     """
-    Run batch inference on all QA pairs in for the images in a level.
+    Run inference on all QA pairs in for the images in a level.
     
     Args:
         image_id: Image identifier (e.g., "00000_b")
@@ -40,31 +68,26 @@ def infer_model_for_levels(
         Dictionary with results for all QA pairs
     """
     # Step 1: Load annotation and images for all levels
-    annotations_by_level = []
+    annotations_all_levels = []
     images_by_level = []
     for level in level_ids:
-        annotations_by_level.append(_load_annotation(level))
+        annotations_all_levels.append(_load_annotation(level))
         images_by_level.append(_get_images(level))
 
     # Step 2: Initialize model and processor
-    processor = LlavaProcessor.from_pretrained(MODEL_ID)
-    model = LlavaForConditionalGeneration.from_pretrained(
-        MODEL_ID,
-        output_attentions=output_attentions,
-        output_hidden_states=output_hidden_states,
-        dtype=torch.float16,
-        low_cpu_mem_usage=True,
-    )
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
-    model.eval()
-
+    processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
 
     results_list = []
-    # Step 3: Infere model for all levels
-    for (level_id, annotation_for_level, images_for_level) in zip(level_ids, annotations_by_level, images_by_level):
+    # Step 3: Infer model for all levels
+    for level_idx, (level_id, annotation_for_level, images_for_level) in enumerate(tqdm(
+        list(zip(level_ids, annotations_all_levels, images_by_level)), desc="Levels",)
+    ):
         print(f"Running inference for level: {level_id}")
-        for (image, annotation) in zip(images_for_level, annotation_for_level):
+        for image, annotation in tqdm(
+            list(zip(images_for_level, annotation_for_level)),
+            desc=f"Images in {level_id}",
+            leave=False,
+        ):
             image_id = annotation['image_id']
             print(f"Processing image... {image_id}")
             qa_pairs = annotation["qa"]
@@ -87,9 +110,7 @@ def infer_model_for_levels(
                 inputs = processor(text=prompt, images=image, return_tensors="pt").to(device)
 
                 with torch.no_grad():
-                        output = model.generate(**inputs, max_new_tokens=10, output_scores=True, 
-                        return_dict_in_generate=True)
-
+                        output = generate_output_for_model(model, inputs)
                 # Extract just the generated part (after the prompt)]
                 if show_llm_output:
                     if output == None:
@@ -115,6 +136,136 @@ def infer_model_for_levels(
 
 
     return results_list
+
+def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual"):
+    """
+    Runs model but this time with attention values aggregated according to source and target in the params
+    """
+    # --- Load data for all levels (same as infer_model_for_levels) ---
+    annotations_all_levels = []
+    images_by_level = []
+    for level in level_ids:
+        annotations_all_levels.append(_load_annotation(level))
+        images_by_level.append(_get_images(level))
+
+    # --- Load model & processor once, with attentions enabled ---
+    processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
+    attn_results: List[Dict[str, Any]] = []
+
+    # --- Loop over levels / images / QAs with tqdm progress bars ---
+    for level_id, ann_for_level, imgs_for_level in tqdm(
+        list(zip(level_ids, annotations_all_levels, images_by_level)),
+        desc="Levels",
+    ):
+        for image, annotation in tqdm(
+            list(zip(imgs_for_level, ann_for_level)),
+            desc=f"Images in {level_id}",
+            leave=False,
+        ):
+            image_id = annotation["image_id"]
+            qa_pairs = annotation["qa"]
+
+            # Build chat-style prompts as in infer_model_for_levels
+            prompts = _build_prompts(qa_pairs, annotation, prompt_strategy)
+            chat_prompts = [
+                processor.apply_chat_template(p, add_generation_prompt=True)
+                for p in prompts
+            ]
+
+            for qa, chat_prompt in tqdm(
+                list(zip(qa_pairs, chat_prompts)),
+                desc=f"QAs for {image_id}",
+                leave=False,
+            ):
+                # --- Build inputs (same as infer_model_for_levels) ---
+                inputs = processor(
+                    text=chat_prompt,
+                    images=image,
+                    return_tensors="pt",
+                )
+                inputs = {k: v.to(device) for k, v in inputs.items()}
+
+                # --- 1) Generation to get prediction (pure inference) ---
+                with torch.no_grad():
+                    gen_out = generate_output_for_model(model, inputs)
+
+                prediction, confidence = get_yes_no_probability(
+                    gen_out, tokenizer=processor.tokenizer
+                )
+
+                # --- 2) Re-run forward pass on *full* sequence (prompt + generated) with attentions ---
+                full_inputs = inputs.copy()
+                full_inputs["input_ids"] = gen_out.sequences  # shape: [batch, prompt+generated_len]
+                # if needed, build a matching attention mask
+                full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
+
+                with torch.no_grad():
+                    fwd_out = model(
+                        **full_inputs,
+                        output_attentions=True,
+                        output_hidden_states=False,
+                        use_cache=False,
+                        return_dict=True,
+                    )
+
+                # move attentions + ids to CPU to save GPU memory
+                attentions_cpu = tuple(
+                    layer.detach().cpu() for layer in fwd_out.attentions
+                )
+                full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+                 
+                # free GPU tensors ASAP 
+                del fwd_out
+                torch.cuda.empty_cache()
+
+                # --- 3) Build source and target token groups ---
+
+                image_token_id = model.config.image_token_index
+
+                # Build ALL possible source groups
+                source_groups = {}
+                source_groups.update(get_last_token_index(full_ids_1d))
+                source_groups.update(get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"]))
+                source_groups.update(get_text_token_indices(full_ids_1d, image_token_id))
+                source_groups.update(get_entity_indices(processor.tokenizer, full_ids_1d, qa, annotation))
+
+                # Build ALL possible target groups
+                target_groups = {}
+                target_groups.update(get_image_token_indices(full_ids_1d, image_token_id))
+                target_groups.update(get_text_token_indices(full_ids_1d, image_token_id))
+                target_groups.update(get_image_entity_indices(full_ids_1d, image_token_id, qa, annotation))
+                target_groups.update(get_entity_indices(processor.tokenizer, full_ids_1d, qa, annotation))
+
+                # Compute ALL combinations
+                attention_metrics = aggregate_attention_between_groups(
+                    attentions_cpu,
+                    source_groups,
+                    target_groups,
+                    key_pairs=key_pairs  # specifies the source -> target combinations of interest for which we need to aggregate attention values
+                )
+
+
+                attn_results.append(
+                    {
+                        "level_id": level_id,
+                        "image_id": image_id,
+                        "qa_id": qa["id"],
+                        "question": qa["question"],
+                        "ground_truth": qa["answer"],
+                        "prediction": prediction,
+                        "confidence": confidence,
+                        "relation_type": qa["rel_type"],
+                        "attention_metrics": attention_metrics,
+                    }
+                )
+
+                # clean up per‑QA intermediates
+                del gen_out, inputs, full_inputs, attentions_cpu, full_ids_1d
+                torch.cuda.empty_cache()
+                
+    return attn_results
+
+# HELPERS to load data, build prompts, get yes\no probabilities
 
 def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float]:
     """Extract yes/no prediction and confidence from model outputs."""

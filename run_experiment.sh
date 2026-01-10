@@ -15,5 +15,8 @@ export HF_HOME="/work/scratch/$USER"
 # Replace 'venv' with the actual path to your environment
 source venv/bin/activate
 
+echo "STARTING JOB..."
 # 3. Run the experiment
 python main.py
+
+echo "JOB ENDED..."

@@ -3,29 +3,29 @@
   "objects": [
     {
       "id": 0,
-      "shape": "square",
-      "color": "lime",
+      "shape": "triangle",
+      "color": "orange",
       "center": [
-        35,
-        35
+        245,
+        77
       ],
-      "size": 18,
+      "size": 21,
       "bbox": [
-        26,
-        26,
-        44,
-        44
+        235,
+        67,
+        255,
+        87
       ],
       "patch_indices": [
-        25,
-        26,
-        27,
-        49,
-        50,
-        51,
-        73,
-        74,
-        75
+        112,
+        113,
+        114,
+        136,
+        137,
+        138,
+        160,
+        161,
+        162
       ]
     },
     {
@@ -33,53 +33,53 @@
       "shape": "triangle",
       "color": "yellow",
       "center": [
-        21,
-        231
+        105,
+        273
       ],
-      "size": 21,
+      "size": 29,
       "bbox": [
-        11,
-        221,
-        31,
-        241
+        91,
+        259,
+        119,
+        287
       ],
       "patch_indices": [
-        360,
-        361,
-        362,
-        384,
-        385,
-        386,
-        408,
-        409,
-        410
+        438,
+        439,
+        440,
+        462,
+        463,
+        464,
+        486,
+        487,
+        488
       ]
     },
     {
       "id": 2,
-      "shape": "triangle",
-      "color": "red",
+      "shape": "circle",
+      "color": "purple",
       "center": [
-        301,
-        147
-      ],
-      "size": 29,
-      "bbox": [
-        287,
         133,
-        315,
-        161
+        273
+      ],
+      "size": 19,
+      "bbox": [
+        124,
+        264,
+        142,
+        282
       ],
       "patch_indices": [
-        236,
-        237,
-        238,
-        260,
-        261,
-        262,
-        284,
-        285,
-        286
+        440,
+        441,
+        442,
+        464,
+        465,
+        466,
+        488,
+        489,
+        490
       ]
     },
     {
@@ -87,26 +87,26 @@
       "shape": "circle",
       "color": "pink",
       "center": [
-        259,
+        91,
         245
       ],
-      "size": 19,
+      "size": 17,
       "bbox": [
-        250,
-        236,
-        268,
-        254
+        83,
+        237,
+        99,
+        253
       ],
       "patch_indices": [
-        401,
-        402,
-        403,
-        425,
-        426,
-        427,
-        449,
-        450,
-        451
+        389,
+        390,
+        391,
+        413,
+        414,
+        415,
+        437,
+        438,
+        439
       ]
     }
   ],
@@ -122,7 +122,7 @@
       "object_id": 1
     },
     {
-      "type": "left_of",
+      "type": "right_of",
       "subject_id": 0,
       "object_id": 2
     },
@@ -130,49 +130,44 @@
       "type": "above",
       "subject_id": 0,
       "object_id": 2
-    },
-    {
-      "type": "left_of",
-      "subject_id": 0,
-      "object_id": 3
-    },
-    {
-      "type": "above",
-      "subject_id": 0,
-      "object_id": 3
-    },
-    {
-      "type": "left_of",
-      "subject_id": 1,
-      "object_id": 0
-    },
-    {
-      "type": "below",
-      "subject_id": 1,
-      "object_id": 0
-    },
-    {
-      "type": "left_of",
-      "subject_id": 1,
-      "object_id": 2
-    },
-    {
-      "type": "below",
-      "subject_id": 1,
-      "object_id": 2
-    },
-    {
-      "type": "left_of",
-      "subject_id": 1,
-      "object_id": 3
-    },
-    {
-      "type": "above",
-      "subject_id": 1,
-      "object_id": 3
     },
     {
       "type": "right_of",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
       "subject_id": 2,
       "object_id": 0
     },
@@ -187,22 +182,17 @@
       "object_id": 1
     },
     {
-      "type": "above",
-      "subject_id": 2,
-      "object_id": 1
-    },
-    {
       "type": "right_of",
       "subject_id": 2,
       "object_id": 3
     },
     {
-      "type": "above",
+      "type": "below",
       "subject_id": 2,
       "object_id": 3
     },
     {
-      "type": "right_of",
+      "type": "left_of",
       "subject_id": 3,
       "object_id": 0
     },
@@ -212,12 +202,12 @@
       "object_id": 0
     },
     {
-      "type": "right_of",
+      "type": "left_of",
       "subject_id": 3,
       "object_id": 1
     },
     {
-      "type": "below",
+      "type": "above",
       "subject_id": 3,
       "object_id": 1
     },
@@ -227,46 +217,44 @@
       "object_id": 2
     },
     {
-      "type": "below",
+      "type": "above",
       "subject_id": 3,
       "object_id": 2
     }
   ],
   "captions": [
-    "The pink circle is to the left of the red triangle.",
-    "The pink circle is below the red triangle.",
-    "The lime square is above the red triangle.",
-    "The lime square is to the left of the pink circle.",
-    "The lime square is left of the red triangle.",
-    "The red triangle is right of the pink circle.",
-    "The pink circle is to the right of the lime square.",
-    "The red triangle is below the lime square.",
-    "The lime square is right of the yellow triangle.",
-    "The yellow triangle is above the pink circle.",
-    "The red triangle is above the yellow triangle.",
-    "The red triangle is right of the lime square.",
-    "The yellow triangle is below the lime square.",
-    "The yellow triangle is left of the lime square.",
-    "The pink circle is below the yellow triangle.",
-    "The yellow triangle is below the red triangle.",
-    "The yellow triangle is to the left of the pink circle.",
-    "The pink circle is to the right of the yellow triangle.",
-    "The lime square is above the pink circle.",
-    "The red triangle is to the right of the yellow triangle.",
-    "The lime square is above the yellow triangle.",
-    "The red triangle is above the pink circle.",
-    "The pink circle is below the lime square.",
-    "The yellow triangle is to the left of the red triangle."
+    "The pink circle is below the orange triangle.",
+    "The purple circle is to the right of the yellow triangle.",
+    "The pink circle is above the yellow triangle.",
+    "The orange triangle is to the right of the purple circle.",
+    "The yellow triangle is below the pink circle.",
+    "The orange triangle is above the yellow triangle.",
+    "The orange triangle is above the pink circle.",
+    "The yellow triangle is below the orange triangle.",
+    "The purple circle is below the pink circle.",
+    "The pink circle is to the left of the yellow triangle.",
+    "The yellow triangle is right of the pink circle.",
+    "The purple circle is left of the orange triangle.",
+    "The orange triangle is right of the pink circle.",
+    "The purple circle is below the orange triangle.",
+    "The purple circle is right of the pink circle.",
+    "The orange triangle is right of the yellow triangle.",
+    "The yellow triangle is left of the orange triangle.",
+    "The pink circle is left of the purple circle.",
+    "The yellow triangle is to the left of the purple circle.",
+    "The pink circle is to the left of the orange triangle.",
+    "The pink circle is above the purple circle.",
+    "The orange triangle is above the purple circle."
   ],
   "captions_meta": [
     {
       "id": 0,
-      "caption": "The pink circle is to the left of the red triangle.",
+      "caption": "The pink circle is below the orange triangle.",
       "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
+      "object_id": 0,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         0
       ],
@@ -276,12 +264,12 @@
     },
     {
       "id": 1,
-      "caption": "The pink circle is below the red triangle.",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
+      "caption": "The purple circle is to the right of the yellow triangle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         2
       ],
@@ -291,9 +279,9 @@
     },
     {
       "id": 2,
-      "caption": "The lime square is above the red triangle.",
-      "subject_id": 0,
-      "object_id": 2,
+      "caption": "The pink circle is above the yellow triangle.",
+      "subject_id": 3,
+      "object_id": 1,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -306,12 +294,12 @@
     },
     {
       "id": 3,
-      "caption": "The lime square is to the left of the pink circle.",
+      "caption": "The orange triangle is to the right of the purple circle.",
       "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
+      "object_id": 2,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         6
       ],
@@ -321,12 +309,12 @@
     },
     {
       "id": 4,
-      "caption": "The lime square is left of the red triangle.",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
+      "caption": "The yellow triangle is below the pink circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         8
       ],
@@ -336,12 +324,12 @@
     },
     {
       "id": 5,
-      "caption": "The red triangle is right of the pink circle.",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
+      "caption": "The orange triangle is above the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "above",
       "entailed_qa_ids": [
         10
       ],
@@ -351,12 +339,12 @@
     },
     {
       "id": 6,
-      "caption": "The pink circle is to the right of the lime square.",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "right_of",
+      "caption": "The orange triangle is above the pink circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "above",
       "entailed_qa_ids": [
         12
       ],
@@ -366,8 +354,8 @@
     },
     {
       "id": 7,
-      "caption": "The red triangle is below the lime square.",
-      "subject_id": 2,
+      "caption": "The yellow triangle is below the orange triangle.",
+      "subject_id": 1,
       "object_id": 0,
       "rel_type": "below",
       "rel_group": "PRIMARY",
@@ -381,12 +369,12 @@
     },
     {
       "id": 8,
-      "caption": "The lime square is right of the yellow triangle.",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
+      "caption": "The purple circle is below the pink circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         16
       ],
@@ -396,12 +384,12 @@
     },
     {
       "id": 9,
-      "caption": "The yellow triangle is above the pink circle.",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
+      "caption": "The pink circle is to the left of the yellow triangle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         18
       ],
@@ -411,12 +399,12 @@
     },
     {
       "id": 10,
-      "caption": "The red triangle is above the yellow triangle.",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
+      "caption": "The yellow triangle is right of the pink circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         20
       ],
@@ -426,12 +414,12 @@
     },
     {
       "id": 11,
-      "caption": "The red triangle is right of the lime square.",
+      "caption": "The purple circle is left of the orange triangle.",
       "subject_id": 2,
       "object_id": 0,
-      "rel_type": "right_of",
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "left of",
       "entailed_qa_ids": [
         22
       ],
@@ -441,12 +429,12 @@
     },
     {
       "id": 12,
-      "caption": "The yellow triangle is below the lime square.",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
+      "caption": "The orange triangle is right of the pink circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         24
       ],
@@ -456,12 +444,12 @@
     },
     {
       "id": 13,
-      "caption": "The yellow triangle is left of the lime square.",
-      "subject_id": 1,
+      "caption": "The purple circle is below the orange triangle.",
+      "subject_id": 2,
       "object_id": 0,
-      "rel_type": "left_of",
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         26
       ],
@@ -471,12 +459,12 @@
     },
     {
       "id": 14,
-      "caption": "The pink circle is below the yellow triangle.",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
+      "caption": "The purple circle is right of the pink circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         28
       ],
@@ -486,12 +474,12 @@
     },
     {
       "id": 15,
-      "caption": "The yellow triangle is below the red triangle.",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
+      "caption": "The orange triangle is right of the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         30
       ],
@@ -501,12 +489,12 @@
     },
     {
       "id": 16,
-      "caption": "The yellow triangle is to the left of the pink circle.",
+      "caption": "The yellow triangle is left of the orange triangle.",
       "subject_id": 1,
-      "object_id": 3,
+      "object_id": 0,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "left of",
       "entailed_qa_ids": [
         32
       ],
@@ -516,12 +504,12 @@
     },
     {
       "id": 17,
-      "caption": "The pink circle is to the right of the yellow triangle.",
+      "caption": "The pink circle is left of the purple circle.",
       "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
+      "object_id": 2,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "left of",
       "entailed_qa_ids": [
         34
       ],
@@ -531,12 +519,12 @@
     },
     {
       "id": 18,
-      "caption": "The lime square is above the pink circle.",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
+      "caption": "The yellow triangle is to the left of the purple circle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         36
       ],
@@ -546,12 +534,12 @@
     },
     {
       "id": 19,
-      "caption": "The red triangle is to the right of the yellow triangle.",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
+      "caption": "The pink circle is to the left of the orange triangle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         38
       ],
@@ -561,9 +549,9 @@
     },
     {
       "id": 20,
-      "caption": "The lime square is above the yellow triangle.",
-      "subject_id": 0,
-      "object_id": 1,
+      "caption": "The pink circle is above the purple circle.",
+      "subject_id": 3,
+      "object_id": 2,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -576,9 +564,9 @@
     },
     {
       "id": 21,
-      "caption": "The red triangle is above the pink circle.",
-      "subject_id": 2,
-      "object_id": 3,
+      "caption": "The orange triangle is above the purple circle.",
+      "subject_id": 0,
+      "object_id": 2,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -588,88 +576,58 @@
       "contradicted_qa_ids": [
         43
       ]
-    },
+    }
+  ],
+  "qa": [
     {
-      "id": 22,
-      "caption": "The pink circle is below the lime square.",
+      "question": "Is the pink circle below the orange triangle?",
+      "answer": "yes",
       "subject_id": 3,
       "object_id": 0,
       "rel_type": "below",
       "rel_group": "PRIMARY",
       "rel_phrase": "below",
-      "entailed_qa_ids": [
-        44
-      ],
-      "contradicted_qa_ids": [
-        45
-      ]
-    },
-    {
-      "id": 23,
-      "caption": "The yellow triangle is to the left of the red triangle.",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "entailed_qa_ids": [
-        46
-      ],
-      "contradicted_qa_ids": [
-        47
-      ]
-    }
-  ],
-  "qa": [
-    {
-      "question": "Is the pink circle to the left of the red triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
       "caption_id": 0,
       "id": 0
     },
     {
-      "question": "Is the pink circle right of the red triangle?",
+      "question": "Is the pink circle above the orange triangle?",
       "answer": "no",
       "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "right_of",
+      "object_id": 0,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "above",
       "caption_id": 0,
       "id": 1
     },
     {
-      "question": "Is the pink circle below the red triangle?",
+      "question": "Is the purple circle right of the yellow triangle?",
       "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "right of",
       "caption_id": 1,
       "id": 2
     },
     {
-      "question": "Is the pink circle above the red triangle?",
+      "question": "Is the purple circle to the left of the yellow triangle?",
       "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "above",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "to the left of",
       "caption_id": 1,
       "id": 3
     },
     {
-      "question": "Is the lime square above the red triangle?",
+      "question": "Is the pink circle above the yellow triangle?",
       "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
+      "subject_id": 3,
+      "object_id": 1,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -677,10 +635,10 @@
       "id": 4
     },
     {
-      "question": "Is the lime square below the red triangle?",
+      "question": "Is the pink circle below the yellow triangle?",
       "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
+      "subject_id": 3,
+      "object_id": 1,
       "rel_type": "below",
       "rel_group": "PRIMARY",
       "rel_phrase": "below",
@@ -688,97 +646,97 @@
       "id": 5
     },
     {
-      "question": "Is the lime square to the left of the pink circle?",
+      "question": "Is the orange triangle to the right of the purple circle?",
       "answer": "yes",
       "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
+      "object_id": 2,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "to the right of",
       "caption_id": 3,
       "id": 6
     },
     {
-      "question": "Is the lime square right of the pink circle?",
+      "question": "Is the orange triangle left of the purple circle?",
       "answer": "no",
       "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "right_of",
+      "object_id": 2,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "left of",
       "caption_id": 3,
       "id": 7
     },
     {
-      "question": "Is the lime square to the left of the red triangle?",
+      "question": "Is the yellow triangle below the pink circle?",
       "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "below",
       "caption_id": 4,
       "id": 8
     },
     {
-      "question": "Is the lime square right of the red triangle?",
+      "question": "Is the yellow triangle above the pink circle?",
       "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "above",
       "caption_id": 4,
       "id": 9
     },
     {
-      "question": "Is the red triangle to the right of the pink circle?",
+      "question": "Is the orange triangle above the yellow triangle?",
       "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "above",
       "caption_id": 5,
       "id": 10
     },
     {
-      "question": "Is the red triangle left of the pink circle?",
+      "question": "Is the orange triangle below the yellow triangle?",
       "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "left_of",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "below",
       "caption_id": 5,
       "id": 11
     },
     {
-      "question": "Is the pink circle right of the lime square?",
+      "question": "Is the orange triangle above the pink circle?",
       "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "right_of",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "above",
       "caption_id": 6,
       "id": 12
     },
     {
-      "question": "Is the pink circle left of the lime square?",
+      "question": "Is the orange triangle below the pink circle?",
       "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "left_of",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "below",
       "caption_id": 6,
       "id": 13
     },
     {
-      "question": "Is the red triangle below the lime square?",
+      "question": "Is the yellow triangle below the orange triangle?",
       "answer": "yes",
-      "subject_id": 2,
+      "subject_id": 1,
       "object_id": 0,
       "rel_type": "below",
       "rel_group": "PRIMARY",
@@ -787,9 +745,9 @@
       "id": 14
     },
     {
-      "question": "Is the red triangle above the lime square?",
+      "question": "Is the yellow triangle above the orange triangle?",
       "answer": "no",
-      "subject_id": 2,
+      "subject_id": 1,
       "object_id": 0,
       "rel_type": "above",
       "rel_group": "PRIMARY",
@@ -798,197 +756,197 @@
       "id": 15
     },
     {
-      "question": "Is the lime square to the right of the yellow triangle?",
+      "question": "Is the purple circle below the pink circle?",
       "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "below",
       "caption_id": 8,
       "id": 16
     },
     {
-      "question": "Is the lime square to the left of the yellow triangle?",
+      "question": "Is the purple circle above the pink circle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 8,
+      "id": 17
+    },
+    {
+      "question": "Is the pink circle left of the yellow triangle?",
+      "answer": "yes",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 9,
+      "id": 18
+    },
+    {
+      "question": "Is the pink circle right of the yellow triangle?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 9,
+      "id": 19
+    },
+    {
+      "question": "Is the yellow triangle to the right of the pink circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 10,
+      "id": 20
+    },
+    {
+      "question": "Is the yellow triangle left of the pink circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 10,
+      "id": 21
+    },
+    {
+      "question": "Is the purple circle to the left of the orange triangle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 11,
+      "id": 22
+    },
+    {
+      "question": "Is the purple circle to the right of the orange triangle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 11,
+      "id": 23
+    },
+    {
+      "question": "Is the orange triangle to the right of the pink circle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 12,
+      "id": 24
+    },
+    {
+      "question": "Is the orange triangle left of the pink circle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 12,
+      "id": 25
+    },
+    {
+      "question": "Is the purple circle below the orange triangle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 13,
+      "id": 26
+    },
+    {
+      "question": "Is the purple circle above the orange triangle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 13,
+      "id": 27
+    },
+    {
+      "question": "Is the purple circle right of the pink circle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 14,
+      "id": 28
+    },
+    {
+      "question": "Is the purple circle left of the pink circle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 14,
+      "id": 29
+    },
+    {
+      "question": "Is the orange triangle right of the yellow triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 15,
+      "id": 30
+    },
+    {
+      "question": "Is the orange triangle to the left of the yellow triangle?",
       "answer": "no",
       "subject_id": 0,
       "object_id": 1,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "to the left of",
-      "caption_id": 8,
-      "id": 17
+      "caption_id": 15,
+      "id": 31
     },
     {
-      "question": "Is the yellow triangle above the pink circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the yellow triangle below the pink circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the red triangle above the yellow triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the red triangle below the yellow triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 10,
-      "id": 21
-    },
-    {
-      "question": "Is the red triangle right of the lime square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 11,
-      "id": 22
-    },
-    {
-      "question": "Is the red triangle left of the lime square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 11,
-      "id": 23
-    },
-    {
-      "question": "Is the yellow triangle below the lime square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 12,
-      "id": 24
-    },
-    {
-      "question": "Is the yellow triangle above the lime square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 12,
-      "id": 25
-    },
-    {
-      "question": "Is the yellow triangle to the left of the lime square?",
+      "question": "Is the yellow triangle to the left of the orange triangle?",
       "answer": "yes",
       "subject_id": 1,
       "object_id": 0,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "to the left of",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the yellow triangle to the right of the lime square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 13,
-      "id": 27
-    },
-    {
-      "question": "Is the pink circle below the yellow triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 14,
-      "id": 28
-    },
-    {
-      "question": "Is the pink circle above the yellow triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 14,
-      "id": 29
-    },
-    {
-      "question": "Is the yellow triangle below the red triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 15,
-      "id": 30
-    },
-    {
-      "question": "Is the yellow triangle above the red triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 15,
-      "id": 31
-    },
-    {
-      "question": "Is the yellow triangle left of the pink circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
       "caption_id": 16,
       "id": 32
     },
     {
-      "question": "Is the yellow triangle to the right of the pink circle?",
+      "question": "Is the yellow triangle to the right of the orange triangle?",
       "answer": "no",
       "subject_id": 1,
-      "object_id": 3,
+      "object_id": 0,
       "rel_type": "right_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "to the right of",
@@ -996,76 +954,76 @@
       "id": 33
     },
     {
-      "question": "Is the pink circle right of the yellow triangle?",
+      "question": "Is the pink circle to the left of the purple circle?",
       "answer": "yes",
       "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 17,
-      "id": 34
-    },
-    {
-      "question": "Is the pink circle to the left of the yellow triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
+      "object_id": 2,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "to the left of",
       "caption_id": 17,
+      "id": 34
+    },
+    {
+      "question": "Is the pink circle to the right of the purple circle?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 17,
       "id": 35
     },
     {
-      "question": "Is the lime square above the pink circle?",
+      "question": "Is the yellow triangle to the left of the purple circle?",
       "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "to the left of",
       "caption_id": 18,
       "id": 36
     },
     {
-      "question": "Is the lime square below the pink circle?",
+      "question": "Is the yellow triangle right of the purple circle?",
       "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "right of",
       "caption_id": 18,
       "id": 37
     },
     {
-      "question": "Is the red triangle right of the yellow triangle?",
+      "question": "Is the pink circle left of the orange triangle?",
       "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 19,
-      "id": 38
-    },
-    {
-      "question": "Is the red triangle left of the yellow triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
+      "subject_id": 3,
+      "object_id": 0,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "left of",
       "caption_id": 19,
+      "id": 38
+    },
+    {
+      "question": "Is the pink circle to the right of the orange triangle?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 19,
       "id": 39
     },
     {
-      "question": "Is the lime square above the yellow triangle?",
+      "question": "Is the pink circle above the purple circle?",
       "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
+      "subject_id": 3,
+      "object_id": 2,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -1073,10 +1031,10 @@
       "id": 40
     },
     {
-      "question": "Is the lime square below the yellow triangle?",
+      "question": "Is the pink circle below the purple circle?",
       "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
+      "subject_id": 3,
+      "object_id": 2,
       "rel_type": "below",
       "rel_group": "PRIMARY",
       "rel_phrase": "below",
@@ -1084,10 +1042,10 @@
       "id": 41
     },
     {
-      "question": "Is the red triangle above the pink circle?",
+      "question": "Is the orange triangle above the purple circle?",
       "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
+      "subject_id": 0,
+      "object_id": 2,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -1095,59 +1053,15 @@
       "id": 42
     },
     {
-      "question": "Is the red triangle below the pink circle?",
+      "question": "Is the orange triangle below the purple circle?",
       "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
+      "subject_id": 0,
+      "object_id": 2,
       "rel_type": "below",
       "rel_group": "PRIMARY",
       "rel_phrase": "below",
       "caption_id": 21,
       "id": 43
-    },
-    {
-      "question": "Is the pink circle below the lime square?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 22,
-      "id": 44
-    },
-    {
-      "question": "Is the pink circle above the lime square?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 22,
-      "id": 45
-    },
-    {
-      "question": "Is the yellow triangle left of the red triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 23,
-      "id": 46
-    },
-    {
-      "question": "Is the yellow triangle right of the red triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 23,
-      "id": 47
     }
   ],
   "meta": {
