@@ -6,26 +6,26 @@
       "shape": "circle",
       "color": "pink",
       "center": [
-        231,
+        245,
         231
       ],
       "size": 22,
       "bbox": [
+        234,
         220,
-        220,
-        242,
+        256,
         242
       ],
       "patch_indices": [
-        375,
         376,
         377,
-        399,
+        378,
         400,
         401,
-        423,
+        402,
         424,
-        425
+        425,
+        426
       ]
     },
     {
@@ -33,26 +33,26 @@
       "shape": "star",
       "color": "lime",
       "center": [
-        203,
-        35
+        133,
+        189
       ],
       "size": 21,
       "bbox": [
-        193,
-        25,
-        213,
-        45
+        123,
+        179,
+        143,
+        199
       ],
       "patch_indices": [
-        37,
-        38,
-        39,
-        61,
-        62,
-        63,
-        85,
-        86,
-        87
+        296,
+        297,
+        298,
+        320,
+        321,
+        322,
+        344,
+        345,
+        346
       ]
     },
     {
@@ -60,26 +60,26 @@
       "shape": "star",
       "color": "yellow",
       "center": [
-        147,
-        119
+        49,
+        217
       ],
       "size": 18,
       "bbox": [
-        138,
-        110,
-        156,
-        128
+        40,
+        208,
+        58,
+        226
       ],
       "patch_indices": [
-        177,
-        178,
-        179,
-        201,
-        202,
-        203,
-        225,
-        226,
-        227
+        338,
+        339,
+        340,
+        362,
+        363,
+        364,
+        386,
+        387,
+        388
       ]
     },
     {
@@ -87,26 +87,26 @@
       "shape": "star",
       "color": "red",
       "center": [
-        105,
-        189
+        315,
+        231
       ],
       "size": 18,
       "bbox": [
-        96,
-        180,
-        114,
-        198
+        306,
+        222,
+        324,
+        240
       ],
       "patch_indices": [
-        294,
-        295,
-        296,
-        318,
-        319,
-        320,
-        342,
-        343,
-        344
+        381,
+        382,
+        383,
+        405,
+        406,
+        407,
+        429,
+        430,
+        431
       ]
     }
   ],
@@ -132,12 +132,7 @@
       "object_id": 2
     },
     {
-      "type": "right_of",
-      "subject_id": 0,
-      "object_id": 3
-    },
-    {
-      "type": "below",
+      "type": "left_of",
       "subject_id": 0,
       "object_id": 3
     },
@@ -162,7 +157,7 @@
       "object_id": 2
     },
     {
-      "type": "right_of",
+      "type": "left_of",
       "subject_id": 1,
       "object_id": 3
     },
@@ -192,27 +187,22 @@
       "object_id": 1
     },
     {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
       "type": "right_of",
-      "subject_id": 2,
-      "object_id": 3
-    },
-    {
-      "type": "above",
-      "subject_id": 2,
-      "object_id": 3
-    },
-    {
-      "type": "left_of",
       "subject_id": 3,
       "object_id": 0
     },
     {
-      "type": "above",
-      "subject_id": 3,
-      "object_id": 0
-    },
-    {
-      "type": "left_of",
+      "type": "right_of",
       "subject_id": 3,
       "object_id": 1
     },
@@ -222,7 +212,7 @@
       "object_id": 1
     },
     {
-      "type": "left_of",
+      "type": "right_of",
       "subject_id": 3,
       "object_id": 2
     },
@@ -233,40 +223,38 @@
     }
   ],
   "captions": [
-    "The red star is below the lime star.",
-    "The red star is left of the yellow star.",
-    "The lime star is above the pink circle.",
-    "The yellow star is to the right of the red star.",
-    "The pink circle is below the red star.",
-    "The yellow star is left of the lime star.",
-    "The red star is below the yellow star.",
-    "The lime star is above the yellow star.",
-    "The red star is above the pink circle.",
-    "The pink circle is below the lime star.",
-    "The lime star is right of the red star.",
-    "The yellow star is above the pink circle.",
-    "The pink circle is right of the yellow star.",
-    "The pink circle is to the right of the red star.",
-    "The pink circle is below the yellow star.",
-    "The red star is left of the lime star.",
-    "The lime star is right of the yellow star.",
-    "The yellow star is below the lime star.",
-    "The lime star is above the red star.",
-    "The yellow star is to the left of the pink circle.",
-    "The lime star is to the left of the pink circle.",
-    "The pink circle is right of the lime star.",
     "The yellow star is above the red star.",
-    "The red star is to the left of the pink circle."
+    "The red star is below the yellow star.",
+    "The lime star is to the left of the red star.",
+    "The red star is below the lime star.",
+    "The lime star is to the left of the pink circle.",
+    "The lime star is above the yellow star.",
+    "The lime star is to the right of the yellow star.",
+    "The pink circle is below the lime star.",
+    "The lime star is above the red star.",
+    "The pink circle is to the right of the yellow star.",
+    "The yellow star is below the lime star.",
+    "The yellow star is left of the lime star.",
+    "The pink circle is below the yellow star.",
+    "The red star is right of the yellow star.",
+    "The pink circle is to the left of the red star.",
+    "The yellow star is left of the red star.",
+    "The yellow star is left of the pink circle.",
+    "The yellow star is above the pink circle.",
+    "The lime star is above the pink circle.",
+    "The pink circle is right of the lime star.",
+    "The red star is to the right of the pink circle.",
+    "The red star is to the right of the lime star."
   ],
   "captions_meta": [
     {
       "id": 0,
-      "caption": "The red star is below the lime star.",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
+      "caption": "The yellow star is above the red star.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "above",
       "entailed_qa_ids": [
         0
       ],
@@ -276,12 +264,12 @@
     },
     {
       "id": 1,
-      "caption": "The red star is left of the yellow star.",
+      "caption": "The red star is below the yellow star.",
       "subject_id": 3,
       "object_id": 2,
-      "rel_type": "left_of",
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         2
       ],
@@ -291,12 +279,12 @@
     },
     {
       "id": 2,
-      "caption": "The lime star is above the pink circle.",
+      "caption": "The lime star is to the left of the red star.",
       "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
+      "object_id": 3,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         4
       ],
@@ -306,12 +294,12 @@
     },
     {
       "id": 3,
-      "caption": "The yellow star is to the right of the red star.",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
+      "caption": "The red star is below the lime star.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         6
       ],
@@ -321,12 +309,12 @@
     },
     {
       "id": 4,
-      "caption": "The pink circle is below the red star.",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
+      "caption": "The lime star is to the left of the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         8
       ],
@@ -336,12 +324,12 @@
     },
     {
       "id": 5,
-      "caption": "The yellow star is left of the lime star.",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
+      "caption": "The lime star is above the yellow star.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
+      "rel_phrase": "above",
       "entailed_qa_ids": [
         10
       ],
@@ -351,12 +339,12 @@
     },
     {
       "id": 6,
-      "caption": "The red star is below the yellow star.",
-      "subject_id": 3,
+      "caption": "The lime star is to the right of the yellow star.",
+      "subject_id": 1,
       "object_id": 2,
-      "rel_type": "below",
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         12
       ],
@@ -366,12 +354,12 @@
     },
     {
       "id": 7,
-      "caption": "The lime star is above the yellow star.",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
+      "caption": "The pink circle is below the lime star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         14
       ],
@@ -381,9 +369,9 @@
     },
     {
       "id": 8,
-      "caption": "The red star is above the pink circle.",
-      "subject_id": 3,
-      "object_id": 0,
+      "caption": "The lime star is above the red star.",
+      "subject_id": 1,
+      "object_id": 3,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -396,12 +384,12 @@
     },
     {
       "id": 9,
-      "caption": "The pink circle is below the lime star.",
+      "caption": "The pink circle is to the right of the yellow star.",
       "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
+      "object_id": 2,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         18
       ],
@@ -411,12 +399,12 @@
     },
     {
       "id": 10,
-      "caption": "The lime star is right of the red star.",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "right_of",
+      "caption": "The yellow star is below the lime star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         20
       ],
@@ -426,12 +414,12 @@
     },
     {
       "id": 11,
-      "caption": "The yellow star is above the pink circle.",
+      "caption": "The yellow star is left of the lime star.",
       "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
+      "object_id": 1,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "above",
+      "rel_phrase": "left of",
       "entailed_qa_ids": [
         22
       ],
@@ -441,12 +429,12 @@
     },
     {
       "id": 12,
-      "caption": "The pink circle is right of the yellow star.",
+      "caption": "The pink circle is below the yellow star.",
       "subject_id": 0,
       "object_id": 2,
-      "rel_type": "right_of",
+      "rel_type": "below",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "below",
       "entailed_qa_ids": [
         24
       ],
@@ -456,12 +444,12 @@
     },
     {
       "id": 13,
-      "caption": "The pink circle is to the right of the red star.",
-      "subject_id": 0,
-      "object_id": 3,
+      "caption": "The red star is right of the yellow star.",
+      "subject_id": 3,
+      "object_id": 2,
       "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         26
       ],
@@ -471,12 +459,12 @@
     },
     {
       "id": 14,
-      "caption": "The pink circle is below the yellow star.",
+      "caption": "The pink circle is to the left of the red star.",
       "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
+      "object_id": 3,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "to the left of",
       "entailed_qa_ids": [
         28
       ],
@@ -486,9 +474,9 @@
     },
     {
       "id": 15,
-      "caption": "The red star is left of the lime star.",
-      "subject_id": 3,
-      "object_id": 1,
+      "caption": "The yellow star is left of the red star.",
+      "subject_id": 2,
+      "object_id": 3,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "left of",
@@ -501,12 +489,12 @@
     },
     {
       "id": 16,
-      "caption": "The lime star is right of the yellow star.",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
+      "caption": "The yellow star is left of the pink circle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "left of",
       "entailed_qa_ids": [
         32
       ],
@@ -516,12 +504,12 @@
     },
     {
       "id": 17,
-      "caption": "The yellow star is below the lime star.",
+      "caption": "The yellow star is above the pink circle.",
       "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
+      "object_id": 0,
+      "rel_type": "above",
       "rel_group": "PRIMARY",
-      "rel_phrase": "below",
+      "rel_phrase": "above",
       "entailed_qa_ids": [
         34
       ],
@@ -531,9 +519,9 @@
     },
     {
       "id": 18,
-      "caption": "The lime star is above the red star.",
+      "caption": "The lime star is above the pink circle.",
       "subject_id": 1,
-      "object_id": 3,
+      "object_id": 0,
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
@@ -546,12 +534,12 @@
     },
     {
       "id": 19,
-      "caption": "The yellow star is to the left of the pink circle.",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
+      "caption": "The pink circle is right of the lime star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "right of",
       "entailed_qa_ids": [
         38
       ],
@@ -561,12 +549,12 @@
     },
     {
       "id": 20,
-      "caption": "The lime star is to the left of the pink circle.",
-      "subject_id": 1,
+      "caption": "The red star is to the right of the pink circle.",
+      "subject_id": 3,
       "object_id": 0,
-      "rel_type": "left_of",
+      "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         40
       ],
@@ -576,535 +564,21 @@
     },
     {
       "id": 21,
-      "caption": "The pink circle is right of the lime star.",
-      "subject_id": 0,
+      "caption": "The red star is to the right of the lime star.",
+      "subject_id": 3,
       "object_id": 1,
       "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
+      "rel_phrase": "to the right of",
       "entailed_qa_ids": [
         42
       ],
       "contradicted_qa_ids": [
         43
       ]
-    },
-    {
-      "id": 22,
-      "caption": "The yellow star is above the red star.",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "entailed_qa_ids": [
-        44
-      ],
-      "contradicted_qa_ids": [
-        45
-      ]
-    },
-    {
-      "id": 23,
-      "caption": "The red star is to the left of the pink circle.",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "entailed_qa_ids": [
-        46
-      ],
-      "contradicted_qa_ids": [
-        47
-      ]
     }
   ],
   "qa": [
-    {
-      "question": "Is the red star below the lime star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the red star above the lime star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
-      "question": "Is the red star to the left of the yellow star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the red star to the right of the yellow star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
-      "question": "Is the lime star above the pink circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the lime star below the pink circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
-      "question": "Is the yellow star to the right of the red star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the yellow star left of the red star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
-      "question": "Is the pink circle below the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the pink circle above the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
-      "question": "Is the yellow star to the left of the lime star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the yellow star to the right of the lime star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 5,
-      "id": 11
-    },
-    {
-      "question": "Is the red star below the yellow star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the red star above the yellow star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the lime star above the yellow star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the lime star below the yellow star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the red star above the pink circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the red star below the pink circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the pink circle below the lime star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the pink circle above the lime star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the lime star to the right of the red star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the lime star left of the red star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 10,
-      "id": 21
-    },
-    {
-      "question": "Is the yellow star above the pink circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 11,
-      "id": 22
-    },
-    {
-      "question": "Is the yellow star below the pink circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 11,
-      "id": 23
-    },
-    {
-      "question": "Is the pink circle right of the yellow star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 12,
-      "id": 24
-    },
-    {
-      "question": "Is the pink circle to the left of the yellow star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 12,
-      "id": 25
-    },
-    {
-      "question": "Is the pink circle to the right of the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the pink circle left of the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 13,
-      "id": 27
-    },
-    {
-      "question": "Is the pink circle below the yellow star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 14,
-      "id": 28
-    },
-    {
-      "question": "Is the pink circle above the yellow star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 14,
-      "id": 29
-    },
-    {
-      "question": "Is the red star to the left of the lime star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 15,
-      "id": 30
-    },
-    {
-      "question": "Is the red star to the right of the lime star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 15,
-      "id": 31
-    },
-    {
-      "question": "Is the lime star to the right of the yellow star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 16,
-      "id": 32
-    },
-    {
-      "question": "Is the lime star left of the yellow star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 16,
-      "id": 33
-    },
-    {
-      "question": "Is the yellow star below the lime star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 17,
-      "id": 34
-    },
-    {
-      "question": "Is the yellow star above the lime star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 17,
-      "id": 35
-    },
-    {
-      "question": "Is the lime star above the red star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 18,
-      "id": 36
-    },
-    {
-      "question": "Is the lime star below the red star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 18,
-      "id": 37
-    },
-    {
-      "question": "Is the yellow star left of the pink circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 19,
-      "id": 38
-    },
-    {
-      "question": "Is the yellow star to the right of the pink circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 19,
-      "id": 39
-    },
-    {
-      "question": "Is the lime star left of the pink circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 20,
-      "id": 40
-    },
-    {
-      "question": "Is the lime star right of the pink circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 20,
-      "id": 41
-    },
-    {
-      "question": "Is the pink circle right of the lime star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 21,
-      "id": 42
-    },
-    {
-      "question": "Is the pink circle left of the lime star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 21,
-      "id": 43
-    },
     {
       "question": "Is the yellow star above the red star?",
       "answer": "yes",
@@ -1113,8 +587,8 @@
       "rel_type": "above",
       "rel_group": "PRIMARY",
       "rel_phrase": "above",
-      "caption_id": 22,
-      "id": 44
+      "caption_id": 0,
+      "id": 0
     },
     {
       "question": "Is the yellow star below the red star?",
@@ -1124,30 +598,470 @@
       "rel_type": "below",
       "rel_group": "PRIMARY",
       "rel_phrase": "below",
-      "caption_id": 22,
-      "id": 45
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the red star below the yellow star?",
+      "answer": "yes",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the red star above the yellow star?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 1,
+      "id": 3
+    },
+    {
+      "question": "Is the lime star left of the red star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 2,
+      "id": 4
+    },
+    {
+      "question": "Is the lime star to the right of the red star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 2,
+      "id": 5
+    },
+    {
+      "question": "Is the red star below the lime star?",
+      "answer": "yes",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 3,
+      "id": 6
+    },
+    {
+      "question": "Is the red star above the lime star?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 3,
+      "id": 7
+    },
+    {
+      "question": "Is the lime star to the left of the pink circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 4,
+      "id": 8
+    },
+    {
+      "question": "Is the lime star to the right of the pink circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 4,
+      "id": 9
+    },
+    {
+      "question": "Is the lime star above the yellow star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 5,
+      "id": 10
+    },
+    {
+      "question": "Is the lime star below the yellow star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 5,
+      "id": 11
+    },
+    {
+      "question": "Is the lime star right of the yellow star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 6,
+      "id": 12
+    },
+    {
+      "question": "Is the lime star to the left of the yellow star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 6,
+      "id": 13
+    },
+    {
+      "question": "Is the pink circle below the lime star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 7,
+      "id": 14
+    },
+    {
+      "question": "Is the pink circle above the lime star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 7,
+      "id": 15
+    },
+    {
+      "question": "Is the lime star above the red star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 8,
+      "id": 16
+    },
+    {
+      "question": "Is the lime star below the red star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 8,
+      "id": 17
+    },
+    {
+      "question": "Is the pink circle right of the yellow star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 9,
+      "id": 18
+    },
+    {
+      "question": "Is the pink circle left of the yellow star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 9,
+      "id": 19
+    },
+    {
+      "question": "Is the yellow star below the lime star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 10,
+      "id": 20
+    },
+    {
+      "question": "Is the yellow star above the lime star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 10,
+      "id": 21
+    },
+    {
+      "question": "Is the yellow star left of the lime star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 11,
+      "id": 22
+    },
+    {
+      "question": "Is the yellow star to the right of the lime star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 11,
+      "id": 23
+    },
+    {
+      "question": "Is the pink circle below the yellow star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 12,
+      "id": 24
+    },
+    {
+      "question": "Is the pink circle above the yellow star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 12,
+      "id": 25
+    },
+    {
+      "question": "Is the red star right of the yellow star?",
+      "answer": "yes",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 13,
+      "id": 26
+    },
+    {
+      "question": "Is the red star left of the yellow star?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 13,
+      "id": 27
+    },
+    {
+      "question": "Is the pink circle to the left of the red star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 14,
+      "id": 28
+    },
+    {
+      "question": "Is the pink circle to the right of the red star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 14,
+      "id": 29
+    },
+    {
+      "question": "Is the yellow star to the left of the red star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 15,
+      "id": 30
+    },
+    {
+      "question": "Is the yellow star to the right of the red star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 15,
+      "id": 31
+    },
+    {
+      "question": "Is the yellow star left of the pink circle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 16,
+      "id": 32
+    },
+    {
+      "question": "Is the yellow star to the right of the pink circle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 16,
+      "id": 33
+    },
+    {
+      "question": "Is the yellow star above the pink circle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 17,
+      "id": 34
+    },
+    {
+      "question": "Is the yellow star below the pink circle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 17,
+      "id": 35
+    },
+    {
+      "question": "Is the lime star above the pink circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 18,
+      "id": 36
+    },
+    {
+      "question": "Is the lime star below the pink circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 18,
+      "id": 37
+    },
+    {
+      "question": "Is the pink circle to the right of the lime star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 19,
+      "id": 38
+    },
+    {
+      "question": "Is the pink circle left of the lime star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 19,
+      "id": 39
+    },
+    {
+      "question": "Is the red star to the right of the pink circle?",
+      "answer": "yes",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 20,
+      "id": 40
     },
     {
       "question": "Is the red star left of the pink circle?",
-      "answer": "yes",
+      "answer": "no",
       "subject_id": 3,
       "object_id": 0,
       "rel_type": "left_of",
       "rel_group": "PRIMARY",
       "rel_phrase": "left of",
-      "caption_id": 23,
-      "id": 46
+      "caption_id": 20,
+      "id": 41
     },
     {
-      "question": "Is the red star right of the pink circle?",
-      "answer": "no",
+      "question": "Is the red star to the right of the lime star?",
+      "answer": "yes",
       "subject_id": 3,
-      "object_id": 0,
+      "object_id": 1,
       "rel_type": "right_of",
       "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 23,
-      "id": 47
+      "rel_phrase": "to the right of",
+      "caption_id": 21,
+      "id": 42
+    },
+    {
+      "question": "Is the red star left of the lime star?",
+      "answer": "no",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 21,
+      "id": 43
     }
   ],
   "meta": {
