@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "cyan",
+      "center": [
+        203,
+        189
+      ],
+      "size": 10,
+      "bbox": [
+        198,
+        184,
+        208,
+        194
+      ],
+      "patch_indices": [
+        321
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "red",
+      "center": [
+        217,
+        189
+      ],
+      "size": 10,
+      "bbox": [
+        212,
+        184,
+        222,
+        194
+      ],
+      "patch_indices": [
+        320
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan triangle is left of the red square.",
+    "The red square is right of the cyan triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red square is to the left of the cyan triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan triangle is right of the red square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan triangle left of the red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan triangle right of the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square above the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan triangle above the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan triangle left of the red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square left of the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square right of the cyan triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square right of the cyan triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        175,
+        132
+      ],
+      "size": 10,
+      "bbox": [
+        170,
+        127,
+        180,
+        137
+      ],
+      "patch_indices": [
+        302
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "lime",
+      "center": [
+        175,
+        146
+      ],
+      "size": 10,
+      "bbox": [
+        170,
+        141,
+        180,
+        151
+      ],
+      "patch_indices": [
+        301
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink circle is below the lime circle.",
+    "The lime circle is above the pink circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime circle is left of the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is to the right of the lime circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink circle below the lime circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime circle above the pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink circle right of the lime circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink circle left of the lime circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime circle above the pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime circle left of the pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink circle below the lime circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime circle right of the pink circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

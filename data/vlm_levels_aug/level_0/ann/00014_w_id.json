@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        175,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        170,
+        240,
+        180,
+        250
+      ],
+      "patch_indices": [
+        420
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        189,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        240,
+        194,
+        250
+      ],
+      "patch_indices": [
+        421
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange square is left of the yellow circle.",
+    "The yellow circle is right of the orange square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange square is to the left of the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is right of the orange square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow circle right of the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle left of the orange square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow circle right of the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square left of the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square left of the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square right of the yellow circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange square below the yellow circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange square above the yellow circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

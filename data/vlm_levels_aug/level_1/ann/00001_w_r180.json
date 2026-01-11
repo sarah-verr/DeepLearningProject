@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        259,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        254,
+        128,
+        264,
+        138
+      ],
+      "patch_indices": [
+        341
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        217,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        212,
+        128,
+        222,
+        138
+      ],
+      "patch_indices": [
+        344
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red triangle is right of the blue star.",
+    "The blue star is left of the red triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red triangle is left of the blue star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue star is right of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the blue star above the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red triangle above the blue star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue star right of the red triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue star left of the red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue star left of the red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle right of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle right of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red triangle left of the blue star?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

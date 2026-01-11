@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        189,
+        105
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        100,
+        194,
+        110
+      ],
+      "patch_indices": [
+        397
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        189,
+        63
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        58,
+        194,
+        68
+      ],
+      "patch_indices": [
+        469
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple triangle is below the yellow square.",
+    "The yellow square is above the purple triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple triangle is above the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow square is below the purple triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow square above the purple triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow square left of the purple triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square above the purple triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple triangle below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple triangle right of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple triangle left of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple triangle below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple triangle above the yellow square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "lime",
+      "center": [
+        133,
+        104
+      ],
+      "size": 10,
+      "bbox": [
+        128,
+        99,
+        138,
+        109
+      ],
+      "patch_indices": [
+        232
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        119,
+        104
+      ],
+      "size": 10,
+      "bbox": [
+        114,
+        99,
+        124,
+        109
+      ],
+      "patch_indices": [
+        208
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime triangle is left of the blue triangle.",
+    "The blue triangle is right of the lime triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue triangle is above the lime triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime triangle is below the blue triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the blue triangle right of the lime triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime triangle right of the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime triangle left of the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime triangle below the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle left of the lime triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle right of the lime triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime triangle left of the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle above the lime triangle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

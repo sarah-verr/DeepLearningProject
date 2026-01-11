@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        271,
+        61
+      ],
+      "size": 10,
+      "bbox": [
+        266,
+        56,
+        276,
+        66
+      ],
+      "patch_indices": [
+        100
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "purple",
+      "center": [
+        271,
+        75
+      ],
+      "size": 10,
+      "bbox": [
+        266,
+        70,
+        276,
+        80
+      ],
+      "patch_indices": [
+        101
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange square is below the purple star.",
+    "The purple star is above the orange square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple star is to the right of the orange square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange square is to the left of the purple star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the purple star left of the orange square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple star below the orange square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple star above the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square below the purple star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square above the purple star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange square below the purple star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple star above the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple star right of the orange square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
