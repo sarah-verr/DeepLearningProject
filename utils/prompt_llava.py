@@ -14,24 +14,27 @@ from .prompt_templates import (
     build_visual_yesno_prompt,
     build_caption_yesno_prompt,
     build_scene_yesno_prompt,
+    build_caption_text_yesno_prompt,
 )
 
 from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
-
+VLM_LEVELS_DIR = "data/vlm_levels"
+VLM_TEXT_DIR = "data/vlm_levels_objective"
 
 # CORE FUNCTIONS: The below two functions ensure that model initialisation params and generation config are standardised across inferences
 def _init_model(MODEL_ID: str,
     output_hidden_states: bool = False,
+    output_attentions: bool = False,
 ):
     processor = LlavaProcessor.from_pretrained(MODEL_ID)
     model = LlavaForConditionalGeneration.from_pretrained(
         MODEL_ID,
         dtype=torch.float16,
         low_cpu_mem_usage=True,
-        output_attentions=False,
-        attn_implementation = "eager",
+        output_attentions=output_attentions,
+        attn_implementation="eager",
         output_hidden_states=output_hidden_states,
     )
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -39,15 +42,107 @@ def _init_model(MODEL_ID: str,
     model.eval()
     return processor, model, device
 
-def generate_output_for_model(model, inputs):
+def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
     generated_out = model.generate(
                         **inputs,
-                        max_new_tokens=10,
+                        max_new_tokens=max_new_tokens,
                         output_scores=True,
                         output_attentions=False,
                         return_dict_in_generate=True,)
     
     return generated_out
+
+
+def init_model(
+    model_id: str,
+    *,
+    output_hidden_states: bool = False,
+    output_attentions: bool = False,
+):
+    return _init_model(
+        model_id,
+        output_hidden_states=output_hidden_states,
+        output_attentions=output_attentions,
+    )
+
+
+def build_prompt(
+    processor,
+    prompt_strategy: Literal["visual", "caption", "scene", "text_only"],
+    question: str,
+    *,
+    annotation: Optional[Dict[str, Any]] = None,
+    caption: Optional[str] = None,
+    qa_item: Optional[Dict[str, Any]] = None,
+) -> str:
+    if prompt_strategy == "text_only":
+        if not caption:
+            raise ValueError("caption is required for text_only prompts.")
+        convo = build_caption_text_yesno_prompt(caption, question)
+    elif prompt_strategy == "visual":
+        convo = build_visual_yesno_prompt(question)
+    elif prompt_strategy == "caption":
+        if annotation is None:
+            raise ValueError("annotation is required for caption prompts.")
+        if qa_item is None:
+            qa_item = {"question": question}
+        convo = build_caption_yesno_prompt(annotation, qa_item)
+    elif prompt_strategy == "scene":
+        if annotation is None:
+            raise ValueError("annotation is required for scene prompts.")
+        convo = build_scene_yesno_prompt(annotation, question)
+    else:
+        raise ValueError(f"Unknown prompt strategy: {prompt_strategy}")
+    return processor.apply_chat_template(convo, add_generation_prompt=True)
+
+
+def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = None, device: Optional[str] = None):
+    if image is None:
+        inputs = processor(text=prompt, return_tensors="pt")
+    else:
+        inputs = processor(text=prompt, images=image, return_tensors="pt")
+    if device:
+        inputs = inputs.to(device)
+    return inputs
+
+
+def generate_output(model, inputs, *, max_new_tokens: int = 10):
+    return generate_output_for_model(model, inputs, max_new_tokens=max_new_tokens)
+
+
+def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Optional[float]]:
+    scores = getattr(outputs, "scores", None)
+    if not scores:
+        return None, None, None
+
+    first_token_logits = scores[0][0]
+    probs = torch.softmax(first_token_logits, dim=-1)
+
+    yes_variants = ["Yes", " yes", "yes"]
+    no_variants = ["No", " no", "no"]
+
+    def _token_ids(variants: List[str]) -> set[int]:
+        ids: set[int] = set()
+        for s in variants:
+            enc = tokenizer.encode(s, add_special_tokens=False)
+            if enc:
+                ids.add(int(enc[-1]))
+        return ids
+
+    yes_ids = _token_ids(yes_variants)
+    no_ids = _token_ids(no_variants)
+
+    p_yes = float(sum(probs[t].item() for t in yes_ids if t < probs.numel()))
+    p_no = float(sum(probs[t].item() for t in no_ids if t < probs.numel()))
+
+    denom = p_yes + p_no
+    if denom <= 0:
+        return None, None, None
+
+    p_yes_n = p_yes / denom
+    p_no_n = p_no / denom
+    pred = "yes" if p_yes_n >= p_no_n else "no"
+    return pred, p_yes_n, p_no_n
 
 def infer_model_for_levels(
     level_ids: List[str],
@@ -136,6 +231,7 @@ def infer_model_for_levels(
 
 
     return results_list
+
 
 def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual"):
     """
@@ -296,8 +392,7 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
 def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
     """Load all annotation JSONs for all images in a given level."""
     ann_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "data/vlm_levels",
+        VLM_LEVELS_DIR,
         level_id,
         "ann",
     )
@@ -316,8 +411,7 @@ def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
 def _get_images(level_id: str) -> List[Image.Image]:
     """Load all images for a given level."""
     img_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "data/vlm_levels",
+        VLM_LEVELS_DIR,
         level_id,
         "images",
     )
