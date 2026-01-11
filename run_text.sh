@@ -7,11 +7,8 @@ unset SBATCH_GRES SBATCH_GPUS SBATCH_GRES_PER_TASK SBATCH_TRES_PER_TASK SBATCH_G
 
 sbatch <<EOF
 #!/bin/bash
-#SBATCH --job-name=objective_text
+#SBATCH --job-name=logit_lens
 #SBATCH --account=deep_learning
-#SBATCH --time=04:00:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=24G
 #SBATCH --output=${REPO_DIR}/logs/%x-%j.out
 #SBATCH --error=${REPO_DIR}/logs/%x-%j.err
 
@@ -29,6 +26,9 @@ mkdir -p "\$HF_HUB_CACHE" "\$TRANSFORMERS_CACHE" "\$HF_DATASETS_CACHE" "\$TORCH_
 
 source venv/bin/activate
 
-python3 Text-Only/text_only_objective_vlm_prompt.py --levels level_1
-python3 Text-Only/Analysis/analyze_objective_attention.py
+# python3 Text-Only/text_only_objective_vlm_prompt.py --levels level_1
+# python3 Text-Only/Analysis/analyze_objective_attention.py
+python experiments/logit_lens/run_text_only_objective.py
+python experiments/logit_lens/run_visual_logit_lens.py
+
 EOF
