@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        21,
+        253
+      ],
+      "size": 23,
+      "bbox": [
+        10,
+        242,
+        32,
+        264
+      ],
+      "patch_indices": [
+        93,
+        94,
+        95,
+        117,
+        118,
+        119,
+        141,
+        142,
+        143
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        259,
+        281
+      ],
+      "size": 24,
+      "bbox": [
+        247,
+        269,
+        271,
+        293
+      ],
+      "patch_indices": [
+        28,
+        29,
+        30,
+        52,
+        53,
+        54,
+        76,
+        77,
+        78
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red circle is left of the lime square.",
+    "The red circle is above the lime square.",
+    "The lime square is right of the red circle.",
+    "The lime square is below the red circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime square is left of the red circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red circle is to the right of the lime square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The lime square is above the red circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The red circle is below the lime square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the lime square below the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square left of the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square above the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle left of the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red circle right of the lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle above the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square below the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red circle below the lime square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "cyan",
+      "center": [
+        132,
+        189
+      ],
+      "size": 10,
+      "bbox": [
+        127,
+        184,
+        137,
+        194
+      ],
+      "patch_indices": [
+        349
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        132,
+        203
+      ],
+      "size": 10,
+      "bbox": [
+        127,
+        198,
+        137,
+        208
+      ],
+      "patch_indices": [
+        350
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan star is below the orange triangle.",
+    "The orange triangle is above the cyan star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan star is to the left of the orange triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange triangle is to the right of the cyan star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan star left of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan star below the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange triangle above the cyan star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan star above the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle left of the cyan star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan star below the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange triangle right of the cyan star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle above the cyan star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

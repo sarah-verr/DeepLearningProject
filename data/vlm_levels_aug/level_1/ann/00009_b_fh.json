@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        189,
+        175
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        170,
+        194,
+        180
+      ],
+      "patch_indices": [
+        298
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        189,
+        147
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        142,
+        194,
+        152
+      ],
+      "patch_indices": [
+        250
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow circle is below the orange triangle.",
+    "The orange triangle is above the yellow circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow circle is below the orange triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange triangle is above the yellow circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow circle below the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle left of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow circle above the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle above the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle below the orange triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange triangle above the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle right of the orange triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange triangle right of the yellow circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

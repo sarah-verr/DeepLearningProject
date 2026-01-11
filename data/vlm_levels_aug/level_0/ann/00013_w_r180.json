@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        2,
+        70
+      ],
+      "size": 10,
+      "bbox": [
+        0,
+        65,
+        5,
+        75
+      ],
+      "patch_indices": [
+        454
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        14,
+        70
+      ],
+      "size": 10,
+      "bbox": [
+        9,
+        65,
+        19,
+        75
+      ],
+      "patch_indices": [
+        453
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red circle is left of the lime square.",
+    "The lime square is right of the red circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime square is left of the red circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red circle is to the right of the lime square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red circle right of the lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square right of the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square above the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square right of the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square left of the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square below the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle left of the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red circle left of the lime square?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

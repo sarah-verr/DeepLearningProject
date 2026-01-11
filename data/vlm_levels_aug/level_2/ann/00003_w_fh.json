@@ -1,0 +1,146 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        197,
+        27
+      ],
+      "size": 19,
+      "bbox": [
+        188,
+        18,
+        206,
+        36
+      ],
+      "patch_indices": [
+        31,
+        32,
+        33,
+        55,
+        56,
+        57,
+        79,
+        80,
+        81
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "yellow",
+      "center": [
+        127,
+        27
+      ],
+      "size": 21,
+      "bbox": [
+        117,
+        17,
+        137,
+        37
+      ],
+      "patch_indices": [
+        36,
+        37,
+        38,
+        60,
+        61,
+        62,
+        84,
+        85,
+        86
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue triangle is right of the yellow star.",
+    "The yellow star is left of the blue triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue triangle is to the left of the yellow star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow star is to the right of the blue triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow star above the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle right of the yellow star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow star left of the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow star right of the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle left of the yellow star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue triangle right of the yellow star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow star below the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow star left of the blue triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

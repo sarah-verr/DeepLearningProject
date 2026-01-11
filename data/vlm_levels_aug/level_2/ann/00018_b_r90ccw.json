@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        20,
+        245
+      ],
+      "size": 26,
+      "bbox": [
+        7,
+        232,
+        33,
+        258
+      ],
+      "patch_indices": [
+        520,
+        521,
+        522,
+        544,
+        545,
+        546,
+        568,
+        569,
+        570
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "lime",
+      "center": [
+        160,
+        273
+      ],
+      "size": 26,
+      "bbox": [
+        147,
+        260,
+        173,
+        286
+      ],
+      "patch_indices": [
+        282,
+        283,
+        284,
+        306,
+        307,
+        308,
+        330,
+        331,
+        332
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue triangle is below the lime circle.",
+    "The blue triangle is right of the lime circle.",
+    "The lime circle is above the blue triangle.",
+    "The lime circle is left of the blue triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime circle is above the blue triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue triangle is to the left of the lime circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The blue triangle is below the lime circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The lime circle is right of the blue triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the blue triangle right of the lime circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime circle left of the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle above the lime circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime circle right of the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime circle below the blue triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime circle above the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime circle above the blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue triangle left of the lime circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

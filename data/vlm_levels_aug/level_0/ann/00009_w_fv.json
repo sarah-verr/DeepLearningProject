@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        57,
+        56
+      ],
+      "size": 10,
+      "bbox": [
+        52,
+        51,
+        62,
+        61
+      ],
+      "patch_indices": [
+        460
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "cyan",
+      "center": [
+        71,
+        56
+      ],
+      "size": 10,
+      "bbox": [
+        66,
+        51,
+        76,
+        61
+      ],
+      "patch_indices": [
+        461
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue star is left of the cyan triangle.",
+    "The cyan triangle is right of the blue star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan triangle is to the right of the blue star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue star is to the left of the cyan triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan triangle left of the blue star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue star left of the cyan triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan triangle right of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue star below the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue star right of the cyan triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan triangle right of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue star left of the cyan triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan triangle above the blue star?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

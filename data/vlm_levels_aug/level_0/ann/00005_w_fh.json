@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        203,
+        301
+      ],
+      "size": 10,
+      "bbox": [
+        198,
+        296,
+        208,
+        306
+      ],
+      "patch_indices": [
+        513
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        203,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        198,
+        310,
+        208,
+        320
+      ],
+      "patch_indices": [
+        537
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan square is above the pink square.",
+    "The pink square is below the cyan square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink square is below the cyan square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan square is above the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink square left of the cyan square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink square below the cyan square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square below the cyan square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square right of the cyan square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan square above the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan square left of the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan square above the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square above the cyan square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

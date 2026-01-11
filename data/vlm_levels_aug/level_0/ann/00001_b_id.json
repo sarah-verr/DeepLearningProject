@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "green",
+      "center": [
+        30,
+        120
+      ],
+      "size": 10,
+      "bbox": [
+        25,
+        115,
+        35,
+        125
+      ],
+      "patch_indices": [
+        219
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        30,
+        106
+      ],
+      "size": 10,
+      "bbox": [
+        25,
+        101,
+        35,
+        111
+      ],
+      "patch_indices": [
+        195
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green triangle is below the yellow circle.",
+    "The yellow circle is above the green triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green triangle is below the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is above the green triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the green triangle below the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green triangle right of the yellow circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green triangle below the yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle left of the green triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow circle below the green triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow circle above the green triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle above the green triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow circle right of the green triangle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
