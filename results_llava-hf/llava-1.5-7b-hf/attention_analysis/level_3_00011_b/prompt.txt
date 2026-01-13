@@ -1,4 +1,4 @@
 USER: <image>
 Use the spatial layout in the image to answer the following relational reasoning question with either "yes" or "no". 
-QUESTION: Is the red star above the yellow circle?
+QUESTION: Is the yellow circle above the lime square?
  ASSISTANT:

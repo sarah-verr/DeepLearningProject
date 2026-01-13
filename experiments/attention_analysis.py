@@ -71,7 +71,7 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             # Randomly sample one qa_id
             qa_id = random.choice(qa_ids)
             
-            attentions, prompt = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+            attentions, output = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
 
             # Convert to numpy array for processing
             attentions_array = np.array(attentions)
@@ -87,7 +87,7 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
 
             # pick the only batch item
             attentions = attentions_array[:, 0, :, :, :]
-            print("Prompt: ", prompt)
+            print("Prompt + Ouput: ", output)
 
             # Pick specific combinations of layer and head of interest
             if layers_and_heads_to_plot is None:

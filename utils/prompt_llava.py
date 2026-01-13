@@ -39,6 +39,9 @@ def _init_model(MODEL_ID: str,
         output_hidden_states=output_hidden_states,
     )
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.backends.mps.is_available() and device != "cuda":
+        device = "mps"
+        print("Using mps")
     model.to(device)
     model.eval()
     return processor, model, device
@@ -406,11 +409,13 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     image_positions = torch.where(full_inputs["input_ids"][0] == image_token_id)[0].cpu().numpy()
     attentions_np = [att[:, :, :, image_positions] for att in attentions_np]
     
+    full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
+    
     # Clean up
     del gen_out, inputs, full_inputs, fwd_out
     torch.cuda.empty_cache()
 
-    return attentions_np, prompt
+    return attentions_np, full_output
 
 # HELPERS to load data, build prompts, get yes\no probabilities
 
