@@ -95,6 +95,17 @@ def _mean_by_layer(curves: list[list[float]]) -> list[float]:
     return out
 
 
+def _dataset_label(base_dir: str) -> str:
+    b = (base_dir or "").lower()
+    if "visual_logit_lens" in b or "visual" in b:
+        return "image"
+    if "text_only_objective" in b or "text" in b:
+        return "text"
+    if("aug_logit_lens" in b or "aug"):
+        return "augmented"
+    return "dataset"
+
+
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Aggregate logit-lens curves (correct vs wrong).")
     ap.add_argument(
@@ -107,6 +118,12 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=_LOGIT_LENS_OUT_DIR,
     )
+    ap.add_argument(
+        "--levels",
+        nargs="*",
+        default=None,
+        help="Optional list of levels to include (e.g., level_2).",
+    )
     return ap.parse_args()
 
 
@@ -115,8 +132,17 @@ def main() -> None:
     os.makedirs(args.out_dir, exist_ok=True)
 
     levels = _find_level_dirs(args.base_dir)
+    if args.levels:
+        levels = [lvl for lvl in levels if lvl in args.levels]
     if not levels:
         raise SystemExit(f"No level_* directories found in: {args.base_dir}")
+
+    dataset = _dataset_label(args.base_dir)
+    if len(levels) == 1:
+        scope_label = levels[0]
+    else:
+        scope_label = "all levels"
+    title_suffix = f"{dataset}, {scope_label}"
 
     all_correct = []
     all_wrong = []
@@ -190,14 +216,14 @@ def main() -> None:
             corr_curve_yes,
             wrong_curve_yes,
             os.path.join(args.out_dir, f"logit_lens_{lvl}.png"),
-            f"Logit lens p(yes) by layer ({lvl})",
+            f"Logit lens p(yes) by layer ({title_suffix}, {lvl})",
             "P(yes)",
         )
         _plot_curves(
             corr_curve_no,
             wrong_curve_no,
             os.path.join(args.out_dir, f"logit_lens_pno_{lvl}.png"),
-            f"Logit lens p(no) by layer ({lvl})",
+            f"Logit lens p(no) by layer ({title_suffix}, {lvl})",
             "P(no)",
         )
 
@@ -205,14 +231,14 @@ def main() -> None:
         _mean_curves(all_correct),
         _mean_curves(all_wrong),
         os.path.join(args.out_dir, "logit_lens_overall.png"),
-        "Logit lens p(yes) by layer (overall)",
+        f"Logit lens p(yes) by layer ({title_suffix})",
         "P(yes)",
     )
     _plot_curves(
         _mean_curves(all_correct_no),
         _mean_curves(all_wrong_no),
         os.path.join(args.out_dir, "logit_lens_pno_overall.png"),
-        "Logit lens p(no) by layer (overall)",
+        f"Logit lens p(no) by layer ({title_suffix})",
         "P(no)",
     )
 
@@ -221,13 +247,13 @@ def main() -> None:
     _plot_four_curves(
         p_yes_curves,
         os.path.join(args.out_dir, "logit_lens_pyes_by_outcome.png"),
-        "Logit lens p(yes) by outcome",
+        f"Logit lens p(yes) by outcome ({title_suffix})",
         "P(yes)",
     )
     _plot_four_curves(
         p_no_curves,
         os.path.join(args.out_dir, "logit_lens_pno_by_outcome.png"),
-        "Logit lens p(no) by outcome",
+        f"Logit lens p(no) by outcome ({title_suffix})",
         "P(no)",
     )
 
@@ -263,7 +289,7 @@ def main() -> None:
         _plot_four_curves(
             series,
             os.path.join(args.out_dir, "logit_lens_confusion_counts_by_layer.png"),
-            "Logit-lens confusion counts by layer",
+            f"Logit-lens confusion counts by layer ({title_suffix})",
             "Count",
         )
 
@@ -284,7 +310,7 @@ def main() -> None:
         _plot_four_curves(
             series_norm,
             os.path.join(args.out_dir, "logit_lens_confusion_rates_by_layer.png"),
-            "Logit-lens confusion rates by layer",
+            f"Logit-lens confusion rates by layer ({title_suffix})",
             "Rate",
         )
 
