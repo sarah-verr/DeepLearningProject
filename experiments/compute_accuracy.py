@@ -5,14 +5,20 @@ import pandas as pd
 # Single shared Plotter instance manages the results directory
 plotter = Plotter(experiment_name="compute_accuracy")
 
-def compute_accuracy_for_all_levels(prompt_strategy: str = "visual") -> float:
+def compute_accuracy_for_all_levels(prompt_strategy: str = "visual", masked = False) -> float:
     levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
-    result_list = infer_model_for_levels(level_ids=levels, prompt_strategy=prompt_strategy, use_plain_images=True)
+    result_list = infer_model_for_levels(level_ids=levels, prompt_strategy=prompt_strategy, use_plain_images=masked)
 
     # Convert to DataFrame for easier tracking
     results_df = pd.DataFrame(result_list)
     # Save results to CSV
-    results_df.to_csv(plotter.results_dir / "simple_results_all_levels_with_masked_images.csv", index=False)
+    filename = None
+    if masked:
+        filename = "simple_results_all_levels_with_masked_images.csv"
+    else:
+        filename = "simple_results_all_levels.csv"
+
+    results_df.to_csv(plotter.results_dir / filename, index=False)
     # Create a new column: whether the prediction was correct
     results_df["correct"] = results_df["prediction"] == results_df["ground_truth"]
 

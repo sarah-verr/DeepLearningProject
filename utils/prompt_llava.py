@@ -165,12 +165,12 @@ def infer_model_for_levels(
                 with torch.no_grad():
                         output = generate_output_for_model(model, inputs)
                 # Extract just the generated part (after the prompt)]
+                full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
                 if show_llm_output:
                     if output == None:
                         print("No output generated.")
 
                     # Also decode full output to see prompt + answer
-                    full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
                     print(f"\n--- Model Response {level_id} image: {image_id} ---")
                     print(f"{full_output}")
                     print("---" * 20)
@@ -191,7 +191,7 @@ def infer_model_for_levels(
                     "image_id": image_id,
                     "qa_id": qa_pair["id"],
                     "question": qa_pair["question"],
-                    "ground_truth": qa_pair["answer"],
+                    "response": full_output,
                     "prediction": prediction,
                     "confidence": confidence,
                     "num_image_tokens": n_image_tokens,
@@ -254,6 +254,8 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 with torch.no_grad():
                     gen_out = generate_output_for_model(model, inputs)
 
+                full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
+
                 prediction, confidence, _, _ = get_yes_no_probability(
                     gen_out, tokenizer=processor.tokenizer
                 )
@@ -315,7 +317,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                         "image_id": image_id,
                         "qa_id": qa["id"],
                         "question": qa["question"],
-                        "ground_truth": qa["answer"],
+                        "response": full_output,
                         "prediction": prediction,
                         "confidence": confidence,
                         "relation_type": qa["rel_type"],
