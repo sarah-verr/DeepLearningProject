@@ -41,6 +41,7 @@ def aggregate_attention_from_source_to_target(
         num_heads = layer_all.shape[0]
 
         head_fracs = []
+        head_entropies = []
         for h in range(num_heads):
             mat = layer_all[h]  # [seq, seq]
             # sum attention from all source tokens to all tokens
@@ -50,12 +51,34 @@ def aggregate_attention_from_source_to_target(
             frac = src_to_tgt / (src_to_all + 1e-9) if src_to_all > 0 else 0.0
             head_fracs.append(float(frac))
 
+            # Entropy over the target group
+            # For each source token, compute entropy of its attention over target tokens
+            # NOTE: We take average entropy from source token(s) to target tokens; there can be multiple source tokens -> multiple distributions over the sequence tokens
+            attn_weights = mat[source_token_indices][:, target_token_indices]  # [num_src, num_tgt]
+            entropies = []
+            for i in range(attn_weights.shape[0]):
+                row = attn_weights[i]
+                row_sum = row.sum().item()
+                if row_sum > 0:
+                    probs = row / (row_sum + 1e-9)
+                    probs = probs[probs > 0]  # avoid log(0)
+                    entropy = -float((probs * probs.log()).sum().item())
+                else:
+                    entropy = 0.0
+                entropies.append(entropy)
+            # Average entropy across source tokens
+            avg_entropy = float(sum(entropies) / len(entropies)) if entropies else 0.0
+            head_entropies.append(avg_entropy)
+
         mean_frac = float(sum(head_fracs) / len(head_fracs)) if head_fracs else 0.0
+        mean_entropy = float(sum(head_entropies) / len(head_entropies)) if head_entropies else 0.0
         per_layer.append(
             {
                 "layer_idx": int(layer_idx),
                 "per_head_fraction": head_fracs,
                 "mean_fraction": mean_frac,
+                "per_head_entropy": head_entropies,
+                "mean_entropy": mean_entropy,
             }
         )
 

@@ -48,6 +48,13 @@ class Plotter:
                 f.write(json.dumps(item) + "\n")
         return out_path
 
+    def save_numpy(self, data: np.ndarray, filename: str, subdir: str | None = None) -> Path:
+        """Save numpy array under the results dir."""
+        out_dir = self._subdir(subdir)
+        out_path = out_dir / filename
+        np.save(out_path, data)
+        return out_path
+
     def _subdir(self, name: str | None) -> Path:
         if name:
             d = self._results_dir / name

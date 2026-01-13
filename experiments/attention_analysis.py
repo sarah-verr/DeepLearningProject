@@ -2,12 +2,13 @@
 This file contains the code that uses the output from pure inference, and then runs the same input over the model again (without generation) to compute attentions that the model saw during generation
 """
 
+import numpy as np
 from utils.plotter import Plotter
-from utils.prompt_llava import infer_model_with_attention
+from utils.prompt_llava import infer_model_with_attention, visualise_full_attention
 
-def attention_distribution_between_text_and_visual(levels):
+def aggregate_attention_and_save_to_file(levels):
     """
-    This function computes the attention distribution placed from last_token to visual tokens vs text tokens
+    This function computes that attention (aggregated as mean, per head, layer) and saves it to a json file: attention_results_all_levels.jsonl in the results_{model} folder
     """
 
     # These are the source -> target combinations of interest for us and hence we will store the mean for these
@@ -17,7 +18,9 @@ def attention_distribution_between_text_and_visual(levels):
                     ("relation", "visual_subject"),
                     ("relation", "visual_object"),
                     ("last", "all_text"),
-                    ("last", "all_visual")
+                    ("last", "all_visual"),
+                    ("relation", "all_text"),
+                    ("relation", "all_visual")
     ]
 
     attn_results = infer_model_with_attention(levels, key_pairs, "visual")
@@ -40,4 +43,9 @@ def attention_distribution_between_text_and_visual(levels):
     # #    (plot_attention_by_relation expects the full attn_results list)
     # plotter.plot_attention_by_relation(attn_results)
 
+def full_detailed_attention_map_for_sample(level_id, image_id, qa_id):
+    attentions = visualise_full_attention(level_id, image_id, qa_id)
 
+    plotter = Plotter(experiment_name="attention_analysis")
+    output_path = plotter.save_numpy(attentions, f"attention_{level_id}_{image_id}_{qa_id}.npy")
+    print(f"Saved attention data to {output_path}")
