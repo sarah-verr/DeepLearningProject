@@ -12,5 +12,5 @@ if __name__ == "__main__":
     # aggregate_attention_and_save_to_file(levels)
 
     # For all levels, process 5 random samples each
-    # full_detailed_attention_map_for_sample(levels, num_samples=3)
+    full_detailed_attention_map_for_sample(levels, num_samples=1)
     
