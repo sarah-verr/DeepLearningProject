@@ -100,10 +100,14 @@ def main() -> None:
 
     print(f"Loading model: {args.model_id}")
 <<<<<<< HEAD
+<<<<<<< HEAD
     processor, model, device = prompt_llava.init_model(args.model_id)
 =======
     processor, model, device = prompt_llava._init_model(args.model_id)
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+    processor, model, device = prompt_llava._init_model(args.model_id)
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     tokenizer = processor.tokenizer
     include_logit_lens = not args.no_logit_lens
 
@@ -159,10 +163,14 @@ def main() -> None:
                             device=device,
                         )
 <<<<<<< HEAD
+<<<<<<< HEAD
                         gen = prompt_llava.generate_output(
 =======
                         gen = prompt_llava.generate_output_for_model(
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+                        gen = prompt_llava.generate_output_for_model(
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                             model,
                             inputs,
                             max_new_tokens=args.max_new_tokens,
@@ -171,10 +179,14 @@ def main() -> None:
                         pred_text = decoded.split("ASSISTANT:", 1)[-1].strip()
                         pred = _get_yesno_from_generated_text(pred_text)
 <<<<<<< HEAD
+<<<<<<< HEAD
                         score_pred, p_yes, p_no = prompt_llava.score_yesno(gen, tokenizer)
 =======
                         score_pred, _, p_yes, p_no = prompt_llava.get_yes_no_probability(gen, tokenizer)
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+                        score_pred, _, p_yes, p_no = prompt_llava.get_yes_no_probability(gen, tokenizer)
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                         if score_pred is not None:
                             pred = score_pred
 

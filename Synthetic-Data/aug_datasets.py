@@ -6,17 +6,23 @@ from PIL import Image, ImageOps
 # ------------ CONFIG ------------
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Root folders for your generated 6-level dataset
 ROOT_IN  = "vlm_levels"         # where generate_dataset.py wrote level_1..level_6
 ROOT_OUT = "vlm_levels_aug"     # where we will write augmented data
 
 LEVELS   = [1, 2, 3, 4, 5, 6]   # which levels to augment
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 ROOT_IN  = "data/vlm_levels"         # where generate_dataset.py wrote level_1..level_6
 ROOT_OUT = "data/vlm_levels_aug"     # where we will write augmented data
 
 LEVELS   = [0, 1, 2, 3, 4]   # which levels to augment
+<<<<<<< HEAD
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 N_AUG_PER_IMAGE = 6             # how many transforms per image (max; we sample from TRANSFORMS)
 
 os.makedirs(ROOT_OUT, exist_ok=True)

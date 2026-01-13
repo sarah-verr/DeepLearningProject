@@ -3,6 +3,7 @@ This file contains the code that uses the output from pure inference, and then r
 """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from utils.plotter import Plotter
 from utils.prompt_llava import infer_model_with_attention
 
@@ -10,6 +11,8 @@ def attention_distribution_between_text_and_visual(levels):
     """
     This function computes the attention distribution placed from last_token to visual tokens vs text tokens
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 import numpy as np
 from utils.plotter import Plotter
 from utils.prompt_llava import infer_model_with_attention, visualise_full_attention, _init_model, MODEL_ID
@@ -22,7 +25,10 @@ import torch
 def aggregate_attention_and_save_to_file(levels):
     """
     This function computes that attention (aggregated as mean, per head, layer) and saves it to a json file: attention_results_all_levels.jsonl in the results_{model} folder
+<<<<<<< HEAD
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     """
 
     # These are the source -> target combinations of interest for us and hence we will store the mean for these
@@ -33,12 +39,18 @@ def aggregate_attention_and_save_to_file(levels):
                     ("relation", "visual_object"),
                     ("last", "all_text"),
 <<<<<<< HEAD
+<<<<<<< HEAD
                     ("last", "all_visual")
 =======
                     ("last", "all_visual"),
                     ("relation", "all_text"),
                     ("relation", "all_visual")
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+                    ("last", "all_visual"),
+                    ("relation", "all_text"),
+                    ("relation", "all_visual")
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     ]
 
     attn_results = infer_model_with_attention(levels, key_pairs, "visual")
@@ -62,8 +74,11 @@ def aggregate_attention_and_save_to_file(levels):
     # plotter.plot_attention_by_relation(attn_results)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_heads_to_plot=None):
     # Load model once
     processor, model, device = _init_model(MODEL_ID, output_attentions=True)
@@ -87,7 +102,11 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             # Randomly sample one qa_id
             qa_id = random.choice(qa_ids)
             
+<<<<<<< HEAD
             attentions, prompt = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+=======
+            attentions, output = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
             # Convert to numpy array for processing
             attentions_array = np.array(attentions)
@@ -103,7 +122,11 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
 
             # pick the only batch item
             attentions = attentions_array[:, 0, :, :, :]
+<<<<<<< HEAD
             print("Prompt: ", prompt)
+=======
+            print("Prompt + Ouput: ", output)
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
             # Pick specific combinations of layer and head of interest
             if layers_and_heads_to_plot is None:
@@ -132,5 +155,9 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
         
     # Clean up model after all samples
     del processor, model
+<<<<<<< HEAD
     torch.cuda.empty_cache()
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+    torch.cuda.empty_cache()
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950

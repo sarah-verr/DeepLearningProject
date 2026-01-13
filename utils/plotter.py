@@ -5,12 +5,18 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 <<<<<<< HEAD
+<<<<<<< HEAD
 import seaborn as sns
 =======
 import matplotlib.image as mpimg
 import seaborn as sns
 from scipy.ndimage import zoom
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+import matplotlib.image as mpimg
+import seaborn as sns
+from scipy.ndimage import zoom
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
 from utils.prompt_llava import MODEL_ID
 from collections import defaultdict
@@ -55,7 +61,10 @@ class Plotter:
         return out_path
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     def save_numpy(self, data: np.ndarray, filename: str, subdir: str | None = None) -> Path:
         """Save numpy array under the results dir."""
         out_dir = self._subdir(subdir)
@@ -63,7 +72,10 @@ class Plotter:
         np.save(out_path, data)
         return out_path
 
+<<<<<<< HEAD
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     def _subdir(self, name: str | None) -> Path:
         if name:
             d = self._results_dir / name
@@ -345,7 +357,10 @@ class Plotter:
         plt.tight_layout()
         plt.savefig(out_path)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
         plt.close()
 
     def plot_attention_on_image(
@@ -405,5 +420,8 @@ class Plotter:
         plt.title(f"Attention on Image at Layer {layer_id} and Head {head_id}")
         plt.tight_layout()
         plt.savefig(out_path, bbox_inches='tight')
+<<<<<<< HEAD
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
         plt.close()

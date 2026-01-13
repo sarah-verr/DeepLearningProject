@@ -6,6 +6,7 @@ import pandas as pd
 plotter = Plotter(experiment_name="compute_accuracy")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def compute_accuracy_for_all_levels(prompt_strategy: str = "visual") -> float:
     levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
     result_list = infer_model_for_levels(levels, prompt_strategy=prompt_strategy)
@@ -13,6 +14,8 @@ def compute_accuracy_for_all_levels(prompt_strategy: str = "visual") -> float:
     # Convert to DataFrame for easier tracking
     results_df = pd.DataFrame(result_list)
 =======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 def compute_accuracy_for_all_levels(prompt_strategy: str = "visual", masked = False) -> float:
     levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
     result_list = infer_model_for_levels(level_ids=levels, prompt_strategy=prompt_strategy, use_plain_images=masked)
@@ -27,7 +30,10 @@ def compute_accuracy_for_all_levels(prompt_strategy: str = "visual", masked = Fa
         filename = "simple_results_all_levels.csv"
 
     results_df.to_csv(plotter.results_dir / filename, index=False)
+<<<<<<< HEAD
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     # Create a new column: whether the prediction was correct
     results_df["correct"] = results_df["prediction"] == results_df["ground_truth"]
 

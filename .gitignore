@@ -21,6 +21,10 @@ evaluation_summary*.txt
 logs/
 data/vlm_levels/sample
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 results_llava-hf/llava-1.5-7b-hf/attention_results_all_levels.jsonl
 >>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+results_llava-hf/llava-1.5-7b-hf/attention_results_all_levels.jsonl
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
