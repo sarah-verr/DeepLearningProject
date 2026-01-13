@@ -9,6 +9,7 @@ import torch
 from PIL import Image
 from transformers import LlavaProcessor, LlavaForConditionalGeneration
 from tqdm.auto import tqdm
+import numpy as np
 
 from .prompt_templates import (
     build_visual_yesno_prompt,
@@ -337,13 +338,11 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
     return None
 
 
-def visualise_full_attention(level_id: str, image_id: str, qa_id: int):
+def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
     """
     Reads the image and annotation for the specified level and image_id,
-    and for the specific qa_id, saves all the attention values in a numpy array
-    for visualization later on. Uses init_model and generate_output for standardization.
+    and for the specific qa_id, computes attentions and returns them along with the prompt.
     """
-    import numpy as np
     
     # Load annotation for the specific image
     ann_path = os.path.join(VLM_LEVELS_DIR, level_id, "ann", f"{image_id}.json")
@@ -368,8 +367,9 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int):
     img_path = os.path.join(img_dir, img_filename)
     image = Image.open(img_path)
     
-    # Initialize model with attentions enabled
-    processor, model, device = _init_model(MODEL_ID, output_attentions=True)
+    # Initialize model with attentions enabled if not provided
+    if processor is None or model is None or device is None:
+        processor, model, device = _init_model(MODEL_ID, output_attentions=True)
     
     # Build prompt (assuming 'visual' strategy, adjust if needed)
     prompt = build_prompt(processor, "visual", qa["question"], annotation=annotation, qa_item=qa)
@@ -408,7 +408,7 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int):
     del gen_out, inputs, full_inputs, fwd_out
     torch.cuda.empty_cache()
 
-    return attentions_np
+    return attentions_np, prompt
 
 # HELPERS to load data, build prompts, get yes\no probabilities
 

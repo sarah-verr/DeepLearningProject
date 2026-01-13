@@ -4,7 +4,9 @@ import json
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import seaborn as sns
+from scipy.ndimage import zoom
 
 from utils.prompt_llava import MODEL_ID
 from collections import defaultdict
@@ -335,4 +337,63 @@ class Plotter:
         plt.title(title)
         plt.tight_layout()
         plt.savefig(out_path)
+        plt.close()
+
+    def plot_attention_on_image(
+        self,
+        attention_vector: np.ndarray,
+        layer_id: str,
+        head_id: str,
+        level_id: str,
+        image_id: str,
+        filename: str = "attention_overlay.png",
+        subdir: str = "plots",
+        alpha: float = 0.5,
+        cmap: str = "viridis",
+    ) -> None:
+        """Plot attention weights overlaid on the image patches.
+        
+        Assumes attention_vector is 1D array of size num_patches,
+        patches are in row-major order, and form a square grid.
+        """
+        
+        # Load image
+        project_root = Path(__file__).resolve().parents[1]
+        img_path = project_root / "data" / "vlm_levels" / level_id / "images" / f"{image_id}.png"
+        if not img_path.exists():
+            print(f"Image not found: {img_path}")
+            return
+        
+        img = mpimg.imread(img_path)
+        
+        # Assume square grid
+        num_patches = len(attention_vector)
+        side = int(np.sqrt(num_patches))
+        if side * side != num_patches:
+            print(f"Cannot reshape {num_patches} patches to square grid")
+            return
+        
+        # Reshape attention to grid
+        attention_grid = attention_vector.reshape(side, side)
+        
+        # Normalize attention
+        attention_norm = (attention_grid - attention_grid.min()) / (attention_grid.max() - attention_grid.min() + 1e-8)
+        attention_norm = attention_norm.astype(np.float32)  # Ensure float32 for zoom
+        
+        # Resize attention to image size
+        img_height, img_width = img.shape[:2]
+        attention_resized = np.kron(attention_norm, np.ones((img_height // side, img_width // side)))
+
+        
+        out_dir = self._subdir(subdir)
+        out_path = out_dir / filename
+        
+        plt.figure(figsize=(8, 8))
+        plt.imshow(img)
+        plt.imshow(attention_resized, cmap=cmap, alpha=alpha, origin='upper')
+        plt.colorbar(fraction=0.046, pad=0.04)
+        plt.axis('off')
+        plt.title(f"Attention on Image at Layer {layer_id} and Head {head_id}")
+        plt.tight_layout()
+        plt.savefig(out_path, bbox_inches='tight')
         plt.close()
