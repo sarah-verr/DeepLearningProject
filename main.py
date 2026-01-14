@@ -1,5 +1,5 @@
 from experiments.compute_accuracy import compute_accuracy_for_all_levels
-from experiments.attention_analysis import aggregate_attention_and_save_to_file,  full_detailed_attention_map_for_sample
+from experiments.attention_analysis import attention_distribution_between_text_and_visual, aggregate_attention_and_save_to_file, full_detailed_attention_map_for_sample
 import random
 import os
 import json
@@ -7,11 +7,10 @@ import json
 if __name__ == "__main__":
     levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
     # levels = ["sample"]
+    # attention_distribution_between_text_and_visual(levels)
     # compute_accuracy_for_all_levels("visual", masked=False)
-    
     # aggregate_attention_and_save_to_file(levels)
 
-    # For all levels, process 5 random samples each
     layers_and_heads_to_plot = [
                     (0, 7),
                     (0, 24),
@@ -39,5 +38,5 @@ if __name__ == "__main__":
             if (layer, head) not in layers_and_heads_to_plot:
                 layers_and_heads_to_plot.append((layer, head))
 
-    full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_heads_to_plot=layers_and_heads_to_plot, use_relational_phrase=True)
+    full_detailed_attention_map_for_sample(levels, num_samples=3, layers_and_heads_to_plot=layers_and_heads_to_plot, use_relational_phrase=True)
     

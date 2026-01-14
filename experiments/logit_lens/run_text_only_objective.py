@@ -214,6 +214,7 @@ def main() -> None:
     os.makedirs(args.out_dir, exist_ok=True)
 
     print(f"Loading model: {args.model_id}")
+
     processor, model, device = prompt_llava._init_model(args.model_id)
     tokenizer = processor.tokenizer
 
@@ -261,7 +262,9 @@ def main() -> None:
                         caption=caption,
                     )
                     tok = prompt_llava.prepare_inputs(processor, prompt, device=device)
+
                     gen = prompt_llava.generate_output_for_model(
+
                         model,
                         tok,
                         max_new_tokens=args.max_new_tokens,

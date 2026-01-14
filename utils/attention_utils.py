@@ -41,7 +41,14 @@ def aggregate_attention_from_source_to_target(
         num_heads = layer_all.shape[0]
 
         head_fracs = []
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
         head_entropies = []
+>>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+        head_entropies = []
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
         for h in range(num_heads):
             mat = layer_all[h]  # [seq, seq]
             # sum attention from all source tokens to all tokens
@@ -51,6 +58,12 @@ def aggregate_attention_from_source_to_target(
             frac = src_to_tgt / (src_to_all + 1e-9) if src_to_all > 0 else 0.0
             head_fracs.append(float(frac))
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+        mean_frac = float(sum(head_fracs) / len(head_fracs)) if head_fracs else 0.0
+=======
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
             # Entropy over the target group
             # For each source token, compute entropy of its attention over target tokens
             # NOTE: We take average entropy from source token(s) to target tokens; there can be multiple source tokens -> multiple distributions over the sequence tokens
@@ -72,13 +85,25 @@ def aggregate_attention_from_source_to_target(
 
         mean_frac = float(sum(head_fracs) / len(head_fracs)) if head_fracs else 0.0
         mean_entropy = float(sum(head_entropies) / len(head_entropies)) if head_entropies else 0.0
+<<<<<<< HEAD
+>>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
         per_layer.append(
             {
                 "layer_idx": int(layer_idx),
                 "per_head_fraction": head_fracs,
                 "mean_fraction": mean_frac,
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
                 "per_head_entropy": head_entropies,
                 "mean_entropy": mean_entropy,
+>>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+                "per_head_entropy": head_entropies,
+                "mean_entropy": mean_entropy,
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
             }
         )
 

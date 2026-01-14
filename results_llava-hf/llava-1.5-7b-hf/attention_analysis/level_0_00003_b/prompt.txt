@@ -1,4 +1,8 @@
 USER: <image>
 Use the spatial layout in the image to answer the following relational reasoning question with either "yes" or "no". 
+<<<<<<< HEAD
+QUESTION: Is the cyan star left of the orange triangle?
+=======
 QUESTION: Is the orange triangle right of the cyan star?
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
  ASSISTANT:

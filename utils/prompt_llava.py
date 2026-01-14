@@ -39,9 +39,11 @@ def _init_model(MODEL_ID: str,
         output_hidden_states=output_hidden_states,
     )
     device = "cuda" if torch.cuda.is_available() else "cpu"
+
     if torch.backends.mps.is_available() and device != "cuda":
         device = "mps"
         print("Using mps")
+
     model.to(device)
     model.eval()
     return processor, model, device
@@ -56,6 +58,19 @@ def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
     
     return generated_out
 
+
+
+def init_model(
+    model_id: str,
+    *,
+    output_hidden_states: bool = False,
+    output_attentions: bool = False,
+):
+    return _init_model(
+        model_id,
+        output_hidden_states=output_hidden_states,
+        output_attentions=output_attentions,
+    )
 
 def build_prompt(
     processor,
@@ -86,6 +101,7 @@ def build_prompt(
         raise ValueError(f"Unknown prompt strategy: {prompt_strategy}")
     return processor.apply_chat_template(convo, add_generation_prompt=True)
 
+
 def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = None, device: Optional[str] = None):
     if image is None:
         inputs = processor(text=prompt, return_tensors="pt")
@@ -94,6 +110,45 @@ def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = Non
     if device:
         inputs = inputs.to(device)
     return inputs
+
+
+def generate_output(model, inputs, *, max_new_tokens: int = 10):
+    return generate_output_for_model(model, inputs, max_new_tokens=max_new_tokens)
+
+
+def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Optional[float]]:
+    scores = getattr(outputs, "scores", None)
+    if not scores:
+        return None, None, None
+
+    first_token_logits = scores[0][0]
+    probs = torch.softmax(first_token_logits, dim=-1)
+
+    yes_variants = ["Yes", " yes", "yes"]
+    no_variants = ["No", " no", "no"]
+
+    def _token_ids(variants: List[str]) -> set[int]:
+        ids: set[int] = set()
+        for s in variants:
+            enc = tokenizer.encode(s, add_special_tokens=False)
+            if enc:
+                ids.add(int(enc[-1]))
+        return ids
+
+    yes_ids = _token_ids(yes_variants)
+    no_ids = _token_ids(no_variants)
+
+    p_yes = float(sum(probs[t].item() for t in yes_ids if t < probs.numel()))
+    p_no = float(sum(probs[t].item() for t in no_ids if t < probs.numel()))
+
+    denom = p_yes + p_no
+    if denom <= 0:
+        return None, None, None
+
+    p_yes_n = p_yes / denom
+    p_no_n = p_no / denom
+    pred = "yes" if p_yes_n >= p_no_n else "no"
+    return pred, p_yes_n, p_no_n
 
 def infer_model_for_levels(
     level_ids: List[str],
@@ -168,12 +223,13 @@ def infer_model_for_levels(
                 with torch.no_grad():
                         output = generate_output_for_model(model, inputs)
                 # Extract just the generated part (after the prompt)]
+
                 full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
+
                 if show_llm_output:
                     if output == None:
                         print("No output generated.")
-
-                    # Also decode full output to see prompt + answer
+    
                     print(f"\n--- Model Response {level_id} image: {image_id} ---")
                     print(f"{full_output}")
                     print("---" * 20)
@@ -194,6 +250,7 @@ def infer_model_for_levels(
                     "image_id": image_id,
                     "qa_id": qa_pair["id"],
                     "question": qa_pair["question"],
+                    "ground_truth": qa_pair["answer"],
                     "response": full_output,
                     "prediction": prediction,
                     "confidence": confidence,
@@ -228,6 +285,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
         list(zip(level_ids, annotations_all_levels, images_by_level)),
         desc="Levels",
     ):
+
         attn_results: List[Dict[str, Any]] = []  # Per-level results
         for image, annotation in tqdm(
             list(zip(imgs_for_level, ann_for_level)),
@@ -238,6 +296,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
             qa_pairs = annotation["qa"]
 
             # Build chat-style prompts as in infer_model_for_levels
+
             chat_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,) for qa in qa_pairs]
 
             for qa, chat_prompt in tqdm(
@@ -260,6 +319,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
 
                 prediction, confidence, _, _ = get_yes_no_probability(
+
                     gen_out, tokenizer=processor.tokenizer
                 )
 
@@ -283,7 +343,15 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                     layer.detach().cpu() for layer in fwd_out.attentions
                 )
                 full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+<<<<<<< HEAD
+<<<<<<< HEAD
+                 
+=======
                 
+>>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
+=======
+                
+>>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                 # free GPU tensors ASAP 
                 del fwd_out
                 torch.cuda.empty_cache()
@@ -320,6 +388,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                         "image_id": image_id,
                         "qa_id": qa["id"],
                         "question": qa["question"],
+                        "ground_truth": qa["answer"],
                         "response": full_output,
                         "prediction": prediction,
                         "confidence": confidence,
@@ -343,7 +412,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
     return None
 
 
-def  visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
+def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
     """
     Reads the image and annotation for the specified level and image_id,
     and for the specific qa_id, computes attentions and returns them along with the prompt.
@@ -408,6 +477,9 @@ def  visualise_full_attention(level_id: str, image_id: str, qa_id: int, processo
     image_token_id = model.config.image_token_index
     image_positions = torch.where(full_inputs["input_ids"][0] == image_token_id)[0].cpu().numpy()
     attentions_np = [att[:, :, :, image_positions] for att in attentions_np]
+    
+    full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+    rel_positions = get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"])["relation"]
     
     full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
     rel_positions = get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"])["relation"]
@@ -496,3 +568,20 @@ def _get_images(level_id: str) -> List[Image.Image]:
             image = Image.open(img_path) # .convert("RGB")
             images.append(image)
     return images
+
+def _build_prompts(qa_pairs: List[Dict], annotation: Dict[str, Any], strategy: str) -> List:
+    """Build conversation prompts for all QA pairs based on strategy."""
+    prompts = []
+    for qa in qa_pairs:
+        question = qa["question"]
+        if strategy == "visual":
+            p = build_visual_yesno_prompt(question)
+        elif strategy == "caption": # TODO
+            p = build_caption_yesno_prompt(annotation, qa)
+        elif strategy == "scene": # TODO
+            # TODO: Implement scene-based prompting
+            p = build_scene_yesno_prompt(annotation, question)
+        else:
+            p = build_visual_yesno_prompt(question)
+        prompts.append(p)
+    return prompts
