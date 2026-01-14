@@ -343,7 +343,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
     return None
 
 
-def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
+def  visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
     """
     Reads the image and annotation for the specified level and image_id,
     and for the specific qa_id, computes attentions and returns them along with the prompt.
@@ -409,13 +409,16 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     image_positions = torch.where(full_inputs["input_ids"][0] == image_token_id)[0].cpu().numpy()
     attentions_np = [att[:, :, :, image_positions] for att in attentions_np]
     
+    full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+    rel_positions = get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"])["relation"]
+    
     full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
     
     # Clean up
     del gen_out, inputs, full_inputs, fwd_out
     torch.cuda.empty_cache()
 
-    return attentions_np, full_output
+    return attentions_np, full_output, rel_positions
 
 # HELPERS to load data, build prompts, get yes\no probabilities
 

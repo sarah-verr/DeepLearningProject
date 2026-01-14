@@ -5,6 +5,7 @@ This file contains the code that uses the output from pure inference, and then r
 import numpy as np
 from utils.plotter import Plotter
 from utils.prompt_llava import infer_model_with_attention, visualise_full_attention, _init_model, MODEL_ID
+from utils.attention_utils import get_phrase_token_positions
 import random
 import os
 import json
@@ -48,7 +49,7 @@ def aggregate_attention_and_save_to_file(levels):
     # #    (plot_attention_by_relation expects the full attn_results list)
     # plotter.plot_attention_by_relation(attn_results)
 
-def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_heads_to_plot=None):
+def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_heads_to_plot=None, use_relational_phrase=True):
     # Load model once
     processor, model, device = _init_model(MODEL_ID, output_attentions=True)
     
@@ -71,7 +72,7 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             # Randomly sample one qa_id
             qa_id = random.choice(qa_ids)
             
-            attentions, output = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+            attentions, output, rel_positions = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
 
             # Convert to numpy array for processing
             attentions_array = np.array(attentions)
@@ -80,9 +81,9 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             plotter = Plotter(experiment_name="attention_analysis")
             output_dir = plotter.results_dir / f'{level_id}_{image_id}'
             output_dir.mkdir(parents=True, exist_ok=True)
-            prompt_path = output_dir / "prompt.txt"
+            prompt_path = output_dir / "output.txt"
             with open(prompt_path, "w") as f:
-                f.write(prompt)
+                f.write(output)
             print(f"Saved prompt to {prompt_path}")
 
             # pick the only batch item
@@ -104,11 +105,17 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             for layer_idx, head_idx in layers_and_heads_to_plot:
                 # Get attention for this layer and head: (seq_len, num_patches)
                 attention = attentions[layer_idx, head_idx, :, :]
-                # Pick attention from the last token to the image patches
-                last_token_attention_to_patches = attention[-1, :]
+                if use_relational_phrase:
+                    # Pick attention from the relational phrase tokens to the image patches
+                    attention_to_patches = attention[rel_positions, :].mean(axis=0)
+                    attention_type = "relational"
+                else:
+                    # Pick attention from the last token to the image patches
+                    attention_to_patches = attention[-1, :]
+                    attention_type = "last"
                 # Plot
-                filename = f"attention_overlay_layer_{layer_idx}_head_{head_idx}.png"
-                plotter.plot_attention_on_image(last_token_attention_to_patches, layer_idx, head_idx, level_id, image_id, filename=filename, subdir=f'{level_id}_{image_id}')
+                filename = f"attention_overlay_layer_{layer_idx}_head_{head_idx}_{attention_type}.png"
+                plotter.plot_attention_on_image(attention_to_patches, layer_idx, head_idx, level_id, image_id, filename=filename, subdir=f'{level_id}_{image_id}')
                 print(f"Plotted {filename}")
             
             del attentions
