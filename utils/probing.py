@@ -114,7 +114,7 @@ def extract_all_layer_hidden_states(model, processor, inputs, num_layers, first_
         else:
             input_step_hidden_states = outputs.hidden_states[1]
     else:
-    input_step_hidden_states = outputs.hidden_states[0]
+        input_step_hidden_states = outputs.hidden_states[0]
 
     # Extract hidden state at the decision point for all layers
     all_layer_hidden_states = {}
@@ -419,7 +419,9 @@ def main():
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     base_output_dir = "vis_results"
     level_output = os.path.join(base_output_dir, f"level_{args.level}")
-    probing_output = os.path.join(level_output, f"probing_{timestamp}")
+    # Include suffix if using first generated token
+    token_suffix = "_first_token" if args.first_gen_token else ""
+    probing_output = os.path.join(level_output, f"probing{token_suffix}_{timestamp}")
     os.makedirs(probing_output, exist_ok=True)
 
     # Plot and save
