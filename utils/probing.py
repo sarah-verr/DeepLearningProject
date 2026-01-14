@@ -114,8 +114,8 @@ def extract_all_layer_hidden_states(model, processor, inputs, num_layers, first_
         else:
             input_step_hidden_states = outputs.hidden_states[1]
     else:
-        input_step_hidden_states = outputs.hidden_states[0]
-    
+    input_step_hidden_states = outputs.hidden_states[0]
+
     # Extract hidden state at the decision point for all layers
     all_layer_hidden_states = {}
     for layer_idx in range(num_layers):
@@ -135,7 +135,7 @@ def extract_all_layer_hidden_states(model, processor, inputs, num_layers, first_
 
 
 def collect_probing_data(model, processor, level, max_images=None, first_token=False):
-    
+
     level_dir = os.path.join(BASE_DATA_PATH, f"level_{level}")
     ann_dir = os.path.join(level_dir, "ann")
     # ann_dir = os.path.join(base_dir, "ann")
