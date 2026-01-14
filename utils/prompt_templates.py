@@ -29,6 +29,30 @@ def build_visual_yesno_prompt(question: str,) -> Conversation:
     ]
 
 
+def build_existential_yesno_prompt(question: str) -> Conversation:
+    """Return a chat-style conversation for existential yes/no questions (object existence).
+    
+    Similar to build_visual_yesno_prompt but without the 'relational reasoning' text,
+    suitable for questions about object existence rather than spatial relations.
+    """
+    q = (question or "").strip()
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        'Answer the following question about the image with either "yes" or "no".\n'
+                        f"QUESTION: {q}\n"
+                    ),
+                },
+                {"type": "image"},
+            ],
+        },
+    ]
+
+
 def build_caption_yesno_prompt(annotation_data: dict, qa_item: dict) -> Conversation:
     """Return a chat-style conversation for caption-based yes/no answering."""
     caption = get_caption_for_qa(annotation_data, qa_item)
