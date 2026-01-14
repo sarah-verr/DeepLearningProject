@@ -1,5 +1,5 @@
 from experiments.compute_accuracy import compute_accuracy_for_all_levels
-from experiments.attention_analysis import attention_distribution_between_text_and_visual, aggregate_attention_and_save_to_file, full_detailed_attention_map_for_sample
+from experiments.attention_analysis import aggregate_attention_and_save_to_file, full_detailed_attention_map_for_sample
 import random
 import os
 import json

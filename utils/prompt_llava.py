@@ -343,15 +343,6 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                     layer.detach().cpu() for layer in fwd_out.attentions
                 )
                 full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
-<<<<<<< HEAD
-<<<<<<< HEAD
-                 
-=======
-                
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-                
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                 # free GPU tensors ASAP 
                 del fwd_out
                 torch.cuda.empty_cache()
