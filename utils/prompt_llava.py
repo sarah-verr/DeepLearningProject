@@ -16,6 +16,7 @@ from .prompt_templates import (
     build_caption_yesno_prompt,
     build_scene_yesno_prompt,
     build_caption_text_yesno_prompt,
+    build_existential_yesno_prompt,
 )
 
 from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
@@ -78,7 +79,7 @@ def init_model(
 
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "caption", "scene", "text_only"],
+    prompt_strategy: Literal["visual", "caption", "scene", "text_only", "existential"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
@@ -91,6 +92,8 @@ def build_prompt(
         convo = build_caption_text_yesno_prompt(caption, question)
     elif prompt_strategy == "visual":
         convo = build_visual_yesno_prompt(question)
+    elif prompt_strategy == "existential":
+        convo = build_existential_yesno_prompt(question)
     elif prompt_strategy == "caption":
         if annotation is None:
             raise ValueError("annotation is required for caption prompts.")
@@ -151,22 +154,23 @@ def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Opt
 
 def infer_model_for_levels(
     level_ids: List[str],
-    prompt_strategy: Literal["visual", "caption", "scene"] = "visual",
+    prompt_strategy: Literal["visual", "caption", "scene", "existential"] = "visual",
     show_llm_output: bool = False,
     use_plain_images: bool = False,
+    qa_key: str = "qa",
 ) -> Dict[str, Any]:
     """
-    Run inference on all QA pairs in for the images in a level.
+    Run inference on all QA pairs for images in specified levels.
     
     Args:
-        image_id: Image identifier (e.g., "00000_b")
-        level_id: Level identifier (e.g., "level_0")
-        prompt_strategy: How to format prompts ("visual", "caption", or "scene")
-        output_attentions: Whether to extract attention patterns
-        attention_source_token: Which token to use as attention source
+        level_ids: List of level identifiers (e.g., ["level_0", "level_1"])
+        prompt_strategy: How to format prompts ("visual", "caption", "scene", or "existential")
+        show_llm_output: Whether to print full model outputs
+        use_plain_images: Whether to use plain black/white images instead of actual images
+        qa_key: Key in annotation JSON for QA pairs (default "qa", use "qa_existential" for existential questions)
         
     Returns:
-        Dictionary with results for all QA pairs
+        List of dictionaries with results for all QA pairs
     """
     # Step 1: Load annotation and images for all levels
     annotations_all_levels = []
@@ -201,7 +205,10 @@ def infer_model_for_levels(
                     raise ValueError(f"Image ID {image_id} does not end with '_b' or '_w' for plain images")
             # else: image is already loaded from _get_images
             
-            qa_pairs = annotation["qa"]
+            qa_pairs = annotation.get(qa_key, [])
+            if not qa_pairs:
+                continue  # Skip if no QA pairs found for this key
+            
             processed_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,)for qa in qa_pairs]
             
             results_for_level = {
@@ -247,7 +254,7 @@ def infer_model_for_levels(
                 results_list.append({
                     "level_id": level_id,
                     "image_id": image_id,
-                    "qa_id": qa_pair["id"],
+                    "qa_id": qa_pair.get("id", idx),  # Use index if no id field
                     "question": qa_pair["question"],
                     "ground_truth": qa_pair["answer"],
                     "response": full_output,
