@@ -1,0 +1,4 @@
+USER:  
+Use the spatial layout in the image to answer the following relational reasoning question with either "yes" or "no". 
+QUESTION: Is the cyan triangle above the red star?
+ ASSISTANT: Yes

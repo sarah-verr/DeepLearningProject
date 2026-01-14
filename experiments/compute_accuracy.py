@@ -5,13 +5,6 @@ import pandas as pd
 # Single shared Plotter instance manages the results directory
 plotter = Plotter(experiment_name="compute_accuracy")
 
-def compute_accuracy_for_all_levels(prompt_strategy: str = "visual") -> float:
-    levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
-    result_list = infer_model_for_levels(levels, prompt_strategy=prompt_strategy)
-
-    # Convert to DataFrame for easier tracking
-    results_df = pd.DataFrame(result_list)
-
 def compute_accuracy_for_all_levels(prompt_strategy: str = "visual", masked = False) -> float:
     levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
     result_list = infer_model_for_levels(level_ids=levels, prompt_strategy=prompt_strategy, use_plain_images=masked)

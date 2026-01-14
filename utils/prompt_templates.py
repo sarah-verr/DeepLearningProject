@@ -6,8 +6,10 @@ from typing import Any
 Conversation = list[dict[str, Any]]
 
 
+
 def build_visual_yesno_prompt(question: str,) -> Conversation:
     """Return a chat-style conversation for visual yes/no answering."""
+    
     q = (question or "").strip()
     return [
         {

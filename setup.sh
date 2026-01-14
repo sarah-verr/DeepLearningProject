@@ -39,7 +39,7 @@ if [ -f "requirements.txt" ]; then
     
     # Install requirements
     pip install -r requirements.txt
-    TMPDIR=. pip install flash-attn --no-build-isolation
+    # TMPDIR=. pip install flash-attn --no-build-isolation
     
     echo ">> Dependency installation complete."
 else

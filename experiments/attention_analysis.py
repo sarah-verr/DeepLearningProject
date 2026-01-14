@@ -52,6 +52,8 @@ def aggregate_attention_and_save_to_file(levels):
 def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_heads_to_plot=None, use_relational_phrase=True):
     # Load model once
     processor, model, device = _init_model(MODEL_ID, output_attentions=True)
+
+    print(f"Model loaded on {device}")
     
     project_root = Path(__file__).resolve().parents[1]
     for level_id in levels:
@@ -116,6 +118,86 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
                 # Plot
                 filename = f"attention_overlay_layer_{layer_idx}_head_{head_idx}_{attention_type}.png"
                 plotter.plot_attention_on_image(attention_to_patches, layer_idx, head_idx, level_id, image_id, filename=filename, subdir=f'{level_id}_{image_id}')
+                print(f"Plotted {filename}")
+            
+            del attentions
+            torch.cuda.empty_cache()
+        
+    # Clean up model after all samples
+    del processor, model
+    torch.cuda.empty_cache()
+
+
+def average_attention_over_layer_groups(levels, layer_groups, num_samples=1, use_relational_phrase=True):
+    """
+    Similar to full_detailed_attention_map_for_sample, but averages attention over all heads and all layers in each specified group.
+    
+    Args:
+        levels: List of level IDs to process
+        layer_groups: List of lists, where each sublist contains layer indices to average over
+        num_samples: Number of samples per level
+        use_relational_phrase: Whether to use relational phrase tokens or last token
+    """
+    # Load model once
+    processor, model, device = _init_model(MODEL_ID, output_attentions=True)
+
+    print(f"Model loaded on {device}")
+    
+    project_root = Path(__file__).resolve().parents[1]
+    for level_id in levels:
+        print(f"Inferring for level {level_id}")
+        for _ in range(num_samples):
+            # Sample image_id
+            images_dir = project_root / "data" / "vlm_levels" / level_id / "images"
+            image_files = [f for f in os.listdir(images_dir) if f.endswith(('_b.png', '_w.png'))]
+            image_ids = [f.replace('.png', '') for f in image_files]
+            image_id = random.choice(image_ids)
+            
+            # Load annotation to get available qa_ids
+            ann_path = project_root / "data" / "vlm_levels" / level_id / "ann" / f"{image_id}.json"
+            with open(ann_path, 'r') as f:
+                ann = json.load(f)
+            qa_ids = [q['id'] for q in ann['qa']]
+            
+            # Randomly sample one qa_id
+            qa_id = random.choice(qa_ids)
+            
+            attentions, output, rel_positions = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+
+            # Convert to numpy array for processing
+            attentions_array = np.array(attentions)
+
+            # Save prompt as text
+            plotter = Plotter(experiment_name="attention_analysis_by_level_groups")
+            output_dir = plotter.results_dir / f'{level_id}_{image_id}'
+            output_dir.mkdir(parents=True, exist_ok=True)
+            prompt_path = output_dir / "output.txt"
+            with open(prompt_path, "w") as f:
+                f.write(output)
+            print(f"Saved prompt to {prompt_path}")
+
+            # pick the only batch item
+            attentions = attentions_array[:, 0, :, :, :]  # (num_layers, num_heads, seq_len, num_patches)
+            print("Prompt + Output: ", output)
+
+            for group_idx, layer_indices in enumerate(layer_groups):
+                # Average over layers and heads in the group
+                group_attentions = attentions[layer_indices, :, :, :]  # (num_layers_in_group, num_heads, seq_len, num_patches)
+                mean_attention = group_attentions.mean(axis=(0, 1))  # (seq_len, num_patches)
+                
+                if use_relational_phrase:
+                    # Pick attention from the relational phrase tokens to the image patches
+                    attention_to_patches = mean_attention[rel_positions, :].mean(axis=0)
+                    attention_type = "relational"
+                else:
+                    # Pick attention from the last token to the image patches
+                    attention_to_patches = mean_attention[-1, :]
+                    attention_type = "last"
+                
+                # Plot
+                filename = f"attention_overlay_group_{group_idx}_{attention_type}.png"
+                # Using -1 for layer_idx and head_idx as placeholders for averaged
+                plotter.plot_attention_on_image(attention_to_patches, layer_indices, -1, level_id, image_id, filename=filename, subdir=f'{level_id}_{image_id}')
                 print(f"Plotted {filename}")
             
             del attentions

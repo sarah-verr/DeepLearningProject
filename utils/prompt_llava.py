@@ -25,27 +25,31 @@ VLM_LEVELS_DIR = "data/vlm_levels"
 VLM_TEXT_DIR = "data/vlm_levels_objective"
 
 # CORE FUNCTIONS: The below two functions ensure that model initialisation params and generation config are standardised across inferences
-def _init_model(MODEL_ID: str,
-    output_hidden_states: bool = False,
-    output_attentions: bool = False,
-):
+def _init_model(MODEL_ID, output_hidden_states=False, output_attentions=False):
+
+    print("[DEBUG] Initialising model...")
+
     processor = LlavaProcessor.from_pretrained(MODEL_ID)
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    dtype = torch.float16 if device == "cuda" else torch.float32
+
+    print(f"[DEBUG] Device: {device}...")
+
     model = LlavaForConditionalGeneration.from_pretrained(
         MODEL_ID,
-        dtype=torch.float16,
+        dtype=dtype,
         low_cpu_mem_usage=True,
         output_attentions=output_attentions,
-        attn_implementation="eager",
         output_hidden_states=output_hidden_states,
+        attn_implementation="eager",
     )
-    device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    if torch.backends.mps.is_available() and device != "cuda":
-        device = "mps"
-        print("Using mps")
-
+    print("[DEBUG] Model initialised...")
     model.to(device)
     model.eval()
+    print(f"[DEBUG] Moved to {device}")
+
     return processor, model, device
 
 def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
@@ -110,11 +114,6 @@ def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = Non
     if device:
         inputs = inputs.to(device)
     return inputs
-
-
-def generate_output(model, inputs, *, max_new_tokens: int = 10):
-    return generate_output_for_model(model, inputs, max_new_tokens=max_new_tokens)
-
 
 def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Optional[float]]:
     scores = getattr(outputs, "scores", None)
