@@ -11,6 +11,7 @@ sbatch <<EOF
 #SBATCH --account=deep_learning
 #SBATCH --output=${REPO_DIR}/logs/%x-%j.out
 #SBATCH --error=${REPO_DIR}/logs/%x-%j.err
+SBATCH --time=02:00:00     
 
 set -euo pipefail
 
