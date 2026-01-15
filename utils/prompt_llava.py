@@ -17,6 +17,7 @@ from .prompt_templates import (
     build_scene_yesno_prompt,
     build_caption_text_yesno_prompt,
     build_existential_yesno_prompt,
+    build_existential_attribute_prompt,
 )
 
 from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
@@ -79,12 +80,13 @@ def init_model(
 
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "caption", "scene", "text_only", "existential"],
+    prompt_strategy: Literal["visual", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
     caption: Optional[str] = None,
     qa_item: Optional[Dict[str, Any]] = None,
+    qa_key: Optional[str] = None,
 ) -> str:
     if prompt_strategy == "text_only":
         if not caption:
@@ -93,7 +95,15 @@ def build_prompt(
     elif prompt_strategy == "visual":
         convo = build_visual_yesno_prompt(question)
     elif prompt_strategy == "existential":
+        # Use attribute prompt for attribute questions, yes/no prompt for yes/no questions
+        if qa_key == "qa_existential_attribute":
+            convo = build_existential_attribute_prompt(question)
+        else:
+            convo = build_existential_yesno_prompt(question)
+    elif prompt_strategy == "existential_yesno":
         convo = build_existential_yesno_prompt(question)
+    elif prompt_strategy == "existential_attribute":
+        convo = build_existential_attribute_prompt(question)
     elif prompt_strategy == "caption":
         if annotation is None:
             raise ValueError("annotation is required for caption prompts.")
@@ -209,7 +219,7 @@ def infer_model_for_levels(
             if not qa_pairs:
                 continue  # Skip if no QA pairs found for this key
             
-            processed_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,)for qa in qa_pairs]
+            processed_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,qa_key=qa_key)for qa in qa_pairs]
             
             results_for_level = {
                 "image_id": image_id,

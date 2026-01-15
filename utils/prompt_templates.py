@@ -52,6 +52,29 @@ def build_existential_yesno_prompt(question: str) -> Conversation:
         },
     ]
 
+def build_existential_attribute_prompt(question: str) -> Conversation:
+    """Return a chat-style conversation for existential attribute questions."""
+    q = (question or "").strip()
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        'Available answers: <number>, <color>, <shape>, <color> <shape>. '
+                        'Available colors: red, blue, green, yellow, purple, cyan, orange, pink, lime. '
+                        'Available shapes: square, circle, triangle, star. '
+                        'Available numbers: 1 2 3 4.'
+                        'Answer the following question about the image with a descriptive answer.\n'
+                        f"QUESTION: {q}\n"
+                    ),
+                },
+                {"type": "image"},
+            ],
+        },
+    ]
+
 
 def build_caption_yesno_prompt(annotation_data: dict, qa_item: dict) -> Conversation:
     """Return a chat-style conversation for caption-based yes/no answering."""
