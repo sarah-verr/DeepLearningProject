@@ -3,11 +3,11 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-unset SBATCH_GRES SBATCH_GPUS SBATCH_GRES_PER_TASK SBATCH_TRES_PER_TASK SBATCH_GPUS_PER_TASK
+# unset SBATCH_GRES SBATCH_GPUS SBATCH_GRES_PER_TASK SBATCH_TRES_PER_TASK SBATCH_GPUS_PER_TASK
 
 sbatch <<EOF
 #!/bin/bash
-#SBATCH --job-name=logit_lens
+#SBATCH --job-name=logit_lens_raw
 #SBATCH --account=deep_learning
 #SBATCH --output=${REPO_DIR}/logs/%x-%j.out
 #SBATCH --error=${REPO_DIR}/logs/%x-%j.err
@@ -29,7 +29,7 @@ source venv/bin/activate
 
 # python3 Text-Only/text_only_objective_vlm_prompt.py --levels level_1
 # python3 Text-Only/Analysis/analyze_objective_attention.py
-python experiments/logit_lens/run_text_only_objective.py
+# python experiments/logit_lens/run_text_only_objective.py
 python experiments/logit_lens/run_visual_logit_lens.py
 
 EOF
