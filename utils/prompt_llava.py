@@ -13,6 +13,7 @@ import numpy as np
 
 from .prompt_templates import (
     build_visual_yesno_prompt,
+    build_visual_attribute_prompt,
     build_caption_yesno_prompt,
     build_scene_yesno_prompt,
     build_caption_text_yesno_prompt,
@@ -80,7 +81,7 @@ def init_model(
 
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
+    prompt_strategy: Literal["visual", "visual_attribute", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
@@ -94,6 +95,9 @@ def build_prompt(
         convo = build_caption_text_yesno_prompt(caption, question)
     elif prompt_strategy == "visual":
         convo = build_visual_yesno_prompt(question)
+    elif prompt_strategy == "visual_attribute":
+        question_type = qa_item.get("question_type")
+        convo = build_visual_attribute_prompt(question, question_type)
     elif prompt_strategy == "existential":
         # Use attribute prompt for attribute questions, yes/no prompt for yes/no questions
         if qa_key == "qa_existential_attribute":
@@ -164,30 +168,35 @@ def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Opt
 
 def infer_model_for_levels(
     level_ids: List[str],
-    prompt_strategy: Literal["visual", "caption", "scene", "existential"] = "visual",
+    prompt_strategy: Literal["visual", "caption", "scene", "existential", "visual_attribute"] = "visual",
     show_llm_output: bool = False,
     use_plain_images: bool = False,
     qa_key: str = "qa",
+    data_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Run inference on all QA pairs for images in specified levels.
     
     Args:
         level_ids: List of level identifiers (e.g., ["level_0", "level_1"])
-        prompt_strategy: How to format prompts ("visual", "caption", "scene", or "existential")
+        prompt_strategy: How to format prompts ("visual", "caption", "scene", "existential", or "visual_attribute")
         show_llm_output: Whether to print full model outputs
         use_plain_images: Whether to use plain black/white images instead of actual images
         qa_key: Key in annotation JSON for QA pairs (default "qa", use "qa_existential" for existential questions)
+        data_dir: Directory containing the level data (default: VLM_LEVELS_DIR)
         
     Returns:
         List of dictionaries with results for all QA pairs
     """
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
+    
     # Step 1: Load annotation and images for all levels
     annotations_all_levels = []
     images_by_level = []
     for level in level_ids:
-        annotations_all_levels.append(_load_annotation(level))
-        images_by_level.append(_get_images(level))
+        annotations_all_levels.append(_load_annotation(level, data_dir=data_dir))
+        images_by_level.append(_get_images(level, data_dir=data_dir))
 
     # Step 2: Initialize model and processor
     processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
@@ -261,7 +270,7 @@ def infer_model_for_levels(
                     n_image_tokens = 0
                 n_text_tokens = len(input_ids) - n_image_tokens
 
-                results_list.append({
+                result_dict = {
                     "level_id": level_id,
                     "image_id": image_id,
                     "qa_id": qa_pair.get("id", idx),  # Use index if no id field
@@ -272,7 +281,11 @@ def infer_model_for_levels(
                     "confidence": confidence,
                     "num_image_tokens": n_image_tokens,
                     "num_text_tokens": n_text_tokens,
-                })
+                }
+                # Add question_type if present in qa_pair
+                if "question_type" in qa_pair:
+                    result_dict["question_type"] = qa_pair["question_type"]
+                results_list.append(result_dict)
 
 
     return results_list
@@ -542,10 +555,12 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
 
     return prediction, confidence, norm_yes, norm_no
 
-def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
+def _load_annotation(level_id: str, data_dir: Optional[str] = None) -> List[Dict[str, Any]]:
     """Load all annotation JSONs for all images in a given level."""
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
     ann_dir = os.path.join(
-        VLM_LEVELS_DIR,
+        data_dir,
         level_id,
         "ann",
     )
@@ -561,10 +576,12 @@ def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
             annotations[-1]["image_id"] = image_id
     return annotations
 
-def _get_images(level_id: str) -> List[Image.Image]:
+def _get_images(level_id: str, data_dir: Optional[str] = None) -> List[Image.Image]:
     """Load all images for a given level."""
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
     img_dir = os.path.join(
-        VLM_LEVELS_DIR,
+        data_dir,
         level_id,
         "images",
     )
