@@ -63,6 +63,7 @@ def logit_lens_yesno(
     for h in hidden_states:
         h_pos = h[:, position, :]
         logits = lm_head(h_pos)
+        logit_total = float(torch.logsumexp(logits[0], dim=-1).item())
         logit_yes = 0.0
         logit_no = 0.0
         if yes_ids_list:
@@ -79,7 +80,13 @@ def logit_lens_yesno(
             p_yes /= denom
             p_no /= denom
         per_layer.append(
-            {"p_yes": p_yes, "p_no": p_no, "logit_yes": logit_yes, "logit_no": logit_no}
+            {
+                "p_yes": p_yes,
+                "p_no": p_no,
+                "logit_yes": logit_yes,
+                "logit_no": logit_no,
+                "logit_total": logit_total,
+            }
         )
 
     return per_layer

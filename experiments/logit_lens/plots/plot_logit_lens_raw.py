@@ -1,10 +1,11 @@
 import argparse
 import json
+import math
 import os
 
 import matplotlib.pyplot as plt
 
-_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 _NEW_RESULTS_ROOT = os.path.join(_REPO_ROOT, "results_llava-hf", "llava-1.5-7b-hf")
 _LOGIT_LENS_RAW_OUT_DIR = os.path.join(_NEW_RESULTS_ROOT, "logit_lens_raw")
 
@@ -83,6 +84,22 @@ def _plot_four_curves(curves: dict, out_path: str, title: str, ylabel: str) -> N
     plt.close()
 
 
+def _plot_multi_curves(curves: dict, out_path: str, title: str, ylabel: str) -> None:
+    if not curves:
+        return
+    plt.figure(figsize=(6, 4))
+    for label, data in curves.items():
+        if data:
+            plt.plot(list(range(len(data))), data, label=label)
+    plt.xlabel("Layer")
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=160)
+    plt.close()
+
+
 def _mean_by_layer(curves: list[list[float]]) -> list[float]:
     if not curves:
         return []
@@ -139,6 +156,20 @@ def _extract_curve(lens: list[dict], key: str) -> list[float]:
     return curve
 
 
+def _extract_full_softmax_curves(lens: list[dict]) -> tuple[list[float], list[float]]:
+    yes = []
+    no = []
+    for d in lens:
+        logit_yes = d.get("logit_yes")
+        logit_no = d.get("logit_no")
+        logit_total = d.get("logit_total")
+        if logit_yes is None or logit_no is None or logit_total is None:
+            return [], []
+        yes.append(float(math.exp(float(logit_yes) - float(logit_total))))
+        no.append(float(math.exp(float(logit_no) - float(logit_total))))
+    return yes, no
+
+
 def main() -> None:
     args = parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
@@ -160,8 +191,14 @@ def main() -> None:
     all_wrong_yes = []
     all_correct_no = []
     all_wrong_no = []
+    all_correct_yes_full = []
+    all_wrong_yes_full = []
+    all_correct_no_full = []
+    all_wrong_no_full = []
     outcome_logit_yes = {"TP": [], "TN": [], "FP": [], "FN": []}
     outcome_logit_no = {"TP": [], "TN": [], "FP": [], "FN": []}
+    outcome_yes_full = {"TP": [], "TN": [], "FP": [], "FN": []}
+    outcome_no_full = {"TP": [], "TN": [], "FP": [], "FN": []}
 
     for lvl in levels:
         summary_path = os.path.join(args.base_dir, lvl, "summary.jsonl")
@@ -185,7 +222,8 @@ def main() -> None:
 
             logit_yes = _extract_curve(lens, "logit_yes")
             logit_no = _extract_curve(lens, "logit_no")
-            if not logit_yes or not logit_no:
+            yes_full, no_full = _extract_full_softmax_curves(lens)
+            if not logit_yes or not logit_no or not yes_full or not no_full:
                 continue
 
             if r["is_correct"]:
@@ -193,11 +231,15 @@ def main() -> None:
                 lvl_correct_no.append(logit_no)
                 all_correct_yes.append(logit_yes)
                 all_correct_no.append(logit_no)
+                all_correct_yes_full.append(yes_full)
+                all_correct_no_full.append(no_full)
             else:
                 lvl_wrong_yes.append(logit_yes)
                 lvl_wrong_no.append(logit_no)
                 all_wrong_yes.append(logit_yes)
                 all_wrong_no.append(logit_no)
+                all_wrong_yes_full.append(yes_full)
+                all_wrong_no_full.append(no_full)
 
             if pred_final == "yes" and gt == "yes":
                 outcome = "TP"
@@ -210,6 +252,8 @@ def main() -> None:
 
             outcome_logit_yes[outcome].append(logit_yes)
             outcome_logit_no[outcome].append(logit_no)
+            outcome_yes_full[outcome].append(yes_full)
+            outcome_no_full[outcome].append(no_full)
 
         _plot_curves(
             _mean_curves(lvl_correct_yes),
@@ -241,6 +285,49 @@ def main() -> None:
         "logit(no)",
     )
 
+    all_yes = all_correct_yes + all_wrong_yes
+    all_no = all_correct_no + all_wrong_no
+    _plot_multi_curves(
+        {
+            "logit_yes": _mean_curves(all_yes),
+            "logit_no": _mean_curves(all_no),
+        },
+        os.path.join(args.out_dir, "logit_lens_raw_yes_no_overall.png"),
+        f"Logit lens logit(yes/no) overall ({title_suffix})",
+        "logit",
+    )
+    _plot_multi_curves(
+        {
+            "p_yes": _mean_curves(all_correct_yes_full + all_wrong_yes_full),
+            "p_no": _mean_curves(all_correct_no_full + all_wrong_no_full),
+        },
+        os.path.join(args.out_dir, "logit_lens_softmax_yes_no_overall.png"),
+        f"Logit lens softmax p(yes/no) overall ({title_suffix})",
+        "P",
+    )
+    _plot_multi_curves(
+        {
+            "correct_yes": _mean_curves(all_correct_yes),
+            "correct_no": _mean_curves(all_correct_no),
+            "wrong_yes": _mean_curves(all_wrong_yes),
+            "wrong_no": _mean_curves(all_wrong_no),
+        },
+        os.path.join(args.out_dir, "logit_lens_raw_yes_no_correct_wrong.png"),
+        f"Logit lens logit(yes/no) by correctness ({title_suffix})",
+        "logit",
+    )
+    _plot_multi_curves(
+        {
+            "correct_yes": _mean_curves(all_correct_yes_full),
+            "correct_no": _mean_curves(all_correct_no_full),
+            "wrong_yes": _mean_curves(all_wrong_yes_full),
+            "wrong_no": _mean_curves(all_wrong_no_full),
+        },
+        os.path.join(args.out_dir, "logit_lens_softmax_yes_no_correct_wrong.png"),
+        f"Logit lens softmax p(yes/no) by correctness ({title_suffix})",
+        "P",
+    )
+
     logit_yes_curves = {k: _mean_by_layer(v) for k, v in outcome_logit_yes.items()}
     logit_no_curves = {k: _mean_by_layer(v) for k, v in outcome_logit_no.items()}
     _plot_four_curves(
@@ -254,6 +341,38 @@ def main() -> None:
         os.path.join(args.out_dir, "logit_lens_raw_no_by_outcome.png"),
         f"Logit lens logit(no) by outcome ({title_suffix})",
         "logit(no)",
+    )
+    _plot_multi_curves(
+        {
+            "TP_yes": logit_yes_curves.get("TP", []),
+            "TP_no": logit_no_curves.get("TP", []),
+            "TN_yes": logit_yes_curves.get("TN", []),
+            "TN_no": logit_no_curves.get("TN", []),
+            "FP_yes": logit_yes_curves.get("FP", []),
+            "FP_no": logit_no_curves.get("FP", []),
+            "FN_yes": logit_yes_curves.get("FN", []),
+            "FN_no": logit_no_curves.get("FN", []),
+        },
+        os.path.join(args.out_dir, "logit_lens_raw_yes_no_by_outcome.png"),
+        f"Logit lens logit(yes/no) by outcome ({title_suffix})",
+        "logit",
+    )
+    yes_full_curves = {k: _mean_by_layer(v) for k, v in outcome_yes_full.items()}
+    no_full_curves = {k: _mean_by_layer(v) for k, v in outcome_no_full.items()}
+    _plot_multi_curves(
+        {
+            "TP_yes": yes_full_curves.get("TP", []),
+            "TP_no": no_full_curves.get("TP", []),
+            "TN_yes": yes_full_curves.get("TN", []),
+            "TN_no": no_full_curves.get("TN", []),
+            "FP_yes": yes_full_curves.get("FP", []),
+            "FP_no": no_full_curves.get("FP", []),
+            "FN_yes": yes_full_curves.get("FN", []),
+            "FN_no": no_full_curves.get("FN", []),
+        },
+        os.path.join(args.out_dir, "logit_lens_softmax_yes_no_by_outcome.png"),
+        f"Logit lens softmax p(yes/no) by outcome ({title_suffix})",
+        "P",
     )
 
     print(f"Saved raw logit-lens plots to: {args.out_dir}")
