@@ -57,10 +57,20 @@ def logit_lens_yesno(
         return []
 
     yes_ids, no_ids = yes_no_token_ids(tokenizer)
+    yes_ids_list = sorted(yes_ids)
+    no_ids_list = sorted(no_ids)
     per_layer = []
     for h in hidden_states:
         h_pos = h[:, position, :]
         logits = lm_head(h_pos)
+        logit_yes = 0.0
+        logit_no = 0.0
+        if yes_ids_list:
+            yes_tensor = logits[0, yes_ids_list]
+            logit_yes = float(torch.logsumexp(yes_tensor, dim=0).item())
+        if no_ids_list:
+            no_tensor = logits[0, no_ids_list]
+            logit_no = float(torch.logsumexp(no_tensor, dim=0).item())
         probs = torch.softmax(logits, dim=-1)[0]
         p_yes = float(sum(probs[i].item() for i in yes_ids if i < probs.numel()))
         p_no = float(sum(probs[i].item() for i in no_ids if i < probs.numel()))
@@ -68,6 +78,8 @@ def logit_lens_yesno(
         if denom > 0:
             p_yes /= denom
             p_no /= denom
-        per_layer.append({"p_yes": p_yes, "p_no": p_no})
+        per_layer.append(
+            {"p_yes": p_yes, "p_no": p_no, "logit_yes": logit_yes, "logit_no": logit_no}
+        )
 
     return per_layer

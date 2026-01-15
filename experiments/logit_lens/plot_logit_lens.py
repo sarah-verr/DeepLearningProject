@@ -1,12 +1,13 @@
 import argparse
 import json
+import math
 import os
 
 import matplotlib.pyplot as plt
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 _NEW_RESULTS_ROOT = os.path.join(_REPO_ROOT, "results_llava-hf", "llava-1.5-7b-hf")
-_LOGIT_LENS_OUT_DIR = os.path.join(_NEW_RESULTS_ROOT, "logit_lens")
+_LOGIT_LENS_OUT_DIR = os.path.join(_NEW_RESULTS_ROOT, "aug_logit_lens")
 
 
 def _find_level_dirs(base_dir: str) -> list[str]:
@@ -95,6 +96,77 @@ def _mean_by_layer(curves: list[list[float]]) -> list[float]:
     return out
 
 
+def _quantile_sorted(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    if len(values) == 1:
+        return values[0]
+    pos = q * (len(values) - 1)
+    lo = int(math.floor(pos))
+    hi = int(math.ceil(pos))
+    if lo == hi:
+        return values[lo]
+    return values[lo] + (values[hi] - values[lo]) * (pos - lo)
+
+
+def _layer_quantiles(
+    curves: list[list[float]],
+    q_low: float,
+    q_high: float,
+) -> tuple[list[float], list[float], list[float]]:
+    if not curves:
+        return [], [], []
+    min_len = min(len(c) for c in curves)
+    if min_len == 0:
+        return [], [], []
+    medians = []
+    lows = []
+    highs = []
+    for i in range(min_len):
+        values = sorted(c[i] for c in curves)
+        medians.append(_quantile_sorted(values, 0.5))
+        lows.append(_quantile_sorted(values, q_low))
+        highs.append(_quantile_sorted(values, q_high))
+    return medians, lows, highs
+
+
+def _plot_outcome_spread(
+    curves: dict[str, list[list[float]]],
+    out_path: str,
+    title: str,
+    ylabel: str,
+    q_low: float = 0.25,
+    q_high: float = 0.75,
+) -> None:
+    if not curves:
+        return
+    fig, axes = plt.subplots(2, 2, figsize=(8, 6), sharex=True, sharey=True)
+    outcome_order = ["TP", "TN", "FP", "FN"]
+    for ax, label in zip(axes.flat, outcome_order):
+        outcome_curves = curves.get(label, [])
+        ax.set_title(f"{label} (n={len(outcome_curves)})")
+        ax.set_ylim(0.0, 1.0)
+        if not outcome_curves:
+            continue
+        medians, lows, highs = _layer_quantiles(outcome_curves, q_low, q_high)
+        if not medians:
+            continue
+        x = list(range(len(medians)))
+        ax.plot(x, medians, color="tab:blue", label="median")
+        ax.fill_between(x, lows, highs, color="tab:blue", alpha=0.2, label="IQR")
+    for ax in axes[-1]:
+        ax.set_xlabel("Layer")
+    for ax in axes[:, 0]:
+        ax.set_ylabel(ylabel)
+    fig.suptitle(title)
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    if handles:
+        fig.legend(handles, labels, loc="upper right")
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=160)
+    plt.close(fig)
+
+
 def _dataset_label(base_dir: str) -> str:
     b = (base_dir or "").lower()
     if "visual_logit_lens" in b or "visual" in b:
@@ -111,7 +183,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--base_dir",
         type=str,
-        default=os.path.join(_NEW_RESULTS_ROOT, "text_only_objective"),
+        default=os.path.join(_NEW_RESULTS_ROOT, "aug_logit_lens"),
     )
     ap.add_argument(
         "--out_dir",
@@ -250,10 +322,22 @@ def main() -> None:
         f"Logit lens p(yes) by outcome ({title_suffix})",
         "P(yes)",
     )
+    _plot_outcome_spread(
+        outcome_p_yes,
+        os.path.join(args.out_dir, "logit_lens_pyes_by_outcome_spread.png"),
+        f"Logit lens p(yes) by outcome with IQR ({title_suffix})",
+        "P(yes)",
+    )
     _plot_four_curves(
         p_no_curves,
         os.path.join(args.out_dir, "logit_lens_pno_by_outcome.png"),
         f"Logit lens p(no) by outcome ({title_suffix})",
+        "P(no)",
+    )
+    _plot_outcome_spread(
+        outcome_p_no,
+        os.path.join(args.out_dir, "logit_lens_pno_by_outcome_spread.png"),
+        f"Logit lens p(no) by outcome with IQR ({title_suffix})",
         "P(no)",
     )
 
