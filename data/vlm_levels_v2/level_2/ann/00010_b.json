@@ -1,0 +1,244 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "blue",
+      "center": [
+        315,
+        301
+      ],
+      "size": 28,
+      "bbox": [
+        301,
+        287,
+        329,
+        315
+      ],
+      "patch_indices": [
+        501,
+        502,
+        503,
+        525,
+        526,
+        527,
+        549,
+        550,
+        551
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        231,
+        105
+      ],
+      "size": 17,
+      "bbox": [
+        223,
+        97,
+        239,
+        113
+      ],
+      "patch_indices": [
+        159,
+        160,
+        161,
+        183,
+        184,
+        185,
+        207,
+        208,
+        209
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue circle is to the right of the pink triangle.",
+    "The blue circle is below the pink triangle.",
+    "The pink triangle is above the blue circle.",
+    "The pink triangle is to the left of the blue circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue circle is to the right of the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue circle is below the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink triangle is above the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink triangle is to the left of the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object right of the pink triangle?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object right of the pink triangle?",
+      "answer": "circle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object to the left of the blue circle?",
+      "answer": "pink",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object to the left of the blue circle?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "id": 3
+    },
+    {
+      "question": "What is the color of the object below the pink triangle?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 4
+    },
+    {
+      "question": "What is the shape of the object below the pink triangle?",
+      "answer": "circle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 5
+    },
+    {
+      "question": "What is the color of the object above the blue circle?",
+      "answer": "pink",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 6
+    },
+    {
+      "question": "What is the shape of the object above the blue circle?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 7
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

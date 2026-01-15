@@ -1,0 +1,142 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        63,
+        273
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        268,
+        68,
+        278
+      ],
+      "patch_indices": [
+        460
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "cyan",
+      "center": [
+        77,
+        273
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        268,
+        82,
+        278
+      ],
+      "patch_indices": [
+        461
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan triangle is to the right of the blue star.",
+    "The blue star is to the left of the cyan triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan triangle is to the right of the blue star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue star is to the left of the cyan triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object left of the cyan triangle?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object left of the cyan triangle?",
+      "answer": "star",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object right of the blue star?",
+      "answer": "cyan",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object right of the blue star?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

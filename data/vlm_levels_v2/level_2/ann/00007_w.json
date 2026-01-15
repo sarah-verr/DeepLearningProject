@@ -1,0 +1,244 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        133,
+        91
+      ],
+      "size": 22,
+      "bbox": [
+        122,
+        80,
+        144,
+        102
+      ],
+      "patch_indices": [
+        128,
+        129,
+        130,
+        152,
+        153,
+        154,
+        176,
+        177,
+        178
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        301,
+        133
+      ],
+      "size": 21,
+      "bbox": [
+        291,
+        123,
+        311,
+        143
+      ],
+      "patch_indices": [
+        212,
+        213,
+        214,
+        236,
+        237,
+        238,
+        260,
+        261,
+        262
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple triangle is right of the yellow circle.",
+    "The purple triangle is below the yellow circle.",
+    "The yellow circle is left of the purple triangle.",
+    "The yellow circle is above the purple triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple triangle is right of the yellow circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple triangle is below the yellow circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The yellow circle is left of the purple triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The yellow circle is above the purple triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object above the purple triangle?",
+      "answer": "yellow",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object above the purple triangle?",
+      "answer": "circle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object below the yellow circle?",
+      "answer": "purple",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object below the yellow circle?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 3
+    },
+    {
+      "question": "What is the color of the object left of the purple triangle?",
+      "answer": "yellow",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 4
+    },
+    {
+      "question": "What is the shape of the object left of the purple triangle?",
+      "answer": "circle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 5
+    },
+    {
+      "question": "What is the color of the object right of the yellow circle?",
+      "answer": "purple",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 6
+    },
+    {
+      "question": "What is the shape of the object right of the yellow circle?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "id": 7
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

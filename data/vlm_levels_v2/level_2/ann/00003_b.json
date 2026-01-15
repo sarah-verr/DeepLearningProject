@@ -1,0 +1,158 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        119,
+        35
+      ],
+      "size": 19,
+      "bbox": [
+        110,
+        26,
+        128,
+        44
+      ],
+      "patch_indices": [
+        31,
+        32,
+        33,
+        55,
+        56,
+        57,
+        79,
+        80,
+        81
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "yellow",
+      "center": [
+        189,
+        35
+      ],
+      "size": 21,
+      "bbox": [
+        179,
+        25,
+        199,
+        45
+      ],
+      "patch_indices": [
+        36,
+        37,
+        38,
+        60,
+        61,
+        62,
+        84,
+        85,
+        86
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow star is to the right of the blue triangle.",
+    "The blue triangle is to the left of the yellow star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow star is to the right of the blue triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue triangle is to the left of the yellow star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object left of the yellow star?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object left of the yellow star?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object to the right of the blue triangle?",
+      "answer": "yellow",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object to the right of the blue triangle?",
+      "answer": "star",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

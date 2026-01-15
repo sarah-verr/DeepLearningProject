@@ -1,0 +1,142 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        77,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        128,
+        82,
+        138
+      ],
+      "patch_indices": [
+        221
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        63,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        128,
+        68,
+        138
+      ],
+      "patch_indices": [
+        220
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink circle is to the left of the orange triangle.",
+    "The orange triangle is right of the pink circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink circle is to the left of the orange triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange triangle is right of the pink circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object to the right of the pink circle?",
+      "answer": "orange",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object to the right of the pink circle?",
+      "answer": "triangle",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object left of the orange triangle?",
+      "answer": "pink",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object left of the orange triangle?",
+      "answer": "circle",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

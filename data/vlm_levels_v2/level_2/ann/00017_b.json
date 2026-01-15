@@ -1,0 +1,244 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "blue",
+      "center": [
+        315,
+        273
+      ],
+      "size": 26,
+      "bbox": [
+        302,
+        260,
+        328,
+        286
+      ],
+      "patch_indices": [
+        453,
+        454,
+        455,
+        477,
+        478,
+        479,
+        501,
+        502,
+        503
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        49,
+        119
+      ],
+      "size": 22,
+      "bbox": [
+        38,
+        108,
+        60,
+        130
+      ],
+      "patch_indices": [
+        170,
+        171,
+        172,
+        194,
+        195,
+        196,
+        218,
+        219,
+        220
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue square is below the cyan square.",
+    "The cyan square is left of the blue square.",
+    "The blue square is right of the cyan square.",
+    "The cyan square is above the blue square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue square is below the cyan square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan square is left of the blue square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The blue square is right of the cyan square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The cyan square is above the blue square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the color of the object to the right of the cyan square?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 0
+    },
+    {
+      "question": "What is the shape of the object to the right of the cyan square?",
+      "answer": "square",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "id": 1
+    },
+    {
+      "question": "What is the color of the object left of the blue square?",
+      "answer": "cyan",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 2
+    },
+    {
+      "question": "What is the shape of the object left of the blue square?",
+      "answer": "square",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "id": 3
+    },
+    {
+      "question": "What is the color of the object below the cyan square?",
+      "answer": "blue",
+      "question_type": "color",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 4
+    },
+    {
+      "question": "What is the shape of the object below the cyan square?",
+      "answer": "square",
+      "question_type": "shape",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "id": 5
+    },
+    {
+      "question": "What is the color of the object above the blue square?",
+      "answer": "cyan",
+      "question_type": "color",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 6
+    },
+    {
+      "question": "What is the shape of the object above the blue square?",
+      "answer": "square",
+      "question_type": "shape",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "id": 7
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
