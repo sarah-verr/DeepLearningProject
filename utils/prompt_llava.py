@@ -14,6 +14,7 @@ import numpy as np
 from .prompt_templates import (
     build_visual_yesno_prompt,
     build_visual_attribute_prompt,
+    build_visual_relational_prompt,
     build_caption_yesno_prompt,
     build_scene_yesno_prompt,
     build_caption_text_yesno_prompt,
@@ -67,7 +68,7 @@ def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
 
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "visual_attribute", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
+    prompt_strategy: Literal["visual", "visual_attribute", "visual_relational", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
@@ -84,6 +85,9 @@ def build_prompt(
     elif prompt_strategy == "visual_attribute":
         question_type = qa_item.get("question_type")
         convo = build_visual_attribute_prompt(question, question_type)
+    elif prompt_strategy == "visual_relational":
+        question_type = qa_item.get("question_type")
+        convo = build_visual_relational_prompt(question, question_type)
     elif prompt_strategy == "existential":
         # Use attribute prompt for attribute questions, yes/no prompt for yes/no questions
         if qa_key == "qa_existential_attribute":
@@ -154,7 +158,7 @@ def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Opt
 
 def infer_model_for_levels(
     level_ids: List[str],
-    prompt_strategy: Literal["visual", "caption", "scene", "existential", "visual_attribute"] = "visual",
+    prompt_strategy: Literal["visual", "caption", "scene", "existential", "visual_attribute", "visual_relational"] = "visual",
     show_llm_output: bool = False,
     use_plain_images: bool = False,
     qa_key: str = "qa",

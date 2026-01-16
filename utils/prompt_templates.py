@@ -61,6 +61,41 @@ def build_visual_attribute_prompt(question: str, question_type: str) -> Conversa
         },
     ]
 
+def build_visual_relational_prompt(question: str, question_type: str) -> Conversation:
+    """
+    question_type: 'vertical', 'horizontal', and 'combined'
+    """
+    if question_type == 'vertical':
+        options = "above, below"
+        task = "vertical"
+    elif question_type == 'horizontal':
+        options = "left, right"
+        task = "horizontal"
+    else:
+        options = "top-left, top-right, bottom-left, bottom-right"
+        task = ""
+    
+    # options = "above, below, left, right, top-left, top-right, bottom-left, bottom-right"
+
+    return [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image"},
+                {
+                    "type": "text",
+                    "text": (
+                        f"Task: {task.capitalize()} spatial reasoning.\n"
+                        f"Allowed Relations: {options}.\n"
+                        "Instruction: Compare the centers of the two objects mentioned. "
+                        f"Question: {question}\n"
+                        "Answer with exactly one word (or hyphenated word) from the allowed relations list."
+                    ),
+                },
+            ],
+        },
+    ]
+
 def build_existential_yesno_prompt(question: str) -> Conversation:
     """Return a chat-style conversation for existential yes/no questions (object existence).
     
