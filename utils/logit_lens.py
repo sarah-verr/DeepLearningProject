@@ -21,6 +21,23 @@ def yes_no_token_ids(tokenizer) -> tuple[set[int], set[int]]:
     return yes_ids, no_ids
 
 
+def _option_token_ids(tokenizer, option: str) -> set[int]:
+    variants = [
+        option,
+        f" {option}",
+        option.capitalize(),
+        f" {option.capitalize()}",
+    ]
+    return _token_ids(tokenizer, variants)
+
+
+def attribute_token_ids(tokenizer, options: list[str]) -> dict[str, set[int]]:
+    ids: dict[str, set[int]] = {}
+    for opt in options:
+        ids[opt] = _option_token_ids(tokenizer, opt)
+    return ids
+
+
 def logit_lens_yesno(
     *,
     model,
@@ -85,6 +102,76 @@ def logit_lens_yesno(
                 "p_no": p_no,
                 "logit_yes": logit_yes,
                 "logit_no": logit_no,
+                "logit_total": logit_total,
+            }
+        )
+
+    return per_layer
+
+
+def logit_lens_attribute(
+    *,
+    model,
+    tokenizer,
+    input_ids: torch.Tensor,
+    options: list[str],
+    attention_mask: torch.Tensor | None = None,
+    position: int | None = None,
+    model_kwargs: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Return per-layer attribute probabilities for a fixed option set."""
+    call_kwargs = dict(model_kwargs or {})
+    with torch.no_grad():
+        out = model(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            output_hidden_states=True,
+            use_cache=False,
+            return_dict=True,
+            **call_kwargs,
+        )
+
+    hidden_states = out.hidden_states
+    if not hidden_states:
+        return []
+
+    if position is None:
+        position = int(input_ids.shape[1] - 1)
+
+    lm_head = model.get_output_embeddings()
+    if lm_head is None:
+        return []
+
+    option_ids = attribute_token_ids(tokenizer, options)
+    per_layer = []
+    for h in hidden_states:
+        h_pos = h[:, position, :]
+        logits = lm_head(h_pos)
+        logit_total = float(torch.logsumexp(logits[0], dim=-1).item())
+        logit_by_choice: dict[str, float | None] = {}
+        valid_logits = []
+        valid_labels = []
+        for opt, ids in option_ids.items():
+            ids_list = sorted(ids)
+            if not ids_list:
+                logit_by_choice[opt] = None
+                continue
+            opt_logits = logits[0, ids_list]
+            logit_val = float(torch.logsumexp(opt_logits, dim=0).item())
+            logit_by_choice[opt] = logit_val
+            valid_logits.append(logit_val)
+            valid_labels.append(opt)
+
+        p_by_choice: dict[str, float | None] = {opt: None for opt in option_ids.keys()}
+        if valid_logits:
+            probs = torch.softmax(torch.tensor(valid_logits), dim=0).tolist()
+            for opt, prob in zip(valid_labels, probs):
+                p_by_choice[opt] = float(prob)
+
+        per_layer.append(
+            {
+                "p_by_choice": p_by_choice,
+                "logit_by_choice": logit_by_choice,
                 "logit_total": logit_total,
             }
         )
