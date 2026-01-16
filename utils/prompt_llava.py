@@ -21,7 +21,7 @@ from .prompt_templates import (
     build_existential_attribute_prompt,
 )
 
-from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
+from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups, compute_com)
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 VLM_LEVELS_DIR = "data/vlm_levels"
@@ -64,20 +64,6 @@ def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
                         return_dict_in_generate=True,)
     
     return generated_out
-
-
-
-def init_model(
-    model_id: str,
-    *,
-    output_hidden_states: bool = False,
-    output_attentions: bool = False,
-):
-    return _init_model(
-        model_id,
-        output_hidden_states=output_hidden_states,
-        output_attentions=output_attentions,
-    )
 
 def build_prompt(
     processor,
@@ -276,6 +262,7 @@ def infer_model_for_levels(
                     "qa_id": qa_pair.get("id", idx),  # Use index if no id field
                     "question": qa_pair["question"],
                     "ground_truth": qa_pair["answer"],
+                    "relation_type": qa_pair["rel_type"],
                     "response": full_output,
                     "prediction": prediction,
                     "confidence": confidence,
@@ -291,7 +278,7 @@ def infer_model_for_levels(
     return results_list
 
 
-def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual"):
+def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl"):
     """
     Runs model but this time with attention values aggregated according to source and target in the params
     """
@@ -394,12 +381,25 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 target_groups.update(get_image_entity_indices(full_ids_1d, image_token_id, qa, annotation))
                 target_groups.update(get_entity_indices(processor.tokenizer, full_ids_1d, qa, annotation))
 
+                # Collect the object patches
+                obj_id = qa["object_id"]
+                obj_patches = None
+                for obj in annotation['objects']:
+                    if obj['id'] == obj_id:
+                        obj_patches = obj.get('patch_indices', [])
+                        break
+
+                # Compute CoM of the object in the scene
+                object_mask = np.zeros(576, dtype=np.float32)
+                object_mask[obj_patches] = 1.
+                com_object = compute_com(object_mask)
+
                 # Compute ALL combinations
                 attention_metrics = aggregate_attention_between_groups(
                     attentions_cpu,
                     source_groups,
                     target_groups,
-                    key_pairs=key_pairs  # specifies the source -> target combinations of interest for which we need to aggregate attention values
+                    key_pairs=key_pairs,  # specifies the source -> target combinations of interest for which we need to aggregate attention values
                 )
 
                 attn_results.append(
@@ -407,6 +407,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                         "level_id": level_id,
                         "image_id": image_id,
                         "qa_id": qa["id"],
+                        "com_object": com_object,
                         "question": qa["question"],
                         "ground_truth": qa["answer"],
                         "response": full_output,
@@ -539,6 +540,7 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
         tid for tid in (_last_token_id(v) for v in no_variants)
         if tid is not None
     )
+
 
     prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)] + [0])
     prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)] + [0])

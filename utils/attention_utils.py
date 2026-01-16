@@ -1,10 +1,11 @@
 from typing import Optional, Dict, Any, List, Tuple
 import torch
+import numpy as np
 
 def aggregate_attention_from_source_to_target(
     attentions: Tuple[torch.Tensor, ...],
     source_token_indices: List[int],
-    target_token_indices: List[int],
+    target_token_indices: List[int]
 ) -> Dict[str, Any]:
     """
     For each layer/head, compute how much attention the source tokens pay to the target tokens.
@@ -42,15 +43,28 @@ def aggregate_attention_from_source_to_target(
 
         head_fracs = []
         head_entropies = []
+        head_coms = []
 
         for h in range(num_heads):
             mat = layer_all[h]  # [seq, seq]
             # sum attention from all source tokens to all tokens
             src_to_all = mat[source_token_indices, :].sum().item()
             # sum attention from all source tokens to all target tokens
-            src_to_tgt = mat[source_token_indices][:, target_token_indices].sum().item()
+            src_to_tgt_attention = mat[source_token_indices][:, target_token_indices]
+            src_to_tgt =src_to_tgt_attention.sum().item()
             frac = src_to_tgt / (src_to_all + 1e-9) if src_to_all > 0 else 0.0
             head_fracs.append(float(frac))
+
+            # compute CoM, however, this only makes sense when target indices is the image tokens of size 576
+            com_attention_map = None
+            if len(target_token_indices) == 576: 
+                # src_to_tgt_attention is [num_src, num_tgt], in case of multiple source tokens, take average attention map from each source token
+                if src_to_tgt_attention.shape[0] > 1:
+                    src_to_tgt_attention = src_to_tgt_attention.mean(dim=0)  # [num_tgt]
+                src_to_tgt_attention = src_to_tgt_attention.squeeze()  # should be [576]
+                com_attention_map = compute_com(src_to_tgt_attention)
+            head_coms.append(com_attention_map)
+        
 
             # Entropy over the target group
             # For each source token, compute entropy of its attention over target tokens
@@ -81,6 +95,7 @@ def aggregate_attention_from_source_to_target(
                 "mean_fraction": mean_frac,
                 "per_head_entropy": head_entropies,
                 "mean_entropy": mean_entropy,
+                "head_com_attentions": head_coms,
             }
         )
 
@@ -93,6 +108,7 @@ def aggregate_attention_between_groups(
     source_groups: Dict[str, List[int]],
     target_groups: Dict[str, List[int]],
     key_pairs: Optional[List[Tuple[str, str]]] = None,
+    
 ) -> Dict[str, Any]:
     """
     Compute attention for all combinations of source groups -> target groups.
@@ -104,6 +120,7 @@ def aggregate_attention_between_groups(
         attentions: tuple[num_layers] of tensors [1, heads, seq, seq]
         source_groups: Dict mapping group names to token indices (e.g., {"last": [123], "relation": [45, 46]})
         target_groups: Dict mapping group names to token indices (e.g., {"all_visual": [0, 1, 2], "all_text": [100, 101]})
+        object_patches: Used for CoM computation
     
     Returns:
         {
@@ -157,6 +174,28 @@ def aggregate_attention_between_groups(
     return {
         "group_pairs": group_pairs,
     }
+
+def compute_com(weights):
+    """
+    this function takes a list of length 576, which is supposed to represent a 24 * 24 grid, and then outputs the COM grid based on the weights
+    """
+    
+    if len(weights) != 576:
+        raise ValueError(f"Weights must be a list of 576 elements for a 24x24 grid, but got {weights.shape}")
+    
+    grid = np.array(weights).reshape(24, 24)
+    total_weight = np.sum(grid)
+    
+    if total_weight == 0:
+        # Return center if no weights
+        return (11.5, 11.5)  # Center of 24x24 grid (0-based indexing)
+    
+    # Compute center of mass
+    y_indices, x_indices = np.indices((24, 24))
+    com_x = np.sum(grid * x_indices) / total_weight
+    com_y = np.sum(grid * y_indices) / total_weight
+    
+    return (com_x, com_y)
 
 def get_phrase_token_positions(tokenizer, full_input_ids_1d, relation_phrase: str) -> dict[str, list[int]]:
     """

@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import torch
 
-def aggregate_attention_and_save_to_file(levels):
+def aggregate_attention_and_save_to_file(levels, filename="attention_results_detailed.json"):
     """
     This function computes that attention (aggregated as mean, per head, layer) and saves it to a json file: attention_results_all_levels.jsonl in the results_{model} folder
     """
@@ -29,7 +29,7 @@ def aggregate_attention_and_save_to_file(levels):
                     ("relation", "all_visual")
     ]
 
-    attn_results = infer_model_with_attention(levels, key_pairs, "visual")
+    attn_results = infer_model_with_attention(levels, key_pairs, "visual", filename)
 
     if not attn_results:
         return
@@ -37,7 +37,7 @@ def aggregate_attention_and_save_to_file(levels):
     plotter = Plotter(experiment_name="attention_analysis")
 
     # Always save raw attention results to JSON via Plotter
-    plotter.save_jsonl(attn_results, "attention_results_detailed.json")
+    plotter.save_jsonl(attn_results, filename)
 
     # Once I write down the json, I will then analyse them on a notebook
     # # 1) Layer-wise text vs image fractions averaged over all QAs
