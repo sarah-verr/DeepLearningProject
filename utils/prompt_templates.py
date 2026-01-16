@@ -6,8 +6,10 @@ from typing import Any
 Conversation = list[dict[str, Any]]
 
 
+
 def build_visual_yesno_prompt(question: str,) -> Conversation:
     """Return a chat-style conversation for visual yes/no answering."""
+    
     q = (question or "").strip()
     return [
         {
@@ -18,6 +20,85 @@ def build_visual_yesno_prompt(question: str,) -> Conversation:
                     "text": (
                         'Use the spatial layout in the image to answer the following '
                         'relational reasoning question with either "yes" or "no". \n'
+                        f"QUESTION: {q}\n"
+                    ),
+                },
+                {"type": "image"},
+            ],
+        },
+    ]
+
+def build_visual_attribute_prompt(question: str, question_type: str) -> Conversation:
+    """
+    question_type: should be 'color' or 'shape' based on your JSON
+    """
+    q = (question or "").strip()
+    
+    # Define the allowed vocabulary based on the specific task
+    if question_type == "color":
+        allowed_options = "red, blue, green, yellow, purple, cyan, orange, pink, lime"
+        target_attr = "color"
+    else:
+        allowed_options = "square, circle, triangle, star"
+        target_attr = "shape"
+
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        f"Task: Identify the {target_attr} of a specific object.\n"
+                        f"Allowed {target_attr}s: {allowed_options}.\n\n"
+                        "Use the spatial layout to find the object described. "
+                        "Then, provide the answer using exactly one word from the list above.\n"
+                        f"QUESTION: {q}\n"
+                    ),
+                },
+                {"type": "image"},
+            ],
+        },
+    ]
+
+def build_existential_yesno_prompt(question: str) -> Conversation:
+    """Return a chat-style conversation for existential yes/no questions (object existence).
+    
+    Similar to build_visual_yesno_prompt but without the 'relational reasoning' text,
+    suitable for questions about object existence rather than spatial relations.
+    """
+    q = (question or "").strip()
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        'Answer the following question about the image with either "yes" or "no".\n'
+                        f"QUESTION: {q}\n"
+                    ),
+                },
+                {"type": "image"},
+            ],
+        },
+    ]
+
+def build_existential_attribute_prompt(question: str) -> Conversation:
+    """Return a chat-style conversation for existential attribute questions."""
+    q = (question or "").strip()
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        'Available answers: <number>, <color>, <shape>, <color> <shape>. '
+                        'Available colors: red, blue, green, yellow, purple, cyan, orange, pink, lime. '
+                        'Available shapes: square, circle, triangle, star. '
+                        'Available numbers: 1 2 3 4.'
+                        'Answer the following question about the image with a descriptive answer.\n'
                         f"QUESTION: {q}\n"
                     ),
                 },

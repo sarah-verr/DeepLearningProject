@@ -9,51 +9,50 @@ import torch
 from PIL import Image
 from transformers import LlavaProcessor, LlavaForConditionalGeneration
 from tqdm.auto import tqdm
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import numpy as np
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-import numpy as np
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
 from .prompt_templates import (
     build_visual_yesno_prompt,
+    build_visual_attribute_prompt,
     build_caption_yesno_prompt,
     build_scene_yesno_prompt,
     build_caption_text_yesno_prompt,
+    build_existential_yesno_prompt,
+    build_existential_attribute_prompt,
 )
 
-from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups)
+from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups, compute_com)
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 VLM_LEVELS_DIR = "data/vlm_levels"
 VLM_TEXT_DIR = "data/vlm_levels_objective"
 
 # CORE FUNCTIONS: The below two functions ensure that model initialisation params and generation config are standardised across inferences
-def _init_model(MODEL_ID: str,
-    output_hidden_states: bool = False,
-    output_attentions: bool = False,
-):
+def _init_model(MODEL_ID, output_hidden_states=False, output_attentions=False):
+
+    print("[DEBUG] Initialising model...")
+
     processor = LlavaProcessor.from_pretrained(MODEL_ID)
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    dtype = torch.float16 if device == "cuda" else torch.float32
+
+    print(f"[DEBUG] Device: {device}...")
+
     model = LlavaForConditionalGeneration.from_pretrained(
         MODEL_ID,
-        dtype=torch.float16,
+        dtype=dtype,
         low_cpu_mem_usage=True,
         output_attentions=output_attentions,
-        attn_implementation="eager",
         output_hidden_states=output_hidden_states,
+        attn_implementation="eager",
     )
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-<<<<<<< HEAD
-=======
-    if torch.backends.mps.is_available() and device != "cuda":
-        device = "mps"
-        print("Using mps")
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+
+    print("[DEBUG] Model initialised...")
     model.to(device)
     model.eval()
+    print(f"[DEBUG] Moved to {device}")
+
     return processor, model, device
 
 def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
@@ -66,34 +65,15 @@ def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
     
     return generated_out
 
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-def init_model(
-    model_id: str,
-    *,
-    output_hidden_states: bool = False,
-    output_attentions: bool = False,
-):
-    return _init_model(
-        model_id,
-        output_hidden_states=output_hidden_states,
-        output_attentions=output_attentions,
-    )
-
-
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "caption", "scene", "text_only"],
+    prompt_strategy: Literal["visual", "visual_attribute", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
     caption: Optional[str] = None,
     qa_item: Optional[Dict[str, Any]] = None,
+    qa_key: Optional[str] = None,
 ) -> str:
     if prompt_strategy == "text_only":
         if not caption:
@@ -101,6 +81,19 @@ def build_prompt(
         convo = build_caption_text_yesno_prompt(caption, question)
     elif prompt_strategy == "visual":
         convo = build_visual_yesno_prompt(question)
+    elif prompt_strategy == "visual_attribute":
+        question_type = qa_item.get("question_type")
+        convo = build_visual_attribute_prompt(question, question_type)
+    elif prompt_strategy == "existential":
+        # Use attribute prompt for attribute questions, yes/no prompt for yes/no questions
+        if qa_key == "qa_existential_attribute":
+            convo = build_existential_attribute_prompt(question)
+        else:
+            convo = build_existential_yesno_prompt(question)
+    elif prompt_strategy == "existential_yesno":
+        convo = build_existential_yesno_prompt(question)
+    elif prompt_strategy == "existential_attribute":
+        convo = build_existential_attribute_prompt(question)
     elif prompt_strategy == "caption":
         if annotation is None:
             raise ValueError("annotation is required for caption prompts.")
@@ -115,13 +108,7 @@ def build_prompt(
         raise ValueError(f"Unknown prompt strategy: {prompt_strategy}")
     return processor.apply_chat_template(convo, add_generation_prompt=True)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = None, device: Optional[str] = None):
     if image is None:
         inputs = processor(text=prompt, return_tensors="pt")
@@ -130,13 +117,6 @@ def prepare_inputs(processor, prompt: str, *, image: Optional[Image.Image] = Non
     if device:
         inputs = inputs.to(device)
     return inputs
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-def generate_output(model, inputs, *, max_new_tokens: int = 10):
-    return generate_output_for_model(model, inputs, max_new_tokens=max_new_tokens)
-
 
 def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Optional[float]]:
     scores = getattr(outputs, "scores", None)
@@ -172,42 +152,37 @@ def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Opt
     pred = "yes" if p_yes_n >= p_no_n else "no"
     return pred, p_yes_n, p_no_n
 
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 def infer_model_for_levels(
     level_ids: List[str],
-    prompt_strategy: Literal["visual", "caption", "scene"] = "visual",
+    prompt_strategy: Literal["visual", "caption", "scene", "existential", "visual_attribute"] = "visual",
     show_llm_output: bool = False,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     use_plain_images: bool = False,
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-    use_plain_images: bool = False,
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+    qa_key: str = "qa",
+    data_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Run inference on all QA pairs in for the images in a level.
+    Run inference on all QA pairs for images in specified levels.
     
     Args:
-        image_id: Image identifier (e.g., "00000_b")
-        level_id: Level identifier (e.g., "level_0")
-        prompt_strategy: How to format prompts ("visual", "caption", or "scene")
-        output_attentions: Whether to extract attention patterns
-        attention_source_token: Which token to use as attention source
+        level_ids: List of level identifiers (e.g., ["level_0", "level_1"])
+        prompt_strategy: How to format prompts ("visual", "caption", "scene", "existential", or "visual_attribute")
+        show_llm_output: Whether to print full model outputs
+        use_plain_images: Whether to use plain black/white images instead of actual images
+        qa_key: Key in annotation JSON for QA pairs (default "qa", use "qa_existential" for existential questions)
+        data_dir: Directory containing the level data (default: VLM_LEVELS_DIR)
         
     Returns:
-        Dictionary with results for all QA pairs
+        List of dictionaries with results for all QA pairs
     """
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
+    
     # Step 1: Load annotation and images for all levels
     annotations_all_levels = []
     images_by_level = []
     for level in level_ids:
-        annotations_all_levels.append(_load_annotation(level))
-        images_by_level.append(_get_images(level))
+        annotations_all_levels.append(_load_annotation(level, data_dir=data_dir))
+        images_by_level.append(_get_images(level, data_dir=data_dir))
 
     # Step 2: Initialize model and processor
     processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
@@ -225,14 +200,6 @@ def infer_model_for_levels(
         ):
             image_id = annotation['image_id']
             print(f"Processing image... {image_id}")
-<<<<<<< HEAD
-<<<<<<< HEAD
-            qa_pairs = annotation["qa"]
-            prompts = _build_prompts(qa_pairs, annotation, prompt_strategy)
-            processed_prompts = [processor.apply_chat_template(prompt, add_generation_prompt=True) for prompt in prompts]
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
             
             if use_plain_images:
                 if image_id.endswith('_b'):
@@ -243,12 +210,11 @@ def infer_model_for_levels(
                     raise ValueError(f"Image ID {image_id} does not end with '_b' or '_w' for plain images")
             # else: image is already loaded from _get_images
             
-            qa_pairs = annotation["qa"]
-            processed_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,)for qa in qa_pairs]
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+            qa_pairs = annotation.get(qa_key, [])
+            if not qa_pairs:
+                continue  # Skip if no QA pairs found for this key
+            
+            processed_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,qa_key=qa_key)for qa in qa_pairs]
             
             results_for_level = {
                 "image_id": image_id,
@@ -268,36 +234,17 @@ def infer_model_for_levels(
                 with torch.no_grad():
                         output = generate_output_for_model(model, inputs)
                 # Extract just the generated part (after the prompt)]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
                 full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-                full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+
                 if show_llm_output:
                     if output == None:
                         print("No output generated.")
-
-                    # Also decode full output to see prompt + answer
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    full_output = processor.decode(output.sequences[0], skip_special_tokens=True)
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+    
                     print(f"\n--- Model Response {level_id} image: {image_id} ---")
                     print(f"{full_output}")
                     print("---" * 20)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                prediction , confidence = get_yes_no_probability(output, tokenizer=processor.tokenizer)
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                 prediction, confidence, _, _ = get_yes_no_probability(output, tokenizer=processor.tokenizer)
 
                 # Count image and text tokens in the prompt
@@ -308,40 +255,30 @@ def infer_model_for_levels(
                 else:
                     n_image_tokens = 0
                 n_text_tokens = len(input_ids) - n_image_tokens
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
-                results_list.append({
+                result_dict = {
                     "level_id": level_id,
                     "image_id": image_id,
-                    "qa_id": qa_pair["id"],
+                    "qa_id": qa_pair.get("id", idx),  # Use index if no id field
                     "question": qa_pair["question"],
-<<<<<<< HEAD
-<<<<<<< HEAD
                     "ground_truth": qa_pair["answer"],
-                    "prediction": prediction,
-                    "confidence": confidence,
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+                    "relation_type": qa_pair["rel_type"],
                     "response": full_output,
                     "prediction": prediction,
                     "confidence": confidence,
                     "num_image_tokens": n_image_tokens,
                     "num_text_tokens": n_text_tokens,
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
-                })
+                }
+                # Add question_type if present in qa_pair
+                if "question_type" in qa_pair:
+                    result_dict["question_type"] = qa_pair["question_type"]
+                results_list.append(result_dict)
 
 
     return results_list
 
 
-def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual"):
+def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl"):
     """
     Runs model but this time with attention values aggregated according to source and target in the params
     """
@@ -354,34 +291,18 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
 
     # --- Load model & processor once, with attentions enabled ---
     processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    attn_results: List[Dict[str, Any]] = []
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
     # Import Plotter here to avoid circular import issues
     from utils.plotter import Plotter
     plotter = Plotter()
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
     # --- Loop over levels / images / QAs with tqdm progress bars ---
     for level_id, ann_for_level, imgs_for_level in tqdm(
         list(zip(level_ids, annotations_all_levels, images_by_level)),
         desc="Levels",
     ):
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
         attn_results: List[Dict[str, Any]] = []  # Per-level results
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-        attn_results: List[Dict[str, Any]] = []  # Per-level results
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
         for image, annotation in tqdm(
             list(zip(imgs_for_level, ann_for_level)),
             desc=f"Images in {level_id}",
@@ -391,19 +312,8 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
             qa_pairs = annotation["qa"]
 
             # Build chat-style prompts as in infer_model_for_levels
-<<<<<<< HEAD
-<<<<<<< HEAD
-            prompts = _build_prompts(qa_pairs, annotation, prompt_strategy)
-            chat_prompts = [
-                processor.apply_chat_template(p, add_generation_prompt=True)
-                for p in prompts
-            ]
-=======
+
             chat_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,) for qa in qa_pairs]
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-            chat_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,) for qa in qa_pairs]
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
             for qa, chat_prompt in tqdm(
                 list(zip(qa_pairs, chat_prompts)),
@@ -422,19 +332,10 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 with torch.no_grad():
                     gen_out = generate_output_for_model(model, inputs)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                prediction, confidence = get_yes_no_probability(
-=======
                 full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
 
                 prediction, confidence, _, _ = get_yes_no_probability(
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-                full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
 
-                prediction, confidence, _, _ = get_yes_no_probability(
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                     gen_out, tokenizer=processor.tokenizer
                 )
 
@@ -458,15 +359,6 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                     layer.detach().cpu() for layer in fwd_out.attentions
                 )
                 full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
-<<<<<<< HEAD
-<<<<<<< HEAD
-                 
-=======
-                
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-                
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                 # free GPU tensors ASAP 
                 del fwd_out
                 torch.cuda.empty_cache()
@@ -489,36 +381,36 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 target_groups.update(get_image_entity_indices(full_ids_1d, image_token_id, qa, annotation))
                 target_groups.update(get_entity_indices(processor.tokenizer, full_ids_1d, qa, annotation))
 
+                # Collect the object patches
+                obj_id = qa["object_id"]
+                obj_patches = None
+                for obj in annotation['objects']:
+                    if obj['id'] == obj_id:
+                        obj_patches = obj.get('patch_indices', [])
+                        break
+
+                # Compute CoM of the object in the scene
+                object_mask = np.zeros(576, dtype=np.float32)
+                object_mask[obj_patches] = 1.
+                com_object = compute_com(object_mask)
+
                 # Compute ALL combinations
                 attention_metrics = aggregate_attention_between_groups(
                     attentions_cpu,
                     source_groups,
                     target_groups,
-                    key_pairs=key_pairs  # specifies the source -> target combinations of interest for which we need to aggregate attention values
+                    key_pairs=key_pairs,  # specifies the source -> target combinations of interest for which we need to aggregate attention values
                 )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                 attn_results.append(
                     {
                         "level_id": level_id,
                         "image_id": image_id,
                         "qa_id": qa["id"],
+                        "com_object": com_object,
                         "question": qa["question"],
-<<<<<<< HEAD
-<<<<<<< HEAD
                         "ground_truth": qa["answer"],
-=======
                         "response": full_output,
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-                        "response": full_output,
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
                         "prediction": prediction,
                         "confidence": confidence,
                         "relation_type": qa["rel_type"],
@@ -529,16 +421,8 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 # clean up per‑QA intermediates
                 del gen_out, inputs, full_inputs, attentions_cpu, full_ids_1d
                 torch.cuda.empty_cache()
-<<<<<<< HEAD
-<<<<<<< HEAD
-                
-    return attn_results
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
 
         # After finishing this level, append results to a single file
-        output_filename = "attention_results_all_levels.jsonl"
         output_path = plotter.results_dir / output_filename
         with open(output_path, "a") as f:
             for item in attn_results:
@@ -614,34 +498,24 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     image_positions = torch.where(full_inputs["input_ids"][0] == image_token_id)[0].cpu().numpy()
     attentions_np = [att[:, :, :, image_positions] for att in attentions_np]
     
-<<<<<<< HEAD
-=======
+    full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+    rel_positions = get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"])["relation"]
+    
+    full_ids_1d = full_inputs["input_ids"][0].detach().cpu()
+    rel_positions = get_phrase_token_positions(processor.tokenizer, full_ids_1d, qa["rel_phrase"])["relation"]
+    
     full_output = processor.decode(gen_out.sequences[0], skip_special_tokens=True)
     
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     # Clean up
     del gen_out, inputs, full_inputs, fwd_out
     torch.cuda.empty_cache()
 
-<<<<<<< HEAD
-    return attentions_np, prompt
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
-    return attentions_np, full_output
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
+    return attentions_np, full_output, rel_positions
 
 # HELPERS to load data, build prompts, get yes\no probabilities
 
 def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float]:
     """Extract yes/no prediction and confidence from model outputs."""
-<<<<<<< HEAD
-<<<<<<< HEAD
-    first_token_logits = outputs.scores[0][0]
-    probs = torch.softmax(first_token_logits, dim=-1)
-
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     scores = getattr(outputs, "scores", None)
     if not scores:
         return None, None, None, None
@@ -652,28 +526,10 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
     yes_variants = [" yes", " Yes", "yes", "Yes"]
     no_variants = [" no", " No", "no", "No"]
 
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     def _last_token_id(text: str) -> int | None:
         ids = tokenizer.encode(text, add_special_tokens=False)
         return ids[-1] if ids else None
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    yes_variants = [" yes", " Yes", "yes", "Yes"]
-    no_variants = [" no", " No", "no", "No"]
-    yes_tokens = [tid for tid in (_last_token_id(v) for v in yes_variants) if tid is not None]
-    no_tokens = [tid for tid in (_last_token_id(v) for v in no_variants) if tid is not None]
-
-    prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)])
-    prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)])
-
-    total = prob_yes + prob_no + 1e-9
-=======
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     # TODO: Made it to SET, needs to be tested!!
     yes_tokens = set(
         tid for tid in (_last_token_id(v) for v in yes_variants)
@@ -684,6 +540,7 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
         if tid is not None
     )
 
+
     prob_yes = sum([probs[t_id].item() for t_id in yes_tokens if t_id < len(probs)] + [0])
     prob_no = sum([probs[t_id].item() for t_id in no_tokens if t_id < len(probs)] + [0])
 
@@ -691,32 +548,20 @@ def get_yes_no_probability(outputs, tokenizer) -> Tuple[str, float, float, float
     if total <= 0:
         return None, None, None, None
 
-<<<<<<< HEAD
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
     norm_yes = prob_yes / total
     norm_no = prob_no / total
 
     prediction = "yes" if norm_yes > norm_no else "no"
     confidence = norm_yes if prediction == "yes" else norm_no
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-    return prediction, confidence
-=======
 
     return prediction, confidence, norm_yes, norm_no
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
 
-    return prediction, confidence, norm_yes, norm_no
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950
-
-def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
+def _load_annotation(level_id: str, data_dir: Optional[str] = None) -> List[Dict[str, Any]]:
     """Load all annotation JSONs for all images in a given level."""
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
     ann_dir = os.path.join(
-        VLM_LEVELS_DIR,
+        data_dir,
         level_id,
         "ann",
     )
@@ -732,10 +577,12 @@ def _load_annotation(level_id: str) -> List[Dict[str, Any]]:
             annotations[-1]["image_id"] = image_id
     return annotations
 
-def _get_images(level_id: str) -> List[Image.Image]:
+def _get_images(level_id: str, data_dir: Optional[str] = None) -> List[Image.Image]:
     """Load all images for a given level."""
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
     img_dir = os.path.join(
-        VLM_LEVELS_DIR,
+        data_dir,
         level_id,
         "images",
     )
@@ -746,8 +593,6 @@ def _get_images(level_id: str) -> List[Image.Image]:
             image = Image.open(img_path) # .convert("RGB")
             images.append(image)
     return images
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 def _build_prompts(qa_pairs: List[Dict], annotation: Dict[str, Any], strategy: str) -> List:
     """Build conversation prompts for all QA pairs based on strategy."""
@@ -765,7 +610,3 @@ def _build_prompts(qa_pairs: List[Dict], annotation: Dict[str, Any], strategy: s
             p = build_visual_yesno_prompt(question)
         prompts.append(p)
     return prompts
-=======
->>>>>>> 5377b2f0425a36e119609f3a4180b3e1e327ba0c
-=======
->>>>>>> 4ca68f3c539453b359f02ed566707b0af65ad950

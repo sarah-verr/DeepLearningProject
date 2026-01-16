@@ -17,16 +17,17 @@ from transformers import (
 )
 
 from utils.prompt_templates import build_visual_yesno_prompt
+from utils.prompt_llava import _init_model, generate_output_for_model
 
 # --- Configuration ---
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 BASE_DATA_PATH = f"/home/{os.environ['USER']}/DeepLearningProject/data/vlm_levels"
 
-bnb = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,
-)
+# bnb = BitsAndBytesConfig(
+#     load_in_4bit=True,
+#     bnb_4bit_quant_type="nf4",
+#     bnb_4bit_compute_dtype=torch.float16,
+# )
 
 
 def _pick_model_input_device(model) -> torch.device:
@@ -55,10 +56,10 @@ def extract_all_layer_hidden_states(model, processor, inputs, num_layers, first_
     input_length = inputs["input_ids"].shape[1]
 
     with torch.no_grad():
-        outputs = model.generate(
+         outputs = model.generate(
             **inputs,
             max_new_tokens=1,
-            output_hidden_states=True,
+            # output_hidden_states is already set at model initialization, don't pass it here
             return_dict_in_generate=True,
             pad_token_id=processor.tokenizer.eos_token_id,
         )
@@ -251,6 +252,710 @@ def probe_layer(hidden_states, labels, cv_folds=5):
 
     return cv_scores.mean(), cv_scores.std()
 
+def extract_all_head_attentions(model, processor, inputs, specific_layers=[13, 16, 19, 24], first_token=False):
+    """
+    Extract attention patterns from specific heads in specific layers.
+    
+    Args:
+        model: The LLaVA model
+        processor: The processor
+        inputs: Model inputs
+        specific_layers: List of layer indices to extract from
+        first_token: Whether to use first generated token or last input token (currently only last input token supported)
+    
+    Returns:
+        Dictionary: {layer_idx: {head_idx: attention_pattern}}
+        where attention_pattern is attention from last token to image patches [num_image_tokens]
+    """
+    input_length = inputs["input_ids"].shape[1]
+    
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=1,
+            output_attentions=True,
+            return_dict_in_generate=True,
+            pad_token_id=processor.tokenizer.eos_token_id,
+        )
+    
+    if not outputs.attentions or len(outputs.attentions) == 0:
+        raise ValueError("No attentions returned from generation")
+    
+    # Use step 0 (input step) - attention from input tokens
+    input_step_attentions = outputs.attentions[0]  # tuple of [num_layers] tensors
+    
+    # Get image token positions
+    image_token_id = model.config.image_token_index
+    full_input_ids = inputs["input_ids"][0]  # [seq_len]
+    image_token_positions = (full_input_ids == image_token_id).nonzero(as_tuple=True)[0].tolist()
+    
+    if not image_token_positions:
+        raise ValueError("No image tokens found in sequence")
+    
+    last_token_idx = input_length - 1
+    
+    # Extract attention patterns for each head in specified layers
+    all_head_attentions = {}
+    for layer_idx in specific_layers:
+        if layer_idx >= len(input_step_attentions):
+            continue
+        
+        layer_attn = input_step_attentions[layer_idx]  # [1, heads, seq, seq]
+        layer_attn = layer_attn[0]  # Remove batch dim: [heads, seq, seq]
+        num_heads = layer_attn.shape[0]
+        all_head_attentions[layer_idx] = {}
+        
+        for head_idx in range(num_heads):
+            # Get attention from last input token to all tokens
+            head_attn = layer_attn[head_idx, last_token_idx, :]  # [seq]
+            
+            # Extract attention to image patches only
+            image_attn = head_attn[image_token_positions]  # [num_image_tokens]
+            
+            # Normalize to get probability distribution
+            image_attn_sum = image_attn.sum()
+            if image_attn_sum > 0:
+                image_attn_probs = image_attn / image_attn_sum
+            else:
+                image_attn_probs = image_attn
+            
+            all_head_attentions[layer_idx][head_idx] = image_attn_probs.detach().cpu().numpy()
+    
+    return all_head_attentions
+
+def collect_head_probing_data(model, processor, level, max_images=None, 
+                              specific_layers=[13, 16, 19, 24], first_token=False):
+    """
+    Collect head-specific attention patterns for probing.
+    Reuses the same structure as collect_probing_data but extracts attentions instead.
+    """
+    level_dir = os.path.join(BASE_DATA_PATH, f"level_{level}")
+    ann_dir = os.path.join(level_dir, "ann")
+    img_dir = os.path.join(level_dir, "images")
+    
+    if not os.path.exists(ann_dir):
+        raise FileNotFoundError(f"Level {level} directory not found: {ann_dir}")
+    
+    json_files = sorted([f for f in os.listdir(ann_dir) if f.endswith(".json")])
+    if max_images:
+        json_files = json_files[:max_images]
+    
+    # Structure: {layer: {head: [features...]}}
+    head_features_by_layer_head = {}
+    for layer in specific_layers:
+        head_features_by_layer_head[layer] = {head: [] for head in range(32)}
+    
+    labels = []
+    metadata = []
+    
+    device = _pick_model_input_device(model)
+    
+    print(f"Collecting head probing data from {len(json_files)} images...")
+    
+    for filename in tqdm(json_files, desc="Processing images"):
+        file_id = filename.replace(".json", "")
+        ann_path = os.path.join(ann_dir, filename)
+        
+        with open(ann_path, "r") as f:
+            data = json.load(f)
+        
+        image_path = os.path.join(img_dir, f"{file_id}.png")
+        if not os.path.exists(image_path):
+            continue
+        
+        image = Image.open(image_path).convert("RGB")
+        qa_list = data.get("qa", [])
+        
+        for qa in qa_list:
+            question = (qa.get("question") or "").strip()
+            gt = (qa.get("answer") or "").strip().lower()
+            
+            if not question or gt not in {"yes", "no"}:
+                continue
+            
+            # Prepare inputs (same as collect_probing_data)
+            conversation = build_visual_yesno_prompt(question)
+            prompt_text = processor.apply_chat_template(
+                conversation,
+                add_generation_prompt=True,
+                tokenize=False,
+            )
+            inputs = processor(text=prompt_text, images=image, return_tensors="pt")
+            inputs = _move_to_device(inputs, device)
+            
+            # Extract head attentions (instead of hidden states)
+            try:
+                all_head_attentions = extract_all_head_attentions(
+                    model, processor, inputs, specific_layers, first_token
+                )
+                
+                # Store attention patterns for each head in each layer
+                for layer_idx, heads in all_head_attentions.items():
+                    for head_idx, attention_pattern in heads.items():
+                        head_features_by_layer_head[layer_idx][head_idx].append(attention_pattern)
+                
+                # Store label (0=no, 1=yes) - same as collect_probing_data
+                labels.append(1 if gt == "yes" else 0)
+                metadata.append({
+                    "image": file_id,
+                    "question": question,
+                    "ground_truth": gt,
+                })
+            except Exception as e:
+                print(f"Error processing {file_id}, question: {question[:50]}... - {e}")
+    
+    print(f"Collected {len(labels)} examples")
+    return head_features_by_layer_head, labels, metadata
+
+def probe_head(head_features, labels, cv_folds=5):
+    """
+    Train a linear probe on head-specific features and return cross-validation accuracy.
+    Same pattern as probe_layer.
+    
+    Args:
+        head_features: list of numpy arrays, each representing features from a specific head
+                      (e.g., attention pattern from that head)
+        labels: list of binary labels (0 or 1)
+        cv_folds: number of cross-validation folds
+    
+    Returns:
+        mean_accuracy: mean CV accuracy
+        std_accuracy: std of CV accuracy
+    """
+    if len(head_features) != len(labels):
+        raise ValueError(
+            f"Mismatch: {len(head_features)} head features, {len(labels)} labels"
+        )
+    
+    if len(set(labels)) < 2:
+        return 0.0, 0.0
+    
+    X = np.array(head_features)  # Shape: (n_samples, feature_dim)
+    y = np.array(labels)
+    
+    probe = LogisticRegression(max_iter=1000, random_state=42)
+    cv_scores = cross_val_score(probe, X, y, cv=cv_folds, scoring="accuracy")
+    
+    return cv_scores.mean(), cv_scores.std()
+
+def collect_head_com_data(model, processor, level, max_images=None, specific_layers=[13, 16, 19, 24]):
+    """
+    Collect center of mass data for attention heads across specified layers.
+    
+    Args:
+        model: The LLaVA model
+        processor: The processor
+        level: Data level to process
+        max_images: Maximum number of images to process
+        specific_layers: List of layer indices to analyze
+    
+    Returns:
+        List of dictionaries containing CoM results for each image/QA pair
+    """
+    level_dir = os.path.join(BASE_DATA_PATH, f"level_{level}")
+    ann_dir = os.path.join(level_dir, "ann")
+    img_dir = os.path.join(level_dir, "images")
+    
+    if not os.path.exists(ann_dir):
+        raise FileNotFoundError(f"Level {level} directory not found: {ann_dir}")
+    
+    json_files = sorted([f for f in os.listdir(ann_dir) if f.endswith(".json")])
+    if max_images:
+        json_files = json_files[:max_images]
+    
+    device = _pick_model_input_device(model)
+    all_com_results = []
+    
+    print(f"Collecting head CoM data from {len(json_files)} images...")
+    
+    for filename in tqdm(json_files, desc="Processing images"):
+        file_id = filename.replace(".json", "")
+        ann_path = os.path.join(ann_dir, filename)
+        
+        with open(ann_path, "r") as f:
+            annotation = json.load(f)
+        
+        image_path = os.path.join(img_dir, f"{file_id}.png")
+        if not os.path.exists(image_path):
+            continue
+        
+        image = Image.open(image_path).convert("RGB")
+        qa_list = annotation.get("qa", [])
+        
+        for qa_pair in qa_list:
+            question = (qa_pair.get("question") or "").strip()
+            if not question:
+                continue
+            
+            # Prepare inputs
+            conversation = build_visual_yesno_prompt(question)
+            prompt_text = processor.apply_chat_template(
+                conversation,
+                add_generation_prompt=True,
+                tokenize=False,
+            )
+            inputs = processor(text=prompt_text, images=image, return_tensors="pt")
+            inputs = _move_to_device(inputs, device)
+            
+            # Calculate CoM for this QA pair
+            try:
+                com_results = calc_com(
+                    model, processor, inputs, image, annotation, qa_pair,
+                    specific_layers=specific_layers
+                )
+                
+                all_com_results.append({
+                    "image_id": file_id,
+                    "qa_id": qa_pair.get("id"),
+                    "question": question,
+                    "ground_truth": qa_pair.get("answer"),
+                    "com_results": com_results
+                })
+            except Exception as e:
+                print(
+                    f"Error processing {file_id}, question: {question[:50]}... - {e}"
+                )
+                continue
+    
+    return all_com_results
+
+def calc_com(model, processor, inputs, image, annotation, qa_pair, specific_layers=[13, 16, 19, 24]):
+    """
+    Calculate the center of mass distance between the head attention map and the ground truth centers
+    for both subject and object.
+    
+    Args:
+        model: The LLaVA model
+        processor: The processor
+        inputs: Model inputs (from processor)
+        image: PIL Image
+        annotation: Annotation dict with objects and meta
+        qa_pair: QA pair dict with subject_id/object_id
+        specific_layers: List of layer indices to analyze
+    
+    Returns:
+        Dictionary with per-layer, per-head center of mass distances to subject and object centers
+    """
+    input_length = inputs["input_ids"].shape[1]
+    
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=1,
+            # output_hidden_states=True,
+            output_attentions=True,
+            return_dict_in_generate=True,
+            pad_token_id=processor.tokenizer.eos_token_id,
+        )
+    
+    if not outputs.attentions or len(outputs.attentions) == 0:
+        raise ValueError("No attentions returned from generation")
+    
+    # Use step 0 (input step) - attention from input tokens
+    input_step_attentions = outputs.attentions[0]  # tuple of [num_layers] tensors
+    
+    # Get image token positions
+    image_token_id = model.config.image_token_index
+    full_input_ids = inputs["input_ids"][0]  # [seq_len]
+    image_token_positions = (full_input_ids == image_token_id).nonzero(as_tuple=True)[0].tolist()
+    
+    if not image_token_positions:
+        raise ValueError("No image tokens found in sequence")
+    
+    # Get metadata
+    grid_dim = annotation.get("meta", {}).get("grid_dim", 24)
+    patch_size = annotation.get("meta", {}).get("patch", 14)
+    
+    # Get ground truth patch indices (already in patch space)
+    objects = annotation.get("objects", [])
+    subject_id = qa_pair.get("subject_id")
+    object_id = qa_pair.get("object_id")
+    
+    gt_subject_patch_indices = None
+    gt_object_patch_indices = None
+    
+    for obj in objects:
+        if obj.get("id") == subject_id and "patch_indices" in obj:
+            gt_subject_patch_indices = obj["patch_indices"]
+        if obj.get("id") == object_id and "patch_indices" in obj:
+            gt_object_patch_indices = obj["patch_indices"]
+    
+    if gt_subject_patch_indices is None or len(gt_subject_patch_indices) == 0:
+        raise ValueError(f"Subject patch_indices not found for subject_id={subject_id}")
+    if gt_object_patch_indices is None or len(gt_object_patch_indices) == 0:
+        raise ValueError(f"Object patch_indices not found for object_id={object_id}")
+    
+    # Create 2D binary masks for subject and object in grid space
+    gt_subject_mask = np.zeros((grid_dim, grid_dim))
+    gt_object_mask = np.zeros((grid_dim, grid_dim))
+    
+    for idx in gt_subject_patch_indices:
+        row = idx // grid_dim
+        col = idx % grid_dim
+        if 0 <= row < grid_dim and 0 <= col < grid_dim:
+            gt_subject_mask[row, col] = 1
+    
+    for idx in gt_object_patch_indices:
+        row = idx // grid_dim
+        col = idx % grid_dim
+        if 0 <= row < grid_dim and 0 <= col < grid_dim:
+            gt_object_mask[row, col] = 1
+    
+    # Calculate center of mass for ground truth masks (same method as attention)
+    rows, cols = np.meshgrid(np.arange(grid_dim), np.arange(grid_dim), indexing='ij')
+    gt_subject_sum = gt_subject_mask.sum()
+    gt_object_sum = gt_object_mask.sum()
+    
+    if gt_subject_sum > 0:
+        gt_subject_com_row = (gt_subject_mask * rows).sum() / gt_subject_sum
+        gt_subject_com_col = (gt_subject_mask * cols).sum() / gt_subject_sum
+        gt_subject_grid = (gt_subject_com_row, gt_subject_com_col)
+    else:
+        raise ValueError(f"Subject mask is empty for subject_id={subject_id}")
+    
+    if gt_object_sum > 0:
+        gt_object_com_row = (gt_object_mask * rows).sum() / gt_object_sum
+        gt_object_com_col = (gt_object_mask * cols).sum() / gt_object_sum
+        gt_object_grid = (gt_object_com_row, gt_object_com_col)
+    else:
+        raise ValueError(f"Object mask is empty for object_id={object_id}")
+    
+    results = {}
+    last_token_idx = input_length - 1  # Last input token position
+    
+    for layer_idx in specific_layers:
+        if layer_idx >= len(input_step_attentions):
+            continue
+        
+        # Get attention for this layer: [1, heads, seq, seq]
+        layer_attn = input_step_attentions[layer_idx]
+        layer_attn = layer_attn[0]  # Remove batch dim: [heads, seq, seq]
+        
+        num_heads = layer_attn.shape[0]
+        results[layer_idx] = {}
+        
+        for head_idx in range(num_heads):
+            # Get attention from last input token to all tokens: [seq]
+            head_attn = layer_attn[head_idx, last_token_idx, :]
+            
+            # Extract attention to image patches only: [num_image_tokens]
+            image_attn = head_attn[image_token_positions]
+            
+            # Normalize to get probability distribution
+            image_attn_sum = image_attn.sum()
+            if image_attn_sum > 0:
+                image_attn_probs = image_attn / image_attn_sum
+            else:
+                image_attn_probs = image_attn
+            
+            # Reshape to 2D grid: [grid_dim, grid_dim]
+            if len(image_token_positions) != grid_dim * grid_dim:
+                # If mismatch, we need to map properly
+                attn_2d = np.zeros((grid_dim, grid_dim))
+                for i, pos in enumerate(image_token_positions):
+                    if i < grid_dim * grid_dim:
+                        row = i // grid_dim
+                        col = i % grid_dim
+                        attn_2d[row, col] = image_attn_probs[i].item()
+            else:
+                attn_2d = image_attn_probs.reshape(grid_dim, grid_dim).cpu().numpy()
+            
+            # Calculate center of mass in grid coordinates
+            rows, cols = np.meshgrid(np.arange(grid_dim), np.arange(grid_dim), indexing='ij')
+            com_row = (attn_2d * rows).sum() / (attn_2d.sum() + 1e-9)
+            com_col = (attn_2d * cols).sum() / (attn_2d.sum() + 1e-9)
+            com_grid = (com_row, com_col)
+            
+            # Calculate distance to subject ground truth center of mass
+            dist_to_subject = np.sqrt(
+                (com_row - gt_subject_grid[0])**2 + 
+                (com_col - gt_subject_grid[1])**2
+            )
+            
+            # Calculate distance to object ground truth center of mass
+            dist_to_object = np.sqrt(
+                (com_row - gt_object_grid[0])**2 + 
+                (com_col - gt_object_grid[1])**2
+            )
+            
+            results[layer_idx][head_idx] = {
+                "com_grid": (float(com_row), float(com_col)),
+                "gt_subject_grid": gt_subject_grid,
+                "gt_object_grid": gt_object_grid,
+                "distance_to_subject": float(dist_to_subject),
+                "distance_to_object": float(dist_to_object),
+                "attention_sum": float(image_attn_sum.item()),
+            }
+    
+    return results
+
+def plot_com_heatmaps(com_results, output_dir, level):
+    """
+    Plot heatmaps showing distance to subject/object for each head in each layer.
+    
+    Args:
+        com_results: List of dicts with 'com_results' containing per-layer, per-head data
+        output_dir: Directory to save the plots
+        level: Data level for title
+    """
+    if not com_results:
+        print("No CoM results to plot")
+        return
+    
+    # Aggregate distances across all image/QA pairs
+    # Structure: {layer: {head: {'dist_subject': [...], 'dist_object': [...]}}}
+    aggregated = {}
+    
+    for result in com_results:
+        com_data = result.get("com_results", {})
+        for layer_str, heads in com_data.items():
+            layer = int(layer_str)
+            if layer not in aggregated:
+                aggregated[layer] = {head: {'dist_subject': [], 'dist_object': []} 
+                                     for head in range(32)}
+            
+            for head_str, head_data in heads.items():
+                head = int(head_str)
+                if head < 32:
+                    aggregated[layer][head]['dist_subject'].append(
+                        head_data.get('distance_to_subject', 0)
+                    )
+                    aggregated[layer][head]['dist_object'].append(
+                        head_data.get('distance_to_object', 0)
+                    )
+    
+    if not aggregated:
+        print("No aggregated data to plot")
+        return
+    
+    # Get layers and sort them
+    layers = sorted(aggregated.keys())
+    num_layers = len(layers)
+    num_heads = 32
+    
+    # Create arrays for heatmaps
+    dist_subject_heatmap = np.zeros((num_layers, num_heads))
+    dist_object_heatmap = np.zeros((num_layers, num_heads))
+    
+    for i, layer in enumerate(layers):
+        for head in range(num_heads):
+            if aggregated[layer][head]['dist_subject']:
+                dist_subject_heatmap[i, head] = np.mean(aggregated[layer][head]['dist_subject'])
+            if aggregated[layer][head]['dist_object']:
+                dist_object_heatmap[i, head] = np.mean(aggregated[layer][head]['dist_object'])
+    
+    # Create figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    
+    # Plot distance to subject heatmap
+    im1 = ax1.imshow(dist_subject_heatmap, aspect='auto', cmap='YlOrRd', interpolation='nearest')
+    ax1.set_xlabel('Attention Head', fontsize=12)
+    ax1.set_ylabel('Layer', fontsize=12)
+    ax1.set_title(f'Average Distance to Subject CoM\n(Level {level})', fontsize=14)
+    ax1.set_yticks(range(num_layers))
+    ax1.set_yticklabels(layers)
+    ax1.set_xticks(range(0, num_heads, 4))
+    ax1.set_xticklabels(range(0, num_heads, 4))
+    plt.colorbar(im1, ax=ax1, label='Distance (grid units)')
+    
+    # Plot distance to object heatmap
+    im2 = ax2.imshow(dist_object_heatmap, aspect='auto', cmap='YlOrRd', interpolation='nearest')
+    ax2.set_xlabel('Attention Head', fontsize=12)
+    ax2.set_ylabel('Layer', fontsize=12)
+    ax2.set_title(f'Average Distance to Object CoM\n(Level {level})', fontsize=14)
+    ax2.set_yticks(range(num_layers))
+    ax2.set_yticklabels(layers)
+    ax2.set_xticks(range(0, num_heads, 4))
+    ax2.set_xticklabels(range(0, num_heads, 4))
+    plt.colorbar(im2, ax=ax2, label='Distance (grid units)')
+    
+    plt.tight_layout()
+    
+    # Save plot
+    save_path = os.path.join(output_dir, "com_distance_heatmaps.png")
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()
+    
+    print(f"CoM heatmaps saved to: {save_path}")
+
+def plot_head_accuracy(results, output_dir, level):
+    """
+    Plot head probing accuracy heatmap.
+    
+    Args:
+        results: dict with 'head_scores' containing list of dicts with 'layer', 'head', 'accuracy', 'std'
+        output_dir: directory to save the plot
+        level: data level for title
+    """
+    head_scores = results.get("head_scores", [])
+    if not head_scores:
+        print("No head scores to plot")
+        return
+    
+    # Organize data by layer and head
+    layers = sorted(set(s["layer"] for s in head_scores))
+    num_layers = len(layers)
+    num_heads = 32
+    
+    # Create heatmap array
+    accuracy_heatmap = np.zeros((num_layers, num_heads))
+    
+    for score in head_scores:
+        layer_idx = layers.index(score["layer"])
+        head_idx = score["head"]
+        if head_idx < num_heads:
+            accuracy_heatmap[layer_idx, head_idx] = score["accuracy"]
+    
+    # Create figure
+    plt.figure(figsize=(14, 6))
+    
+    im = plt.imshow(accuracy_heatmap, aspect='auto', cmap='viridis', interpolation='nearest')
+    plt.xlabel('Attention Head', fontsize=12)
+    plt.ylabel('Layer', fontsize=12)
+    plt.title(f'Head Probing Accuracy (Level {level})\n{results.get("num_examples", 0)} examples', fontsize=14)
+    plt.yticks(range(num_layers), layers)
+    plt.xticks(range(0, num_heads, 4), range(0, num_heads, 4))
+    plt.colorbar(im, label='Cross-Validation Accuracy')
+    
+    plt.tight_layout()
+    
+    # Save plot
+    save_path = os.path.join(output_dir, "head_probing_accuracy.png")
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()
+    
+    print(f"Head probing plot saved to: {save_path}")
+
+def plot_accuracy_vs_distance(head_probing_results_path, com_results_path, output_dir, level):
+    """
+    Plot head probing accuracy vs CoM distance to subject/object.
+    
+    Args:
+        head_probing_results_path: Path to head_probing_results.json
+        com_results_path: Path to head_com_results.json
+        output_dir: Directory to save the plot
+        level: Data level for title
+    """
+    # Load head probing results
+    with open(head_probing_results_path, "r") as f:
+        head_results = json.load(f)
+    
+    # Load CoM results
+    with open(com_results_path, "r") as f:
+        com_results = json.load(f)
+    
+    # Aggregate CoM distances per head (average across all examples)
+    # Structure: {layer: {head: {'dist_subject': [...], 'dist_object': [...]}}}
+    com_aggregated = {}
+    
+    for result in com_results:
+        com_data = result.get("com_results", {})
+        for layer_str, heads in com_data.items():
+            layer = int(layer_str)
+            if layer not in com_aggregated:
+                com_aggregated[layer] = {head: {'dist_subject': [], 'dist_object': []} 
+                                        for head in range(32)}
+            
+            for head_str, head_data in heads.items():
+                head = int(head_str)
+                if head < 32:
+                    com_aggregated[layer][head]['dist_subject'].append(
+                        head_data.get('distance_to_subject', 0)
+                    )
+                    com_aggregated[layer][head]['dist_object'].append(
+                        head_data.get('distance_to_object', 0)
+                    )
+    
+    # Match head probing accuracy with CoM distances
+    accuracies = []
+    dists_subject = []
+    dists_object = []
+    dists_avg = []
+    layers = []
+    heads = []
+    
+    for score in head_results.get("head_scores", []):
+        layer = score["layer"]
+        head = score["head"]
+        accuracy = score["accuracy"]
+        
+        if layer in com_aggregated and head in com_aggregated[layer]:
+            dist_subj_list = com_aggregated[layer][head]['dist_subject']
+            dist_obj_list = com_aggregated[layer][head]['dist_object']
+            
+            if dist_subj_list and dist_obj_list:
+                avg_dist_subject = np.mean(dist_subj_list)
+                avg_dist_object = np.mean(dist_obj_list)
+                avg_dist = (avg_dist_subject + avg_dist_object) / 2
+                
+                accuracies.append(accuracy)
+                dists_subject.append(avg_dist_subject)
+                dists_object.append(avg_dist_object)
+                dists_avg.append(avg_dist)
+                layers.append(layer)
+                heads.append(head)
+    
+    if not accuracies:
+        print("No matching data found between head probing and CoM results")
+        return
+    
+    # Create figure with subplots
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    
+    # Plot 1: Accuracy vs Distance to Subject
+    axes[0].scatter(dists_subject, accuracies, alpha=0.6, s=50)
+    axes[0].set_xlabel('Average Distance to Subject CoM (grid units)', fontsize=11)
+    axes[0].set_ylabel('Head Probing Accuracy', fontsize=11)
+    axes[0].set_title('Accuracy vs Distance to Subject', fontsize=12)
+    axes[0].grid(True, alpha=0.3)
+    axes[0].axhline(y=0.5, linestyle="--", alpha=0.5, color='red', label='Random (0.5)')
+    axes[0].legend()
+    
+    # Add correlation coefficient
+    if len(dists_subject) > 1:
+        corr_subj = np.corrcoef(dists_subject, accuracies)[0, 1]
+        axes[0].text(0.05, 0.95, f'r = {corr_subj:.3f}', transform=axes[0].transAxes,
+                    verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    
+    # Plot 2: Accuracy vs Distance to Object
+    axes[1].scatter(dists_object, accuracies, alpha=0.6, s=50, color='orange')
+    axes[1].set_xlabel('Average Distance to Object CoM (grid units)', fontsize=11)
+    axes[1].set_ylabel('Head Probing Accuracy', fontsize=11)
+    axes[1].set_title('Accuracy vs Distance to Object', fontsize=12)
+    axes[1].grid(True, alpha=0.3)
+    axes[1].axhline(y=0.5, linestyle="--", alpha=0.5, color='red', label='Random (0.5)')
+    axes[1].legend()
+    
+    # Add correlation coefficient
+    if len(dists_object) > 1:
+        corr_obj = np.corrcoef(dists_object, accuracies)[0, 1]
+        axes[1].text(0.05, 0.95, f'r = {corr_obj:.3f}', transform=axes[1].transAxes,
+                    verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    
+    # Plot 3: Accuracy vs Average Distance (subject + object)
+    axes[2].scatter(dists_avg, accuracies, alpha=0.6, s=50, color='green')
+    axes[2].set_xlabel('Average Distance to Subject+Object CoM (grid units)', fontsize=11)
+    axes[2].set_ylabel('Head Probing Accuracy', fontsize=11)
+    axes[2].set_title('Accuracy vs Average Distance', fontsize=12)
+    axes[2].grid(True, alpha=0.3)
+    axes[2].axhline(y=0.5, linestyle="--", alpha=0.5, color='red', label='Random (0.5)')
+    axes[2].legend()
+    
+    # Add correlation coefficient
+    if len(dists_avg) > 1:
+        corr_avg = np.corrcoef(dists_avg, accuracies)[0, 1]
+        axes[2].text(0.05, 0.95, f'r = {corr_avg:.3f}', transform=axes[2].transAxes,
+                    verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    
+    plt.suptitle(f'Head Probing Accuracy vs CoM Distance (Level {level})', fontsize=14, y=1.02)
+    plt.tight_layout()
+    
+    # Save plot
+    save_path = os.path.join(output_dir, "accuracy_vs_distance.png")
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()
+    
+    print(f"Accuracy vs distance plot saved to: {save_path}")
 
 def plot_layer_accuracy(results, output_dir, level):
     """
@@ -344,18 +1049,152 @@ def main():
         "--cv_folds", type=int, default=5, help="Number of CV folds"
     )
     parser.add_argument("--first_gen_token", action="store_true")
+    parser.add_argument("--calc_com", action="store_true", 
+                       help="Calculate center of mass for attention heads")
+    parser.add_argument("--com_layers", type=int, nargs="+", 
+                       default=[13, 16, 19, 24],
+                       help="Layers to analyze for CoM (default: 13 16 19 24)")
+    parser.add_argument("--skip_probing", action="store_true",
+                       help="Skip layer probing and only run CoM calculation")
+    parser.add_argument("--probe_heads", action="store_true",
+                       help="Probe individual attention heads (requires attentions)")
+    parser.add_argument("--head_layers", type=int, nargs="+", 
+                       default=[13, 16, 19, 24],
+                       help="Layers to probe for head probing (default: 13 16 19 24)")
+    parser.add_argument("--skip_layer_probing", action="store_true",
+                       help="Skip layer probing and only run head probing")
     args = parser.parse_args()
 
+    # If only head probing is requested, skip layer probing
+    if args.probe_heads and args.skip_layer_probing:
+        print(f"Loading {MODEL_ID} for head probing only...")
+        processor, model, device = _init_model(
+            MODEL_ID,
+            output_hidden_states=False,
+            output_attentions=True,  # Need attentions for head probing
+        )
+        
+        # Collect head probing data
+        head_features_by_layer_head, labels, metadata = collect_head_probing_data(
+            model, processor, args.level,
+            max_images=args.max_images,
+            specific_layers=args.head_layers,
+            first_token=args.first_gen_token
+        )
+        
+        if len(labels) == 0:
+            print("No data collected. Exiting.")
+            return
+        
+        print(f"\nProbing heads in layers {args.head_layers} on {len(labels)} examples...")
+        
+        # Probe each head in each layer
+        results = {
+            "level": args.level,
+            "num_examples": len(labels),
+            "layers": args.head_layers,
+            "head_scores": [],
+        }
+        
+        total_heads = sum(len(heads) for heads in head_features_by_layer_head.values())
+        with tqdm(total=total_heads, desc="Probing heads") as pbar:
+            for layer_idx in sorted(head_features_by_layer_head.keys()):
+                heads = head_features_by_layer_head[layer_idx]
+                for head_idx in sorted(heads.keys()):
+                    head_features = heads[head_idx]
+                    if len(head_features) != len(labels):
+                        pbar.update(1)
+                        continue
+                    
+                    mean_acc, std_acc = probe_head(head_features, labels, cv_folds=args.cv_folds)
+                    
+                    results["head_scores"].append({
+                        "layer": layer_idx,
+                        "head": head_idx,
+                        "accuracy": float(mean_acc),
+                        "std": float(std_acc),
+                    })
+                    pbar.update(1)
+        
+        # Save results
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        base_output_dir = "vis_results"
+        level_output = os.path.join(base_output_dir, f"level_{args.level}")
+        token_suffix = "_first_token" if args.first_gen_token else ""
+        head_output = os.path.join(level_output, f"head_probing{token_suffix}_{timestamp}")
+        os.makedirs(head_output, exist_ok=True)
+        
+        # Plot and save
+        plot_head_accuracy(results, head_output, args.level)
+        
+        # Save JSON results
+        results_path = os.path.join(head_output, "head_probing_results.json")
+        with open(results_path, "w") as f:
+            json.dump(results, f, indent=2)
+        
+        print(f"\nHead probing results saved to: {os.path.abspath(head_output)}")
+        
+        # Check if CoM results exist and create comparison plot
+        # Look for most recent com_results directory
+        com_dirs = [d for d in os.listdir(level_output) if d.startswith("com_results_")]
+        if com_dirs:
+            # Use most recent CoM results
+            latest_com_dir = sorted(com_dirs)[-1]
+            com_results_path = os.path.join(level_output, latest_com_dir, "head_com_results.json")
+            if os.path.exists(com_results_path):
+                print(f"\nCreating accuracy vs distance comparison plot...")
+                plot_accuracy_vs_distance(results_path, com_results_path, head_output, args.level)
+        
+        return  # Exit early, skip layer probing
+    
+    # If only CoM is requested, skip probing entirely
+    if args.calc_com and args.skip_probing:
+        print(f"Loading {MODEL_ID} for CoM calculation only...")
+        processor, model, device = _init_model(
+            MODEL_ID,
+            output_hidden_states=True,
+            output_attentions=True,  # Need attentions for CoM
+        )
+        
+        com_results = collect_head_com_data(
+            model, processor, args.level, 
+            max_images=args.max_images,
+            specific_layers=args.com_layers
+        )
+        
+        # Save CoM results
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        base_output_dir = "vis_results"
+        level_output = os.path.join(base_output_dir, f"level_{args.level}")
+        com_output = os.path.join(level_output, f"com_results_{timestamp}")
+        os.makedirs(com_output, exist_ok=True)
+        
+        com_output_path = os.path.join(com_output, "head_com_results.json")
+        with open(com_output_path, "w") as f:
+            json.dump(com_results, f, indent=2)
+        
+        # Plot heatmaps
+        plot_com_heatmaps(com_results, com_output, args.level)
+        
+        print(f"CoM results saved to: {os.path.abspath(com_output_path)}")
+        
+        # Check if head probing results exist and create comparison plot
+        head_dirs = [d for d in os.listdir(level_output) if d.startswith("head_probing")]
+        if head_dirs:
+            latest_head_dir = sorted(head_dirs)[-1]
+            head_results_path = os.path.join(level_output, latest_head_dir, "head_probing_results.json")
+            if os.path.exists(head_results_path):
+                print(f"\nCreating accuracy vs distance comparison plot...")
+                plot_accuracy_vs_distance(head_results_path, com_output_path, com_output, args.level)
+        
+        return  # Exit early, skip all probing
+
     print(f"Loading {MODEL_ID}...")
-    model = LlavaForConditionalGeneration.from_pretrained(
+    processor, model, device = _init_model(
         MODEL_ID,
-        dtype=torch.float16,
-        device_map="auto",
-        attn_implementation="eager",
-        quantization_config=bnb,
+        output_hidden_states=True,
+        output_attentions=False,
     )
-    processor = AutoProcessor.from_pretrained(MODEL_ID, use_fast=False)
-    model.eval()
 
     num_layers = len(model.language_model.layers)
     print(f"Model has {num_layers} layers")
@@ -435,6 +1274,106 @@ def main():
         json.dump(results, f, indent=2)
 
     print(f"\nVisualization results saved to: {os.path.abspath(probing_output)}")
+    
+    # Optionally probe heads
+    if args.probe_heads:
+        print(f"\nProbing attention heads...")
+        # Need to reinitialize model with attentions enabled for head probing
+        processor_heads, model_heads, device_heads = _init_model(
+            MODEL_ID,
+            output_hidden_states=False,
+            output_attentions=True,  # Need attentions for head probing
+        )
+        
+        # Collect head probing data
+        head_features_by_layer_head, head_labels, head_metadata = collect_head_probing_data(
+            model_heads, processor_heads, args.level,
+            max_images=args.max_images,
+            specific_layers=args.head_layers,
+            first_token=args.first_gen_token
+        )
+        
+        if len(head_labels) > 0:
+            print(f"\nProbing heads in layers {args.head_layers} on {len(head_labels)} examples...")
+            
+            # Probe each head in each layer
+            head_results = {
+                "level": args.level,
+                "num_examples": len(head_labels),
+                "layers": args.head_layers,
+                "head_scores": [],
+            }
+            
+            total_heads = sum(len(heads) for heads in head_features_by_layer_head.values())
+            for layer_idx in sorted(head_features_by_layer_head.keys()):
+                heads = head_features_by_layer_head[layer_idx]
+                for head_idx in sorted(heads.keys()):
+                    head_features = heads[head_idx]
+                    if len(head_features) != len(head_labels):
+                        continue
+                    
+                    mean_acc, std_acc = probe_head(head_features, head_labels, cv_folds=args.cv_folds)
+                    
+                    head_results["head_scores"].append({
+                        "layer": layer_idx,
+                        "head": head_idx,
+                        "accuracy": float(mean_acc),
+                        "std": float(std_acc),
+                    })
+            
+            # Save head probing results in same directory
+            plot_head_accuracy(head_results, probing_output, args.level)
+            
+            head_results_path = os.path.join(probing_output, "head_probing_results.json")
+            with open(head_results_path, "w") as f:
+                json.dump(head_results, f, indent=2)
+            
+            print(f"Head probing results saved to: {os.path.abspath(head_results_path)}")
+            
+            # If CoM results exist, create comparison plot
+            com_output = os.path.join(level_output, f"com_results_{timestamp}")
+            com_results_path = os.path.join(com_output, "head_com_results.json")
+            if os.path.exists(com_results_path):
+                print(f"\nCreating accuracy vs distance comparison plot...")
+                plot_accuracy_vs_distance(head_results_path, com_results_path, probing_output, args.level)
+    
+    # Optionally calculate CoM for attention heads
+    if args.calc_com:
+        print(f"\nCalculating center of mass for attention heads...")
+        # Need to reinitialize model with attentions enabled for CoM calculation
+        processor_com, model_com, device_com = _init_model(
+            MODEL_ID,
+            output_hidden_states=True,
+            output_attentions=True,  # Need attentions for CoM
+        )
+        
+        com_results = collect_head_com_data(
+            model_com, processor_com, args.level, 
+            max_images=args.max_images,
+            specific_layers=args.com_layers
+        )
+        
+        # Save CoM results
+        com_output = os.path.join(level_output, f"com_results_{timestamp}")
+        os.makedirs(com_output, exist_ok=True)
+        
+        com_output_path = os.path.join(com_output, "head_com_results.json")
+        with open(com_output_path, "w") as f:
+            json.dump(com_results, f, indent=2)
+        
+        # Plot heatmaps
+        plot_com_heatmaps(com_results, com_output, args.level)
+        
+        print(f"CoM results saved to: {os.path.abspath(com_output_path)}")
+        
+        # Check if head probing results exist and create comparison plot
+        head_dirs = [d for d in os.listdir(level_output) if d.startswith("head_probing")]
+        if head_dirs:
+            latest_head_dir = sorted(head_dirs)[-1]
+            head_results_path = os.path.join(level_output, latest_head_dir, "head_probing_results.json")
+            if os.path.exists(head_results_path):
+                print(f"\nCreating accuracy vs distance comparison plot...")
+                plot_accuracy_vs_distance(head_results_path, com_output_path, com_output, args.level)
 
 
 if __name__ == "__main__":
