@@ -30,6 +30,8 @@ source venv/bin/activate
 # python3 Text-Only/text_only_objective_vlm_prompt.py --levels level_1
 # python3 Text-Only/Analysis/analyze_objective_attention.py
 # python experiments/logit_lens/run_text_only_objective.py
-python experiments/logit_lens/run_visual_logit_lens.py
+# python experiments/logit_lens/run_visual_logit_lens.py
+python experiments/logit_lens/run_visual_logit_lens_attribute.py
+
 
 EOF
