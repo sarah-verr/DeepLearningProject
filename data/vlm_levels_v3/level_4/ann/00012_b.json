@@ -1,0 +1,990 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "lime",
+      "center": [
+        203,
+        189
+      ],
+      "size": 16,
+      "bbox": [
+        195,
+        181,
+        211,
+        197
+      ],
+      "patch_indices": [
+        301,
+        302,
+        303,
+        325,
+        326,
+        327,
+        349,
+        350,
+        351
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "green",
+      "center": [
+        133,
+        21
+      ],
+      "size": 24,
+      "bbox": [
+        121,
+        9,
+        145,
+        33
+      ],
+      "patch_indices": [
+        8,
+        9,
+        10,
+        32,
+        33,
+        34,
+        56,
+        57,
+        58
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        245,
+        63
+      ],
+      "size": 22,
+      "bbox": [
+        234,
+        52,
+        256,
+        74
+      ],
+      "patch_indices": [
+        88,
+        89,
+        90,
+        112,
+        113,
+        114,
+        136,
+        137,
+        138
+      ]
+    },
+    {
+      "id": 3,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        287,
+        77
+      ],
+      "size": 24,
+      "bbox": [
+        275,
+        65,
+        299,
+        89
+      ],
+      "patch_indices": [
+        115,
+        116,
+        117,
+        139,
+        140,
+        141,
+        163,
+        164,
+        165
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 2
+    }
+  ],
+  "captions": [
+    "The blue triangle is to the right of the cyan circle.",
+    "The green circle is above the cyan circle.",
+    "The cyan circle is below the green circle.",
+    "The green circle is above the blue triangle.",
+    "The cyan circle is to the left of the blue triangle.",
+    "The green circle is left of the cyan circle.",
+    "The blue triangle is below the cyan circle.",
+    "The cyan circle is above the blue triangle.",
+    "The lime circle is right of the green circle.",
+    "The blue triangle is below the green circle.",
+    "The blue triangle is above the lime circle.",
+    "The cyan circle is to the right of the green circle.",
+    "The cyan circle is right of the lime circle.",
+    "The lime circle is to the left of the blue triangle.",
+    "The cyan circle is above the lime circle.",
+    "The blue triangle is to the right of the lime circle.",
+    "The lime circle is below the blue triangle.",
+    "The green circle is to the left of the blue triangle.",
+    "The lime circle is to the left of the cyan circle.",
+    "The green circle is above the lime circle.",
+    "The blue triangle is right of the green circle.",
+    "The lime circle is below the green circle.",
+    "The green circle is left of the lime circle.",
+    "The lime circle is below the cyan circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue triangle is to the right of the cyan circle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green circle is above the cyan circle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The cyan circle is below the green circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The green circle is above the blue triangle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The cyan circle is to the left of the blue triangle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The green circle is left of the cyan circle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The blue triangle is below the cyan circle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The cyan circle is above the blue triangle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The lime circle is right of the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The blue triangle is below the green circle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The blue triangle is above the lime circle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The cyan circle is to the right of the green circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    },
+    {
+      "id": 12,
+      "caption": "The cyan circle is right of the lime circle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        24
+      ],
+      "contradicted_qa_ids": [
+        25
+      ]
+    },
+    {
+      "id": 13,
+      "caption": "The lime circle is to the left of the blue triangle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        26
+      ],
+      "contradicted_qa_ids": [
+        27
+      ]
+    },
+    {
+      "id": 14,
+      "caption": "The cyan circle is above the lime circle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        28
+      ],
+      "contradicted_qa_ids": [
+        29
+      ]
+    },
+    {
+      "id": 15,
+      "caption": "The blue triangle is to the right of the lime circle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        30
+      ],
+      "contradicted_qa_ids": [
+        31
+      ]
+    },
+    {
+      "id": 16,
+      "caption": "The lime circle is below the blue triangle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        32
+      ],
+      "contradicted_qa_ids": [
+        33
+      ]
+    },
+    {
+      "id": 17,
+      "caption": "The green circle is to the left of the blue triangle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        34
+      ],
+      "contradicted_qa_ids": [
+        35
+      ]
+    },
+    {
+      "id": 18,
+      "caption": "The lime circle is to the left of the cyan circle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        36
+      ],
+      "contradicted_qa_ids": [
+        37
+      ]
+    },
+    {
+      "id": 19,
+      "caption": "The green circle is above the lime circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        38
+      ],
+      "contradicted_qa_ids": [
+        39
+      ]
+    },
+    {
+      "id": 20,
+      "caption": "The blue triangle is right of the green circle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        40
+      ],
+      "contradicted_qa_ids": [
+        41
+      ]
+    },
+    {
+      "id": 21,
+      "caption": "The lime circle is below the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        42
+      ],
+      "contradicted_qa_ids": [
+        43
+      ]
+    },
+    {
+      "id": 22,
+      "caption": "The green circle is left of the lime circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        44
+      ],
+      "contradicted_qa_ids": [
+        45
+      ]
+    },
+    {
+      "id": 23,
+      "caption": "The lime circle is below the cyan circle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        46
+      ],
+      "contradicted_qa_ids": [
+        47
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of lime circle to green circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of lime circle to green circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is lime circle relative to green circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of green circle to lime circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of green circle to lime circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is green circle relative to lime circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    },
+    {
+      "question": "What is the vertical relation of lime circle to cyan circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 6
+    },
+    {
+      "question": "What is the horizontal relation of lime circle to cyan circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 7
+    },
+    {
+      "question": "Where is lime circle relative to cyan circle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 8
+    },
+    {
+      "question": "What is the vertical relation of cyan circle to lime circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 9
+    },
+    {
+      "question": "What is the horizontal relation of cyan circle to lime circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 10
+    },
+    {
+      "question": "Where is cyan circle relative to lime circle?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 11
+    },
+    {
+      "question": "What is the vertical relation of lime circle to blue triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 12
+    },
+    {
+      "question": "What is the horizontal relation of lime circle to blue triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 13
+    },
+    {
+      "question": "Where is lime circle relative to blue triangle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 14
+    },
+    {
+      "question": "What is the vertical relation of blue triangle to lime circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 15
+    },
+    {
+      "question": "What is the horizontal relation of blue triangle to lime circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 16
+    },
+    {
+      "question": "Where is blue triangle relative to lime circle?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 17
+    },
+    {
+      "question": "What is the vertical relation of green circle to cyan circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 18
+    },
+    {
+      "question": "What is the horizontal relation of green circle to cyan circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 19
+    },
+    {
+      "question": "Where is green circle relative to cyan circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 20
+    },
+    {
+      "question": "What is the vertical relation of cyan circle to green circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 21
+    },
+    {
+      "question": "What is the horizontal relation of cyan circle to green circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 22
+    },
+    {
+      "question": "Where is cyan circle relative to green circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 23
+    },
+    {
+      "question": "What is the vertical relation of green circle to blue triangle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 24
+    },
+    {
+      "question": "What is the horizontal relation of green circle to blue triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 25
+    },
+    {
+      "question": "Where is green circle relative to blue triangle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 26
+    },
+    {
+      "question": "What is the vertical relation of blue triangle to green circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 27
+    },
+    {
+      "question": "What is the horizontal relation of blue triangle to green circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 28
+    },
+    {
+      "question": "Where is blue triangle relative to green circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 29
+    },
+    {
+      "question": "What is the vertical relation of cyan circle to blue triangle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 30
+    },
+    {
+      "question": "What is the horizontal relation of cyan circle to blue triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 31
+    },
+    {
+      "question": "Where is cyan circle relative to blue triangle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 32
+    },
+    {
+      "question": "What is the vertical relation of blue triangle to cyan circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 33
+    },
+    {
+      "question": "What is the horizontal relation of blue triangle to cyan circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 34
+    },
+    {
+      "question": "Where is blue triangle relative to cyan circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 35
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "red",
+      "center": [
+        245,
+        105
+      ],
+      "size": 28,
+      "bbox": [
+        231,
+        91,
+        259,
+        119
+      ],
+      "patch_indices": [
+        160,
+        161,
+        162,
+        184,
+        185,
+        186,
+        208,
+        209,
+        210
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        91,
+        49
+      ],
+      "size": 18,
+      "bbox": [
+        82,
+        40,
+        100,
+        58
+      ],
+      "patch_indices": [
+        53,
+        54,
+        55,
+        77,
+        78,
+        79,
+        101,
+        102,
+        103
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow square is above the red star.",
+    "The red star is below the yellow square.",
+    "The red star is right of the yellow square.",
+    "The yellow square is to the left of the red star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow square is above the red star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red star is below the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The red star is right of the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The yellow square is to the left of the red star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of red star to yellow square?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of red star to yellow square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is red star relative to yellow square?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of yellow square to red star?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of yellow square to red star?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is yellow square relative to red star?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

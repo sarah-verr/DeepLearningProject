@@ -1,0 +1,216 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        315,
+        63
+      ],
+      "size": 23,
+      "bbox": [
+        304,
+        52,
+        326,
+        74
+      ],
+      "patch_indices": [
+        93,
+        94,
+        95,
+        117,
+        118,
+        119,
+        141,
+        142,
+        143
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        77,
+        35
+      ],
+      "size": 24,
+      "bbox": [
+        65,
+        23,
+        89,
+        47
+      ],
+      "patch_indices": [
+        28,
+        29,
+        30,
+        52,
+        53,
+        54,
+        76,
+        77,
+        78
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime square is left of the red circle.",
+    "The red circle is to the right of the lime square.",
+    "The lime square is above the red circle.",
+    "The red circle is below the lime square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime square is left of the red circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red circle is to the right of the lime square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The lime square is above the red circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The red circle is below the lime square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of red circle to lime square?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of red circle to lime square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is red circle relative to lime square?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of lime square to red circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of lime square to red circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is lime square relative to red circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

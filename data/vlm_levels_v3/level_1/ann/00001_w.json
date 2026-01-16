@@ -1,0 +1,118 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        77,
+        203
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        198,
+        82,
+        208
+      ],
+      "patch_indices": [
+        341
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        119,
+        203
+      ],
+      "size": 10,
+      "bbox": [
+        114,
+        198,
+        124,
+        208
+      ],
+      "patch_indices": [
+        344
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red triangle is left of the blue star.",
+    "The blue star is right of the red triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red triangle is left of the blue star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue star is right of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the horizontal relation of red triangle to blue star?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of blue star to red triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

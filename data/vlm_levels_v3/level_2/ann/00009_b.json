@@ -1,0 +1,216 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "lime",
+      "center": [
+        315,
+        301
+      ],
+      "size": 28,
+      "bbox": [
+        301,
+        287,
+        329,
+        315
+      ],
+      "patch_indices": [
+        501,
+        502,
+        503,
+        525,
+        526,
+        527,
+        549,
+        550,
+        551
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        161,
+        217
+      ],
+      "size": 21,
+      "bbox": [
+        151,
+        207,
+        171,
+        227
+      ],
+      "patch_indices": [
+        346,
+        347,
+        348,
+        370,
+        371,
+        372,
+        394,
+        395,
+        396
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime circle is below the blue triangle.",
+    "The blue triangle is above the lime circle.",
+    "The lime circle is to the right of the blue triangle.",
+    "The blue triangle is left of the lime circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime circle is below the blue triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue triangle is above the lime circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The lime circle is to the right of the blue triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The blue triangle is left of the lime circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of lime circle to blue triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of lime circle to blue triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is lime circle relative to blue triangle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of blue triangle to lime circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of blue triangle to lime circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is blue triangle relative to lime circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

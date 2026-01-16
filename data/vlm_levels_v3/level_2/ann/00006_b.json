@@ -1,0 +1,216 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "purple",
+      "center": [
+        315,
+        315
+      ],
+      "size": 24,
+      "bbox": [
+        303,
+        303,
+        327,
+        327
+      ],
+      "patch_indices": [
+        525,
+        526,
+        527,
+        549,
+        550,
+        551,
+        573,
+        574,
+        575
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "green",
+      "center": [
+        217,
+        49
+      ],
+      "size": 25,
+      "bbox": [
+        205,
+        37,
+        229,
+        61
+      ],
+      "patch_indices": [
+        62,
+        63,
+        64,
+        86,
+        87,
+        88,
+        110,
+        111,
+        112
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green triangle is to the left of the purple circle.",
+    "The green triangle is above the purple circle.",
+    "The purple circle is below the green triangle.",
+    "The purple circle is to the right of the green triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green triangle is to the left of the purple circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green triangle is above the purple circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The purple circle is below the green triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The purple circle is to the right of the green triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of purple circle to green triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of purple circle to green triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is purple circle relative to green triangle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of green triangle to purple circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of green triangle to purple circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is green triangle relative to purple circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

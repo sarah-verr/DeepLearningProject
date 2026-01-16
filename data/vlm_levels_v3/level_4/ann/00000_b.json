@@ -1,0 +1,990 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        147,
+        105
+      ],
+      "size": 17,
+      "bbox": [
+        139,
+        97,
+        155,
+        113
+      ],
+      "patch_indices": [
+        153,
+        154,
+        155,
+        177,
+        178,
+        179,
+        201,
+        202,
+        203
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        91,
+        35
+      ],
+      "size": 24,
+      "bbox": [
+        79,
+        23,
+        103,
+        47
+      ],
+      "patch_indices": [
+        29,
+        30,
+        31,
+        53,
+        54,
+        55,
+        77,
+        78,
+        79
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "triangle",
+      "color": "lime",
+      "center": [
+        217,
+        77
+      ],
+      "size": 24,
+      "bbox": [
+        205,
+        65,
+        229,
+        89
+      ],
+      "patch_indices": [
+        110,
+        111,
+        112,
+        134,
+        135,
+        136,
+        158,
+        159,
+        160
+      ]
+    },
+    {
+      "id": 3,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        287,
+        203
+      ],
+      "size": 24,
+      "bbox": [
+        275,
+        191,
+        299,
+        215
+      ],
+      "patch_indices": [
+        331,
+        332,
+        333,
+        355,
+        356,
+        357,
+        379,
+        380,
+        381
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 2
+    }
+  ],
+  "captions": [
+    "The pink square is left of the cyan square.",
+    "The yellow circle is left of the cyan square.",
+    "The cyan square is below the yellow circle.",
+    "The yellow circle is above the pink square.",
+    "The lime triangle is above the cyan square.",
+    "The yellow circle is above the lime triangle.",
+    "The yellow circle is left of the lime triangle.",
+    "The cyan square is below the lime triangle.",
+    "The lime triangle is below the yellow circle.",
+    "The pink square is below the lime triangle.",
+    "The cyan square is right of the lime triangle.",
+    "The lime triangle is to the left of the cyan square.",
+    "The yellow circle is above the cyan square.",
+    "The pink square is above the cyan square.",
+    "The lime triangle is above the pink square.",
+    "The pink square is to the left of the lime triangle.",
+    "The yellow circle is left of the pink square.",
+    "The pink square is right of the yellow circle.",
+    "The lime triangle is to the right of the pink square.",
+    "The cyan square is below the pink square.",
+    "The lime triangle is right of the yellow circle.",
+    "The cyan square is to the right of the yellow circle.",
+    "The cyan square is right of the pink square.",
+    "The pink square is below the yellow circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink square is left of the cyan square.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is left of the cyan square.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The cyan square is below the yellow circle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The yellow circle is above the pink square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The lime triangle is above the cyan square.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The yellow circle is above the lime triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The yellow circle is left of the lime triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The cyan square is below the lime triangle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The lime triangle is below the yellow circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The pink square is below the lime triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The cyan square is right of the lime triangle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The lime triangle is to the left of the cyan square.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    },
+    {
+      "id": 12,
+      "caption": "The yellow circle is above the cyan square.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        24
+      ],
+      "contradicted_qa_ids": [
+        25
+      ]
+    },
+    {
+      "id": 13,
+      "caption": "The pink square is above the cyan square.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        26
+      ],
+      "contradicted_qa_ids": [
+        27
+      ]
+    },
+    {
+      "id": 14,
+      "caption": "The lime triangle is above the pink square.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        28
+      ],
+      "contradicted_qa_ids": [
+        29
+      ]
+    },
+    {
+      "id": 15,
+      "caption": "The pink square is to the left of the lime triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        30
+      ],
+      "contradicted_qa_ids": [
+        31
+      ]
+    },
+    {
+      "id": 16,
+      "caption": "The yellow circle is left of the pink square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        32
+      ],
+      "contradicted_qa_ids": [
+        33
+      ]
+    },
+    {
+      "id": 17,
+      "caption": "The pink square is right of the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        34
+      ],
+      "contradicted_qa_ids": [
+        35
+      ]
+    },
+    {
+      "id": 18,
+      "caption": "The lime triangle is to the right of the pink square.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        36
+      ],
+      "contradicted_qa_ids": [
+        37
+      ]
+    },
+    {
+      "id": 19,
+      "caption": "The cyan square is below the pink square.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        38
+      ],
+      "contradicted_qa_ids": [
+        39
+      ]
+    },
+    {
+      "id": 20,
+      "caption": "The lime triangle is right of the yellow circle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        40
+      ],
+      "contradicted_qa_ids": [
+        41
+      ]
+    },
+    {
+      "id": 21,
+      "caption": "The cyan square is to the right of the yellow circle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        42
+      ],
+      "contradicted_qa_ids": [
+        43
+      ]
+    },
+    {
+      "id": 22,
+      "caption": "The cyan square is right of the pink square.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        44
+      ],
+      "contradicted_qa_ids": [
+        45
+      ]
+    },
+    {
+      "id": 23,
+      "caption": "The pink square is below the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        46
+      ],
+      "contradicted_qa_ids": [
+        47
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of pink square to yellow circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of pink square to yellow circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is pink square relative to yellow circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of yellow circle to pink square?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of yellow circle to pink square?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is yellow circle relative to pink square?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 5
+    },
+    {
+      "question": "What is the vertical relation of pink square to lime triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 6
+    },
+    {
+      "question": "What is the horizontal relation of pink square to lime triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 7
+    },
+    {
+      "question": "Where is pink square relative to lime triangle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 8
+    },
+    {
+      "question": "What is the vertical relation of lime triangle to pink square?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 9
+    },
+    {
+      "question": "What is the horizontal relation of lime triangle to pink square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 10
+    },
+    {
+      "question": "Where is lime triangle relative to pink square?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 11
+    },
+    {
+      "question": "What is the vertical relation of pink square to cyan square?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 12
+    },
+    {
+      "question": "What is the horizontal relation of pink square to cyan square?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 13
+    },
+    {
+      "question": "Where is pink square relative to cyan square?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 14
+    },
+    {
+      "question": "What is the vertical relation of cyan square to pink square?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 15
+    },
+    {
+      "question": "What is the horizontal relation of cyan square to pink square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 16
+    },
+    {
+      "question": "Where is cyan square relative to pink square?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 17
+    },
+    {
+      "question": "What is the vertical relation of yellow circle to lime triangle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 18
+    },
+    {
+      "question": "What is the horizontal relation of yellow circle to lime triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 19
+    },
+    {
+      "question": "Where is yellow circle relative to lime triangle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 20
+    },
+    {
+      "question": "What is the vertical relation of lime triangle to yellow circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 21
+    },
+    {
+      "question": "What is the horizontal relation of lime triangle to yellow circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 22
+    },
+    {
+      "question": "Where is lime triangle relative to yellow circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 23
+    },
+    {
+      "question": "What is the vertical relation of yellow circle to cyan square?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 24
+    },
+    {
+      "question": "What is the horizontal relation of yellow circle to cyan square?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 25
+    },
+    {
+      "question": "Where is yellow circle relative to cyan square?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 26
+    },
+    {
+      "question": "What is the vertical relation of cyan square to yellow circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 27
+    },
+    {
+      "question": "What is the horizontal relation of cyan square to yellow circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 28
+    },
+    {
+      "question": "Where is cyan square relative to yellow circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 29
+    },
+    {
+      "question": "What is the vertical relation of lime triangle to cyan square?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 30
+    },
+    {
+      "question": "What is the horizontal relation of lime triangle to cyan square?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 31
+    },
+    {
+      "question": "Where is lime triangle relative to cyan square?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 32
+    },
+    {
+      "question": "What is the vertical relation of cyan square to lime triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 33
+    },
+    {
+      "question": "What is the horizontal relation of cyan square to lime triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 34
+    },
+    {
+      "question": "Where is cyan square relative to lime triangle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 35
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

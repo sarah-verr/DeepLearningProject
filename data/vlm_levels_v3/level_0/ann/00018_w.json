@@ -1,0 +1,118 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        77,
+        161
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        156,
+        82,
+        166
+      ],
+      "patch_indices": [
+        269
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "green",
+      "center": [
+        63,
+        161
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        156,
+        68,
+        166
+      ],
+      "patch_indices": [
+        268
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green square is to the left of the red triangle.",
+    "The red triangle is to the right of the green square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green square is to the left of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red triangle is to the right of the green square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the horizontal relation of red triangle to green square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of green square to red triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

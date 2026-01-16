@@ -1,0 +1,908 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "orange",
+      "center": [
+        245,
+        77
+      ],
+      "size": 21,
+      "bbox": [
+        235,
+        67,
+        255,
+        87
+      ],
+      "patch_indices": [
+        112,
+        113,
+        114,
+        136,
+        137,
+        138,
+        160,
+        161,
+        162
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "yellow",
+      "center": [
+        105,
+        273
+      ],
+      "size": 29,
+      "bbox": [
+        91,
+        259,
+        119,
+        287
+      ],
+      "patch_indices": [
+        438,
+        439,
+        440,
+        462,
+        463,
+        464,
+        486,
+        487,
+        488
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "circle",
+      "color": "purple",
+      "center": [
+        133,
+        273
+      ],
+      "size": 19,
+      "bbox": [
+        124,
+        264,
+        142,
+        282
+      ],
+      "patch_indices": [
+        440,
+        441,
+        442,
+        464,
+        465,
+        466,
+        488,
+        489,
+        490
+      ]
+    },
+    {
+      "id": 3,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        91,
+        245
+      ],
+      "size": 17,
+      "bbox": [
+        83,
+        237,
+        99,
+        253
+      ],
+      "patch_indices": [
+        389,
+        390,
+        391,
+        413,
+        414,
+        415,
+        437,
+        438,
+        439
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 3
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 3,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 3,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 3,
+      "object_id": 2
+    }
+  ],
+  "captions": [
+    "The pink circle is left of the yellow triangle.",
+    "The purple circle is below the pink circle.",
+    "The purple circle is below the orange triangle.",
+    "The pink circle is above the purple circle.",
+    "The yellow triangle is below the pink circle.",
+    "The purple circle is to the right of the yellow triangle.",
+    "The orange triangle is to the right of the purple circle.",
+    "The pink circle is above the yellow triangle.",
+    "The purple circle is left of the orange triangle.",
+    "The yellow triangle is to the right of the pink circle.",
+    "The pink circle is below the orange triangle.",
+    "The orange triangle is above the purple circle.",
+    "The yellow triangle is left of the purple circle.",
+    "The purple circle is right of the pink circle.",
+    "The pink circle is left of the orange triangle.",
+    "The orange triangle is above the pink circle.",
+    "The orange triangle is above the yellow triangle.",
+    "The yellow triangle is left of the orange triangle.",
+    "The yellow triangle is below the orange triangle.",
+    "The pink circle is to the left of the purple circle.",
+    "The orange triangle is right of the yellow triangle.",
+    "The orange triangle is right of the pink circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink circle is left of the yellow triangle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple circle is below the pink circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The purple circle is below the orange triangle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink circle is above the purple circle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The yellow triangle is below the pink circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The purple circle is to the right of the yellow triangle.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The orange triangle is to the right of the purple circle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The pink circle is above the yellow triangle.",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The purple circle is left of the orange triangle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The yellow triangle is to the right of the pink circle.",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The pink circle is below the orange triangle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The orange triangle is above the purple circle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    },
+    {
+      "id": 12,
+      "caption": "The yellow triangle is left of the purple circle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        24
+      ],
+      "contradicted_qa_ids": [
+        25
+      ]
+    },
+    {
+      "id": 13,
+      "caption": "The purple circle is right of the pink circle.",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        26
+      ],
+      "contradicted_qa_ids": [
+        27
+      ]
+    },
+    {
+      "id": 14,
+      "caption": "The pink circle is left of the orange triangle.",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        28
+      ],
+      "contradicted_qa_ids": [
+        29
+      ]
+    },
+    {
+      "id": 15,
+      "caption": "The orange triangle is above the pink circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        30
+      ],
+      "contradicted_qa_ids": [
+        31
+      ]
+    },
+    {
+      "id": 16,
+      "caption": "The orange triangle is above the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        32
+      ],
+      "contradicted_qa_ids": [
+        33
+      ]
+    },
+    {
+      "id": 17,
+      "caption": "The yellow triangle is left of the orange triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        34
+      ],
+      "contradicted_qa_ids": [
+        35
+      ]
+    },
+    {
+      "id": 18,
+      "caption": "The yellow triangle is below the orange triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        36
+      ],
+      "contradicted_qa_ids": [
+        37
+      ]
+    },
+    {
+      "id": 19,
+      "caption": "The pink circle is to the left of the purple circle.",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        38
+      ],
+      "contradicted_qa_ids": [
+        39
+      ]
+    },
+    {
+      "id": 20,
+      "caption": "The orange triangle is right of the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        40
+      ],
+      "contradicted_qa_ids": [
+        41
+      ]
+    },
+    {
+      "id": 21,
+      "caption": "The orange triangle is right of the pink circle.",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        42
+      ],
+      "contradicted_qa_ids": [
+        43
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of orange triangle to yellow triangle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of orange triangle to yellow triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    },
+    {
+      "question": "Where is orange triangle relative to yellow triangle?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 2
+    },
+    {
+      "question": "What is the vertical relation of yellow triangle to orange triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 3
+    },
+    {
+      "question": "What is the horizontal relation of yellow triangle to orange triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 4
+    },
+    {
+      "question": "Where is yellow triangle relative to orange triangle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 5
+    },
+    {
+      "question": "What is the vertical relation of orange triangle to purple circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 6
+    },
+    {
+      "question": "What is the horizontal relation of orange triangle to purple circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 7
+    },
+    {
+      "question": "Where is orange triangle relative to purple circle?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 8
+    },
+    {
+      "question": "What is the vertical relation of purple circle to orange triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 9
+    },
+    {
+      "question": "What is the horizontal relation of purple circle to orange triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 10
+    },
+    {
+      "question": "Where is purple circle relative to orange triangle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 11
+    },
+    {
+      "question": "What is the vertical relation of orange triangle to pink circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 12
+    },
+    {
+      "question": "What is the horizontal relation of orange triangle to pink circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 13
+    },
+    {
+      "question": "Where is orange triangle relative to pink circle?",
+      "answer": "top-right",
+      "question_type": "combined",
+      "subject_id": 0,
+      "object_id": 3,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 14
+    },
+    {
+      "question": "What is the vertical relation of pink circle to orange triangle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 15
+    },
+    {
+      "question": "What is the horizontal relation of pink circle to orange triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 16
+    },
+    {
+      "question": "Where is pink circle relative to orange triangle?",
+      "answer": "bottom-left",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 17
+    },
+    {
+      "question": "What is the horizontal relation of yellow triangle to purple circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 18
+    },
+    {
+      "question": "What is the horizontal relation of purple circle to yellow triangle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 19
+    },
+    {
+      "question": "What is the vertical relation of yellow triangle to pink circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 20
+    },
+    {
+      "question": "What is the horizontal relation of yellow triangle to pink circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 21
+    },
+    {
+      "question": "Where is yellow triangle relative to pink circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 1,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 22
+    },
+    {
+      "question": "What is the vertical relation of pink circle to yellow triangle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 23
+    },
+    {
+      "question": "What is the horizontal relation of pink circle to yellow triangle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 24
+    },
+    {
+      "question": "Where is pink circle relative to yellow triangle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 25
+    },
+    {
+      "question": "What is the vertical relation of purple circle to pink circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 26
+    },
+    {
+      "question": "What is the horizontal relation of purple circle to pink circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 27
+    },
+    {
+      "question": "Where is purple circle relative to pink circle?",
+      "answer": "bottom-right",
+      "question_type": "combined",
+      "subject_id": 2,
+      "object_id": 3,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 28
+    },
+    {
+      "question": "What is the vertical relation of pink circle to purple circle?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 29
+    },
+    {
+      "question": "What is the horizontal relation of pink circle to purple circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 30
+    },
+    {
+      "question": "Where is pink circle relative to purple circle?",
+      "answer": "top-left",
+      "question_type": "combined",
+      "subject_id": 3,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 31
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

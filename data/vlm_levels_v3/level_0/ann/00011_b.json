@@ -1,0 +1,118 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        203,
+        175
+      ],
+      "size": 10,
+      "bbox": [
+        198,
+        170,
+        208,
+        180
+      ],
+      "patch_indices": [
+        302
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "lime",
+      "center": [
+        189,
+        175
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        170,
+        194,
+        180
+      ],
+      "patch_indices": [
+        301
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime circle is left of the pink circle.",
+    "The pink circle is to the right of the lime circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime circle is left of the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is to the right of the lime circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the horizontal relation of pink circle to lime circle?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of lime circle to pink circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

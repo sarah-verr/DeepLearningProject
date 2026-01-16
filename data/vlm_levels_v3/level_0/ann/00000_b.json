@@ -1,0 +1,118 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        287,
+        105
+      ],
+      "size": 10,
+      "bbox": [
+        282,
+        100,
+        292,
+        110
+      ],
+      "patch_indices": [
+        188
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        287,
+        119
+      ],
+      "size": 10,
+      "bbox": [
+        282,
+        114,
+        292,
+        124
+      ],
+      "patch_indices": [
+        212
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green star is below the pink circle.",
+    "The pink circle is above the green star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green star is below the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is above the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the vertical relation of pink circle to green star?",
+      "answer": "above",
+      "question_type": "vertical",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the vertical relation of green star to pink circle?",
+      "answer": "below",
+      "question_type": "vertical",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "id": 1
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

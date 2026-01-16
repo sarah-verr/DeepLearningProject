@@ -1,0 +1,118 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "purple",
+      "center": [
+        203,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        198,
+        310,
+        208,
+        320
+      ],
+      "patch_indices": [
+        542
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        217,
+        315
+      ],
+      "size": 10,
+      "bbox": [
+        212,
+        310,
+        222,
+        320
+      ],
+      "patch_indices": [
+        543
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple square is left of the cyan circle.",
+    "The cyan circle is right of the purple square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple square is left of the cyan circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan circle is right of the purple square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "What is the horizontal relation of purple square to cyan circle?",
+      "answer": "left",
+      "question_type": "horizontal",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "id": 0
+    },
+    {
+      "question": "What is the horizontal relation of cyan circle to purple square?",
+      "answer": "right",
+      "question_type": "horizontal",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "id": 1
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
