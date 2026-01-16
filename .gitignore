@@ -20,4 +20,4 @@ evaluation_*
 evaluation_summary*.txt
 logs/
 data/vlm_levels/sample
-results_llava-hf/llava-1.5-7b-hf/attention_results_all_levels.jsonl
+results_llava-hf/llava-1.5-7b-hf/attention_results_*.jsonl

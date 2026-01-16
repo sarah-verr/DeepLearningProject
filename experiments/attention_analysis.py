@@ -19,6 +19,10 @@ def aggregate_attention_and_save_to_file(levels, filename="attention_results_det
 
     # These are the source -> target combinations of interest for us and hence we will store the mean for these
     key_pairs = [
+                    ("object", "visual_object"),
+                    ("subject", "visual_subject"),
+                    ("object", "all_visual"),
+                    ("subject", "all_visual"),
                     ("last", "visual_subject"),
                     ("last", "visual_object"),
                     ("relation", "visual_subject"),
