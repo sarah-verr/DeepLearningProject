@@ -423,7 +423,6 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 torch.cuda.empty_cache()
 
         # After finishing this level, append results to a single file
-        output_filename = "attention_results_all_levels.jsonl"
         output_path = plotter.results_dir / output_filename
         with open(output_path, "a") as f:
             for item in attn_results:

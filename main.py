@@ -6,11 +6,11 @@ import json
 
 if __name__ == "__main__":
     print("[DEBUG] Running main.py ...")
-    levels = ["level_0", "level_1", "level_2", "level_3", "level_4"]
+    levels = ["level_4"]
     # levels = ["sample"]
 
     # compute_accuracy_for_all_levels("visual", masked=False)
-    aggregate_attention_and_save_to_file(levels, "attention_results_with_com.jsonl")
+    aggregate_attention_and_save_to_file(levels, "attention_results_all_levels.jsonl")
 
     # layers_and_heads_to_plot = [
     #                 (0, 7),
