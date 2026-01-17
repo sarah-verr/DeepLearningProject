@@ -78,7 +78,7 @@ def full_detailed_attention_map_for_sample(levels, num_samples=1, layers_and_hea
             # Randomly sample one qa_id
             qa_id = random.choice(qa_ids)
             
-            attentions, output, rel_positions = visualise_full_attention(level_id, image_id, qa_id, processor, model, device)
+            attentions, output, rel_positions = visualise_full_attention(level_id, image_id, qa_id, processor, model, device, use_masked_attention, always_mask)
 
             # Convert to numpy array for processing
             attentions_array = np.array(attentions)
