@@ -374,7 +374,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                         inputs["input_ids"],
                         image_token_id,
                         annotation,
-                        qa_pair,
+                        qa,
                         mask_opposite_side=True,
                         always_mask=always_mask,
                     )
@@ -486,7 +486,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
     return None
 
 
-def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None):
+def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None, use_attention_mask=False, always_mask=False):
     """
     Reads the image and annotation for the specified level and image_id,
     and for the specific qa_id, computes attentions and returns them along with the prompt.
@@ -525,7 +525,21 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     # Prepare inputs
     inputs = processor(text=prompt, images=image, return_tensors="pt")
     inputs = {k: v.to(device) for k, v in inputs.items()}
-    
+
+    # Compute attention mask if requested
+    if use_attention_mask:
+        image_token_id = model.config.image_token_index
+        custom_mask = compute_attention_mask_for_qa(
+            inputs["input_ids"],
+            image_token_id,
+            annotation,
+            qa,
+            mask_opposite_side=True,
+            always_mask=always_mask,
+        )
+        if custom_mask is not None:
+            inputs["attention_mask"] = custom_mask
+
     # Generate output
     with torch.no_grad():
         gen_out = generate_output_for_model(model, inputs)
