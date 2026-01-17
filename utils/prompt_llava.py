@@ -23,6 +23,7 @@ from .prompt_templates import (
 )
 
 from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups, compute_com)
+from .mask_utils import compute_attention_mask_for_qa
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 VLM_LEVELS_DIR = "data/vlm_levels"
@@ -68,7 +69,7 @@ def generate_output_for_model(model, inputs, *, max_new_tokens: int = 10):
 
 def build_prompt(
     processor,
-    prompt_strategy: Literal["visual", "visual_attribute", "visual_relational", "caption", "scene", "text_only", "existential", "existential_yesno", "existential_attribute"],
+    prompt_strategy: Literal["visual", "visual_attribute", "visual_relational", "caption", "scene", "text_only", "existential_yesno", "existential_attribute"],
     question: str,
     *,
     annotation: Optional[Dict[str, Any]] = None,
@@ -88,12 +89,6 @@ def build_prompt(
     elif prompt_strategy == "visual_relational":
         question_type = qa_item.get("question_type")
         convo = build_visual_relational_prompt(question, question_type)
-    elif prompt_strategy == "existential":
-        # Use attribute prompt for attribute questions, yes/no prompt for yes/no questions
-        if qa_key == "qa_existential_attribute":
-            convo = build_existential_attribute_prompt(question)
-        else:
-            convo = build_existential_yesno_prompt(question)
     elif prompt_strategy == "existential_yesno":
         convo = build_existential_yesno_prompt(question)
     elif prompt_strategy == "existential_attribute":
@@ -158,18 +153,20 @@ def score_yesno(outputs, tokenizer) -> Tuple[Optional[str], Optional[float], Opt
 
 def infer_model_for_levels(
     level_ids: List[str],
-    prompt_strategy: Literal["visual", "caption", "scene", "existential", "visual_attribute", "visual_relational"] = "visual",
+    prompt_strategy: Literal["visual", "caption", "scene", "existential_yesno", "existential_attribute", "visual_attribute", "visual_relational"] = "visual",
     show_llm_output: bool = False,
     use_plain_images: bool = False,
     qa_key: str = "qa",
     data_dir: Optional[str] = None,
+    use_attention_mask: bool = False,
+    always_mask: bool = False,
 ) -> Dict[str, Any]:
     """
     Run inference on all QA pairs for images in specified levels.
     
     Args:
         level_ids: List of level identifiers (e.g., ["level_0", "level_1"])
-        prompt_strategy: How to format prompts ("visual", "caption", "scene", "existential", or "visual_attribute")
+        prompt_strategy: How to format prompts ("visual", "caption", "scene", "existential_yesno", "existential_attribute", or "visual_attribute")
         show_llm_output: Whether to print full model outputs
         use_plain_images: Whether to use plain black/white images instead of actual images
         qa_key: Key in annotation JSON for QA pairs (default "qa", use "qa_existential" for existential questions)
@@ -234,6 +231,20 @@ def infer_model_for_levels(
                 )
             ):
                 inputs = processor(text=prompt, images=image, return_tensors="pt").to(device)
+                
+                # Compute attention mask if requested
+                if use_attention_mask:
+                    image_token_id = model.config.image_token_index
+                    custom_mask = compute_attention_mask_for_qa(
+                        inputs["input_ids"],
+                        image_token_id,
+                        annotation,
+                        qa_pair,
+                        mask_opposite_side=True,
+                        always_mask=always_mask,
+                    )
+                    if custom_mask is not None:
+                        inputs["attention_mask"] = custom_mask
 
                 with torch.no_grad():
                         output = generate_output_for_model(model, inputs)
@@ -249,7 +260,23 @@ def infer_model_for_levels(
                     print(f"{full_output}")
                     print("---" * 20)
 
-                prediction, confidence, _, _ = get_yes_no_probability(output, tokenizer=processor.tokenizer)
+                # Extract prediction and confidence based on question type
+                # Default: use yes/no probability extraction
+                # Special case: for attribute/relational questions, extract raw answer and first-token confidence
+                if prompt_strategy in ["visual_attribute", "visual_relational", "existential_attribute"]:
+                    # For attribute/relational question types, extract raw answer and first-token confidence
+                    prediction = None  # Will be extracted from response by accuracy scripts
+                    confidence = None
+                    # Extract confidence from first generated token
+                    scores = getattr(output, "scores", None)
+                    if scores and len(scores) > 0:
+                        first_token_logits = scores[0][0]
+                        probs = torch.softmax(first_token_logits, dim=-1)
+                        # Use max probability of first token as confidence
+                        confidence = float(probs.max().item())
+                else:
+                    # Default: use yes/no probability extraction for yes/no questions
+                    prediction, confidence, _, _ = get_yes_no_probability(output, tokenizer=processor.tokenizer)
 
                 # Count image and text tokens in the prompt
                 input_ids = inputs["input_ids"][0]

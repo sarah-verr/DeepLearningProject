@@ -17,8 +17,10 @@ _REPO_ROOT = Path(__file__).parent.parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from utils.prompt_llava import infer_model_for_levels
+from utils.prompt_llava import infer_model_for_levels, MODEL_ID
 from utils.plotter import Plotter
+from utils.results_processing import extract_raw_answer_from_response
+from pathlib import Path
 
 def compute_accuracy_for_questions(
     level_ids: list,
@@ -56,14 +58,25 @@ def compute_accuracy_for_questions(
     print(f"Debug: DataFrame columns: {results_df.columns.tolist()}")
     print(f"Debug: DataFrame shape: {results_df.shape}")
     
-    # For yes/no questions, use the prediction from get_yes_no_probability
-    # For attribute questions, use the response field (full output is shown via show_llm_output)
+    # Add dataset name to results
+    results_df["dataset"] = "vlm_levels"
+    
+    # Extract raw model answers from response (not normalized)
+    # For yes/no questions, we still want the raw text answer, not just the token prediction
+    results_df["model_answer_raw"] = results_df["response"].apply(extract_raw_answer_from_response)
+    
+    # For yes/no questions, prediction is already extracted, but we keep raw answer separate
+    # Use prediction for correctness checking (normalized comparison)
     if qa_key == "qa_existential_yesno":
-        # Yes/no questions: prediction is already extracted
+        # Yes/no questions: use prediction for correctness
         if "prediction" not in results_df.columns:
             print(f"Warning: 'prediction' column not found in results. Available columns: {results_df.columns.tolist()}")
             return pd.Series(dtype=float)
-        results_df["correct"] = results_df["prediction"] == results_df["ground_truth"]
+        # For correctness, compare prediction (yes/no) with ground truth
+        results_df["is_correct"] = results_df["prediction"] == results_df["ground_truth"]
+        # Keep model_answer_raw as the raw extracted text for analysis
+        # If model_answer_raw is empty/None, fallback to prediction
+        results_df.loc[results_df["model_answer_raw"].isna() | (results_df["model_answer_raw"] == ""), "model_answer_raw"] = results_df["prediction"]
     else:
         # Attribute questions: extract just the generated part from response
         # The response contains the full prompt + answer, we need to extract just the answer
@@ -148,25 +161,56 @@ def compute_accuracy_for_questions(
                     prediction_clean in gt_clean or gt_clean in prediction_clean
                 )
         
-        results_df["correct"] = results_df.apply(
+        results_df["is_correct"] = results_df.apply(
             lambda row: check_answer(row["prediction_normalized"], row["prediction_clean"], row["ground_truth"]),
             axis=1
         )
     
-    # Save results
-    plotter = Plotter(experiment_name="existential_qa")
+    # Rename confidence column for consistency (if present)
+    if "confidence" in results_df.columns:
+        results_df["model_confidence"] = results_df["confidence"]
+    
+    # Ensure required columns exist
+    required_cols = ["dataset", "level_id", "image_id", "qa_id", "question", "ground_truth", 
+                     "model_answer_raw", "model_confidence", "is_correct"]
+    for col in required_cols:
+        if col not in results_df.columns:
+            results_df[col] = None
+    
+    # Reorder columns for consistent output
+    priority_cols = ["dataset", "level_id", "image_id", "qa_id", "question"]
+    if "question_type" in results_df.columns:
+        priority_cols.append("question_type")
+    priority_cols.extend(["ground_truth", "model_answer_raw", "model_confidence", "is_correct"])
+    other_cols = [c for c in results_df.columns if c not in priority_cols]
+    results_df = results_df[priority_cols + other_cols]
+    
+    # Save results to new folder structure
+    project_root = Path(__file__).resolve().parents[1]
+    model_name = MODEL_ID.split("/")[-1]
+    # Determine dataset folder name based on qa_key
+    if qa_key == "qa_existential_yesno":
+        dataset_folder = "existential_yesno"
+    elif qa_key == "qa_existential_attribute":
+        dataset_folder = "existential_attribute"
+    else:
+        raise ValueError(f"Unknown qa_key: {qa_key}. Expected 'qa_existential_yesno' or 'qa_existential_attribute'")
+    results_path = project_root / "results_llava_hf" / model_name / "accuracy_question_ablation" / dataset_folder
+    results_path.mkdir(parents=True, exist_ok=True)
     filename = f"{experiment_name}_results_{qa_key}.csv"
-    results_df.to_csv(plotter.results_dir / filename, index=False)
+    output_path = results_path / filename
+    results_df.to_csv(output_path, index=False)
+    print(f"\nResults saved to: {output_path.resolve()}")
     
     # Compute accuracy by level
     if len(results_df) > 0:
-        accuracy_by_level = results_df.groupby("level_id")["correct"].mean()
+        accuracy_by_level = results_df.groupby("level_id")["is_correct"].mean()
         
         print(f"\n{experiment_name} Accuracy by level:")
         for level, acc in accuracy_by_level.items():
             print(f"  {level}: {acc:.2%}")
         if len(accuracy_by_level) > 0:
-            print(f"  Overall: {results_df['correct'].mean():.2%}")
+            print(f"  Overall: {results_df['is_correct'].mean():.2%}")
         
         return accuracy_by_level
     else:
