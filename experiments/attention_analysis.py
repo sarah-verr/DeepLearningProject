@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import torch
 
-def aggregate_attention_and_save_to_file(levels, filename="attention_results_detailed.json"):
+def aggregate_attention_and_save_to_file(levels, filename="attention_results_detailed.json", use_masked_attention = False, always_mask = True):
     """
     This function computes that attention (aggregated as mean, per head, layer) and saves it to a json file: attention_results_all_levels.jsonl in the results_{model} folder
     """
@@ -33,7 +33,7 @@ def aggregate_attention_and_save_to_file(levels, filename="attention_results_det
                     ("relation", "all_visual")
     ]
 
-    attn_results = infer_model_with_attention(levels, key_pairs, "visual", filename)
+    attn_results = infer_model_with_attention(levels, key_pairs, "visual", filename, use_attention_mask=use_masked_attention, always_mask=always_mask, num_questions_per_image=6)
 
     if not attn_results:
         return

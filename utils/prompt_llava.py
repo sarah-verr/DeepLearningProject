@@ -4,6 +4,7 @@ Central prompting script for LLaVA inference.
 
 import os
 import json
+import random
 from typing import Literal, Optional, Dict, Any, List, Tuple
 import torch
 from PIL import Image
@@ -309,9 +310,12 @@ def infer_model_for_levels(
     return results_list
 
 
-def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl"):
+def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl", use_attention_mask: bool = False, always_mask: bool = False, num_questions_per_image: Optional[int] = None):
     """
     Runs model but this time with attention values aggregated according to source and target in the params
+    
+    Args:
+        num_questions_per_image: Maximum number of questions to process per image. If None, process all questions.
     """
     # --- Load data for all levels (same as infer_model_for_levels) ---
     annotations_all_levels = []
@@ -342,6 +346,10 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
             image_id = annotation["image_id"]
             qa_pairs = annotation["qa"]
 
+            # Limit the number of questions per image if specified
+            if num_questions_per_image is not None:
+                qa_pairs = random.sample(qa_pairs, min(num_questions_per_image, len(qa_pairs)))
+
             # Build chat-style prompts as in infer_model_for_levels
 
             chat_prompts = [build_prompt(processor,prompt_strategy,qa["question"],annotation=annotation,qa_item=qa,) for qa in qa_pairs]
@@ -358,6 +366,21 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                     return_tensors="pt",
                 )
                 inputs = {k: v.to(device) for k, v in inputs.items()}
+
+                # Compute attention mask if requested
+                if use_attention_mask:
+                    image_token_id = model.config.image_token_index
+                    custom_mask = compute_attention_mask_for_qa(
+                        inputs["input_ids"],
+                        image_token_id,
+                        annotation,
+                        qa_pair,
+                        mask_opposite_side=True,
+                        always_mask=always_mask,
+                    )
+                    if custom_mask is not None:
+                        inputs["attention_mask"] = custom_mask
+
 
                 # --- 1) Generation to get prediction (pure inference) ---
                 with torch.no_grad():
