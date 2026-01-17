@@ -343,7 +343,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of purple square to cyan circle?",
+      "question": "Where is the purple square in relation to cyan circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -353,7 +353,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of purple square to cyan circle?",
+      "question": "Where is the purple square in relation to cyan circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -363,7 +363,7 @@
       "id": 1
     },
     {
-      "question": "Where is purple square relative to cyan circle?",
+      "question": "Where is the purple square in relation to cyan circle?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -373,7 +373,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of cyan circle to purple square?",
+      "question": "Where is the cyan circle in relation to purple square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -383,7 +383,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of cyan circle to purple square?",
+      "question": "Where is the cyan circle in relation to purple square?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -393,7 +393,7 @@
       "id": 4
     },
     {
-      "question": "Where is cyan circle relative to purple square?",
+      "question": "Where is the cyan circle in relation to purple square?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -403,7 +403,7 @@
       "id": 5
     },
     {
-      "question": "What is the vertical relation of purple square to lime circle?",
+      "question": "Where is the purple square in relation to lime circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -413,7 +413,7 @@
       "id": 6
     },
     {
-      "question": "What is the horizontal relation of purple square to lime circle?",
+      "question": "Where is the purple square in relation to lime circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -423,7 +423,7 @@
       "id": 7
     },
     {
-      "question": "Where is purple square relative to lime circle?",
+      "question": "Where is the purple square in relation to lime circle?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -433,7 +433,7 @@
       "id": 8
     },
     {
-      "question": "What is the vertical relation of lime circle to purple square?",
+      "question": "Where is the lime circle in relation to purple square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -443,7 +443,7 @@
       "id": 9
     },
     {
-      "question": "What is the horizontal relation of lime circle to purple square?",
+      "question": "Where is the lime circle in relation to purple square?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -453,7 +453,7 @@
       "id": 10
     },
     {
-      "question": "Where is lime circle relative to purple square?",
+      "question": "Where is the lime circle in relation to purple square?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 2,
@@ -463,7 +463,7 @@
       "id": 11
     },
     {
-      "question": "What is the vertical relation of cyan circle to lime circle?",
+      "question": "Where is the cyan circle in relation to lime circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -473,7 +473,7 @@
       "id": 12
     },
     {
-      "question": "What is the horizontal relation of cyan circle to lime circle?",
+      "question": "Where is the cyan circle in relation to lime circle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -483,7 +483,7 @@
       "id": 13
     },
     {
-      "question": "Where is cyan circle relative to lime circle?",
+      "question": "Where is the cyan circle in relation to lime circle?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -493,7 +493,7 @@
       "id": 14
     },
     {
-      "question": "What is the vertical relation of lime circle to cyan circle?",
+      "question": "Where is the lime circle in relation to cyan circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -503,7 +503,7 @@
       "id": 15
     },
     {
-      "question": "What is the horizontal relation of lime circle to cyan circle?",
+      "question": "Where is the lime circle in relation to cyan circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -513,7 +513,7 @@
       "id": 16
     },
     {
-      "question": "Where is lime circle relative to cyan circle?",
+      "question": "Where is the lime circle in relation to cyan circle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 2,

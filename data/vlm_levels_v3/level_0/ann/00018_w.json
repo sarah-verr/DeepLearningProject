@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of red triangle to green square?",
+      "question": "Where is the red triangle in relation to green square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of green square to red triangle?",
+      "question": "Where is the green square in relation to red triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,

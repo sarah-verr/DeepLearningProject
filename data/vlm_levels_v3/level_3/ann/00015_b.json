@@ -301,7 +301,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of pink star to yellow star?",
+      "question": "Where is the pink star in relation to yellow star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -311,7 +311,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of yellow star to pink star?",
+      "question": "Where is the yellow star in relation to pink star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -321,7 +321,7 @@
       "id": 1
     },
     {
-      "question": "What is the vertical relation of pink star to purple triangle?",
+      "question": "Where is the pink star in relation to purple triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -331,7 +331,7 @@
       "id": 2
     },
     {
-      "question": "What is the horizontal relation of pink star to purple triangle?",
+      "question": "Where is the pink star in relation to purple triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -341,7 +341,7 @@
       "id": 3
     },
     {
-      "question": "Where is pink star relative to purple triangle?",
+      "question": "Where is the pink star in relation to purple triangle?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -351,7 +351,7 @@
       "id": 4
     },
     {
-      "question": "What is the vertical relation of purple triangle to pink star?",
+      "question": "Where is the purple triangle in relation to pink star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -361,7 +361,7 @@
       "id": 5
     },
     {
-      "question": "What is the horizontal relation of purple triangle to pink star?",
+      "question": "Where is the purple triangle in relation to pink star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -371,7 +371,7 @@
       "id": 6
     },
     {
-      "question": "Where is purple triangle relative to pink star?",
+      "question": "Where is the purple triangle in relation to pink star?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 2,
@@ -381,7 +381,7 @@
       "id": 7
     },
     {
-      "question": "What is the vertical relation of yellow star to purple triangle?",
+      "question": "Where is the yellow star in relation to purple triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -391,7 +391,7 @@
       "id": 8
     },
     {
-      "question": "What is the horizontal relation of yellow star to purple triangle?",
+      "question": "Where is the yellow star in relation to purple triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -401,7 +401,7 @@
       "id": 9
     },
     {
-      "question": "Where is yellow star relative to purple triangle?",
+      "question": "Where is the yellow star in relation to purple triangle?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 1,
@@ -411,7 +411,7 @@
       "id": 10
     },
     {
-      "question": "What is the vertical relation of purple triangle to yellow star?",
+      "question": "Where is the purple triangle in relation to yellow star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -421,7 +421,7 @@
       "id": 11
     },
     {
-      "question": "What is the horizontal relation of purple triangle to yellow star?",
+      "question": "Where is the purple triangle in relation to yellow star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -431,7 +431,7 @@
       "id": 12
     },
     {
-      "question": "Where is purple triangle relative to yellow star?",
+      "question": "Where is the purple triangle in relation to yellow star?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 2,

@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of purple star to pink triangle?",
+      "question": "Where is the purple star in relation to pink triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of pink triangle to purple star?",
+      "question": "Where is the pink triangle in relation to purple star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,

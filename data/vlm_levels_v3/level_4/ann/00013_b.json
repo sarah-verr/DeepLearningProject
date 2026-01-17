@@ -622,7 +622,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of pink triangle to blue square?",
+      "question": "Where is the pink triangle in relation to blue square?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -632,7 +632,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of pink triangle to blue square?",
+      "question": "Where is the pink triangle in relation to blue square?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -642,7 +642,7 @@
       "id": 1
     },
     {
-      "question": "Where is pink triangle relative to blue square?",
+      "question": "Where is the pink triangle in relation to blue square?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -652,7 +652,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of blue square to pink triangle?",
+      "question": "Where is the blue square in relation to pink triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -662,7 +662,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of blue square to pink triangle?",
+      "question": "Where is the blue square in relation to pink triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -672,7 +672,7 @@
       "id": 4
     },
     {
-      "question": "Where is blue square relative to pink triangle?",
+      "question": "Where is the blue square in relation to pink triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 1,
@@ -682,7 +682,7 @@
       "id": 5
     },
     {
-      "question": "What is the vertical relation of pink triangle to yellow star?",
+      "question": "Where is the pink triangle in relation to yellow star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -692,7 +692,7 @@
       "id": 6
     },
     {
-      "question": "What is the horizontal relation of pink triangle to yellow star?",
+      "question": "Where is the pink triangle in relation to yellow star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -702,7 +702,7 @@
       "id": 7
     },
     {
-      "question": "Where is pink triangle relative to yellow star?",
+      "question": "Where is the pink triangle in relation to yellow star?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -712,7 +712,7 @@
       "id": 8
     },
     {
-      "question": "What is the vertical relation of yellow star to pink triangle?",
+      "question": "Where is the yellow star in relation to pink triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -722,7 +722,7 @@
       "id": 9
     },
     {
-      "question": "What is the horizontal relation of yellow star to pink triangle?",
+      "question": "Where is the yellow star in relation to pink triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -732,7 +732,7 @@
       "id": 10
     },
     {
-      "question": "Where is yellow star relative to pink triangle?",
+      "question": "Where is the yellow star in relation to pink triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 2,
@@ -742,7 +742,7 @@
       "id": 11
     },
     {
-      "question": "What is the vertical relation of pink triangle to orange star?",
+      "question": "Where is the pink triangle in relation to orange star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -752,7 +752,7 @@
       "id": 12
     },
     {
-      "question": "What is the horizontal relation of pink triangle to orange star?",
+      "question": "Where is the pink triangle in relation to orange star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -762,7 +762,7 @@
       "id": 13
     },
     {
-      "question": "Where is pink triangle relative to orange star?",
+      "question": "Where is the pink triangle in relation to orange star?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -772,7 +772,7 @@
       "id": 14
     },
     {
-      "question": "What is the vertical relation of orange star to pink triangle?",
+      "question": "Where is the orange star in relation to pink triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 3,
@@ -782,7 +782,7 @@
       "id": 15
     },
     {
-      "question": "What is the horizontal relation of orange star to pink triangle?",
+      "question": "Where is the orange star in relation to pink triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -792,7 +792,7 @@
       "id": 16
     },
     {
-      "question": "Where is orange star relative to pink triangle?",
+      "question": "Where is the orange star in relation to pink triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 3,
@@ -802,7 +802,7 @@
       "id": 17
     },
     {
-      "question": "What is the vertical relation of blue square to yellow star?",
+      "question": "Where is the blue square in relation to yellow star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -812,7 +812,7 @@
       "id": 18
     },
     {
-      "question": "What is the horizontal relation of blue square to yellow star?",
+      "question": "Where is the blue square in relation to yellow star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -822,7 +822,7 @@
       "id": 19
     },
     {
-      "question": "Where is blue square relative to yellow star?",
+      "question": "Where is the blue square in relation to yellow star?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -832,7 +832,7 @@
       "id": 20
     },
     {
-      "question": "What is the vertical relation of yellow star to blue square?",
+      "question": "Where is the yellow star in relation to blue square?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 2,
@@ -842,7 +842,7 @@
       "id": 21
     },
     {
-      "question": "What is the horizontal relation of yellow star to blue square?",
+      "question": "Where is the yellow star in relation to blue square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -852,7 +852,7 @@
       "id": 22
     },
     {
-      "question": "Where is yellow star relative to blue square?",
+      "question": "Where is the yellow star in relation to blue square?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 2,
@@ -862,7 +862,7 @@
       "id": 23
     },
     {
-      "question": "What is the vertical relation of blue square to orange star?",
+      "question": "Where is the blue square in relation to orange star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -872,7 +872,7 @@
       "id": 24
     },
     {
-      "question": "What is the horizontal relation of blue square to orange star?",
+      "question": "Where is the blue square in relation to orange star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -882,7 +882,7 @@
       "id": 25
     },
     {
-      "question": "Where is blue square relative to orange star?",
+      "question": "Where is the blue square in relation to orange star?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -892,7 +892,7 @@
       "id": 26
     },
     {
-      "question": "What is the vertical relation of orange star to blue square?",
+      "question": "Where is the orange star in relation to blue square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 3,
@@ -902,7 +902,7 @@
       "id": 27
     },
     {
-      "question": "What is the horizontal relation of orange star to blue square?",
+      "question": "Where is the orange star in relation to blue square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -912,7 +912,7 @@
       "id": 28
     },
     {
-      "question": "Where is orange star relative to blue square?",
+      "question": "Where is the orange star in relation to blue square?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 3,
@@ -922,7 +922,7 @@
       "id": 29
     },
     {
-      "question": "What is the vertical relation of yellow star to orange star?",
+      "question": "Where is the yellow star in relation to orange star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 2,
@@ -932,7 +932,7 @@
       "id": 30
     },
     {
-      "question": "What is the horizontal relation of yellow star to orange star?",
+      "question": "Where is the yellow star in relation to orange star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -942,7 +942,7 @@
       "id": 31
     },
     {
-      "question": "Where is yellow star relative to orange star?",
+      "question": "Where is the yellow star in relation to orange star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 2,
@@ -952,7 +952,7 @@
       "id": 32
     },
     {
-      "question": "What is the vertical relation of orange star to yellow star?",
+      "question": "Where is the orange star in relation to yellow star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 3,
@@ -962,7 +962,7 @@
       "id": 33
     },
     {
-      "question": "What is the horizontal relation of orange star to yellow star?",
+      "question": "Where is the orange star in relation to yellow star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -972,7 +972,7 @@
       "id": 34
     },
     {
-      "question": "Where is orange star relative to yellow star?",
+      "question": "Where is the orange star in relation to yellow star?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 3,

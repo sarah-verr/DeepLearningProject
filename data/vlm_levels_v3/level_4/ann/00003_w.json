@@ -622,7 +622,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of purple star to red triangle?",
+      "question": "Where is the purple star in relation to red triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -632,7 +632,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of purple star to red triangle?",
+      "question": "Where is the purple star in relation to red triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -642,7 +642,7 @@
       "id": 1
     },
     {
-      "question": "Where is purple star relative to red triangle?",
+      "question": "Where is the purple star in relation to red triangle?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -652,7 +652,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of red triangle to purple star?",
+      "question": "Where is the red triangle in relation to purple star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -662,7 +662,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of red triangle to purple star?",
+      "question": "Where is the red triangle in relation to purple star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -672,7 +672,7 @@
       "id": 4
     },
     {
-      "question": "Where is red triangle relative to purple star?",
+      "question": "Where is the red triangle in relation to purple star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 1,
@@ -682,7 +682,7 @@
       "id": 5
     },
     {
-      "question": "What is the vertical relation of purple star to blue circle?",
+      "question": "Where is the purple star in relation to blue circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -692,7 +692,7 @@
       "id": 6
     },
     {
-      "question": "What is the horizontal relation of purple star to blue circle?",
+      "question": "Where is the purple star in relation to blue circle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -702,7 +702,7 @@
       "id": 7
     },
     {
-      "question": "Where is purple star relative to blue circle?",
+      "question": "Where is the purple star in relation to blue circle?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -712,7 +712,7 @@
       "id": 8
     },
     {
-      "question": "What is the vertical relation of blue circle to purple star?",
+      "question": "Where is the blue circle in relation to purple star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 2,
@@ -722,7 +722,7 @@
       "id": 9
     },
     {
-      "question": "What is the horizontal relation of blue circle to purple star?",
+      "question": "Where is the blue circle in relation to purple star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -732,7 +732,7 @@
       "id": 10
     },
     {
-      "question": "Where is blue circle relative to purple star?",
+      "question": "Where is the blue circle in relation to purple star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 2,
@@ -742,7 +742,7 @@
       "id": 11
     },
     {
-      "question": "What is the vertical relation of purple star to orange triangle?",
+      "question": "Where is the purple star in relation to orange triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -752,7 +752,7 @@
       "id": 12
     },
     {
-      "question": "What is the horizontal relation of purple star to orange triangle?",
+      "question": "Where is the purple star in relation to orange triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -762,7 +762,7 @@
       "id": 13
     },
     {
-      "question": "Where is purple star relative to orange triangle?",
+      "question": "Where is the purple star in relation to orange triangle?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -772,7 +772,7 @@
       "id": 14
     },
     {
-      "question": "What is the vertical relation of orange triangle to purple star?",
+      "question": "Where is the orange triangle in relation to purple star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 3,
@@ -782,7 +782,7 @@
       "id": 15
     },
     {
-      "question": "What is the horizontal relation of orange triangle to purple star?",
+      "question": "Where is the orange triangle in relation to purple star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -792,7 +792,7 @@
       "id": 16
     },
     {
-      "question": "Where is orange triangle relative to purple star?",
+      "question": "Where is the orange triangle in relation to purple star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 3,
@@ -802,7 +802,7 @@
       "id": 17
     },
     {
-      "question": "What is the vertical relation of red triangle to blue circle?",
+      "question": "Where is the red triangle in relation to blue circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -812,7 +812,7 @@
       "id": 18
     },
     {
-      "question": "What is the horizontal relation of red triangle to blue circle?",
+      "question": "Where is the red triangle in relation to blue circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -822,7 +822,7 @@
       "id": 19
     },
     {
-      "question": "Where is red triangle relative to blue circle?",
+      "question": "Where is the red triangle in relation to blue circle?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 1,
@@ -832,7 +832,7 @@
       "id": 20
     },
     {
-      "question": "What is the vertical relation of blue circle to red triangle?",
+      "question": "Where is the blue circle in relation to red triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -842,7 +842,7 @@
       "id": 21
     },
     {
-      "question": "What is the horizontal relation of blue circle to red triangle?",
+      "question": "Where is the blue circle in relation to red triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -852,7 +852,7 @@
       "id": 22
     },
     {
-      "question": "Where is blue circle relative to red triangle?",
+      "question": "Where is the blue circle in relation to red triangle?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 2,
@@ -862,7 +862,7 @@
       "id": 23
     },
     {
-      "question": "What is the vertical relation of red triangle to orange triangle?",
+      "question": "Where is the red triangle in relation to orange triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -872,7 +872,7 @@
       "id": 24
     },
     {
-      "question": "What is the horizontal relation of red triangle to orange triangle?",
+      "question": "Where is the red triangle in relation to orange triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -882,7 +882,7 @@
       "id": 25
     },
     {
-      "question": "Where is red triangle relative to orange triangle?",
+      "question": "Where is the red triangle in relation to orange triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 1,
@@ -892,7 +892,7 @@
       "id": 26
     },
     {
-      "question": "What is the vertical relation of orange triangle to red triangle?",
+      "question": "Where is the orange triangle in relation to red triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 3,
@@ -902,7 +902,7 @@
       "id": 27
     },
     {
-      "question": "What is the horizontal relation of orange triangle to red triangle?",
+      "question": "Where is the orange triangle in relation to red triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -912,7 +912,7 @@
       "id": 28
     },
     {
-      "question": "Where is orange triangle relative to red triangle?",
+      "question": "Where is the orange triangle in relation to red triangle?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 3,
@@ -922,7 +922,7 @@
       "id": 29
     },
     {
-      "question": "What is the vertical relation of blue circle to orange triangle?",
+      "question": "Where is the blue circle in relation to orange triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 2,
@@ -932,7 +932,7 @@
       "id": 30
     },
     {
-      "question": "What is the horizontal relation of blue circle to orange triangle?",
+      "question": "Where is the blue circle in relation to orange triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -942,7 +942,7 @@
       "id": 31
     },
     {
-      "question": "Where is blue circle relative to orange triangle?",
+      "question": "Where is the blue circle in relation to orange triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 2,
@@ -952,7 +952,7 @@
       "id": 32
     },
     {
-      "question": "What is the vertical relation of orange triangle to blue circle?",
+      "question": "Where is the orange triangle in relation to blue circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 3,
@@ -962,7 +962,7 @@
       "id": 33
     },
     {
-      "question": "What is the horizontal relation of orange triangle to blue circle?",
+      "question": "Where is the orange triangle in relation to blue circle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 3,
@@ -972,7 +972,7 @@
       "id": 34
     },
     {
-      "question": "Where is orange triangle relative to blue circle?",
+      "question": "Where is the orange triangle in relation to blue circle?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 3,

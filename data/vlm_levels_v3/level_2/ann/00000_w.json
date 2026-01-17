@@ -148,7 +148,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of green square to pink triangle?",
+      "question": "Where is the green square in relation to pink triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -158,7 +158,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of green square to pink triangle?",
+      "question": "Where is the green square in relation to pink triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -168,7 +168,7 @@
       "id": 1
     },
     {
-      "question": "Where is green square relative to pink triangle?",
+      "question": "Where is the green square in relation to pink triangle?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -178,7 +178,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of pink triangle to green square?",
+      "question": "Where is the pink triangle in relation to green square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -188,7 +188,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of pink triangle to green square?",
+      "question": "Where is the pink triangle in relation to green square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -198,7 +198,7 @@
       "id": 4
     },
     {
-      "question": "Where is pink triangle relative to green square?",
+      "question": "Where is the pink triangle in relation to green square?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 1,

@@ -106,7 +106,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of blue triangle to yellow star?",
+      "question": "Where is the blue triangle in relation to yellow star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -116,7 +116,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of yellow star to blue triangle?",
+      "question": "Where is the yellow star in relation to blue triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,

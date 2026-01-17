@@ -39,14 +39,16 @@ def _generate_relational_qa(
     """
     Generate relational position questions for each object pair.
     
-    For each pair (A, B), generates:
-    - Vertical (A → B): "What is the vertical relation of A to B?" → "above"/"below"
-    - Vertical (B → A): "What is the vertical relation of B to A?" → "below"/"above"
-    - Horizontal (A → B): "What is the horizontal relation of A to B?" → "left"/"right"
-    - Horizontal (B → A): "What is the horizontal relation of B to A?" → "right"/"left"
-    - Combined (A → B): "Where is A relative to B?" → "top-left"/"top-right"/"bottom-left"/"bottom-right"
+    All questions use the format: "Where is the [color] [shape] in relation to [color] [shape]?"
+    
+    For each pair (A, B), generates when relations exist:
+    - Vertical (A → B): "Where is the A in relation to B?" → "above"/"below"
+    - Vertical (B → A): "Where is the B in relation to A?" → "below"/"above"
+    - Horizontal (A → B): "Where is the A in relation to B?" → "left"/"right"
+    - Horizontal (B → A): "Where is the B in relation to A?" → "right"/"left"
+    - Combined (A → B): "Where is the A in relation to B?" → "top-left"/"top-right"/"bottom-left"/"bottom-right"
       (Only generated when both vertical AND horizontal relations exist)
-    - Combined (B → A): "Where is B relative to A?" → inverse of A→B
+    - Combined (B → A): "Where is the B in relation to A?" → inverse of A→B
       (Only generated when both vertical AND horizontal relations exist)
     
     Only generates questions for PRIMARY relations (above/below/left_of/right_of).
@@ -96,7 +98,7 @@ def _generate_relational_qa(
             if vert_ab:
                 # Vertical question: A → B
                 qa.append({
-                    "question": f"What is the vertical relation of {obj_a.color} {obj_a.shape} to {obj_b.color} {obj_b.shape}?",
+                    "question": f"Where is the {obj_a.color} {obj_a.shape} in relation to {obj_b.color} {obj_b.shape}?",
                     "answer": vert_ab,  # "above" or "below"
                     "question_type": "vertical",
                     "subject_id": id_a,
@@ -109,7 +111,7 @@ def _generate_relational_qa(
                 # Horizontal question: A → B
                 horiz_answer = "left" if horiz_ab == "left_of" else "right"
                 qa.append({
-                    "question": f"What is the horizontal relation of {obj_a.color} {obj_a.shape} to {obj_b.color} {obj_b.shape}?",
+                    "question": f"Where is the {obj_a.color} {obj_a.shape} in relation to {obj_b.color} {obj_b.shape}?",
                     "answer": horiz_answer,  # "left" or "right"
                     "question_type": "horizontal",
                     "subject_id": id_a,
@@ -123,7 +125,7 @@ def _generate_relational_qa(
                 combined_ab = get_combined_answer(vert_ab, horiz_ab)
                 if combined_ab:
                     qa.append({
-                        "question": f"Where is {obj_a.color} {obj_a.shape} relative to {obj_b.color} {obj_b.shape}?",
+                        "question": f"Where is the {obj_a.color} {obj_a.shape} in relation to {obj_b.color} {obj_b.shape}?",
                         "answer": combined_ab,  # "top-left", "top-right", "bottom-left", "bottom-right"
                         "question_type": "combined",
                         "subject_id": id_a,
@@ -136,7 +138,7 @@ def _generate_relational_qa(
             if vert_ba:
                 # Vertical question: B → A
                 qa.append({
-                    "question": f"What is the vertical relation of {obj_b.color} {obj_b.shape} to {obj_a.color} {obj_a.shape}?",
+                    "question": f"Where is the {obj_b.color} {obj_b.shape} in relation to {obj_a.color} {obj_a.shape}?",
                     "answer": vert_ba,  # "above" or "below"
                     "question_type": "vertical",
                     "subject_id": id_b,
@@ -149,7 +151,7 @@ def _generate_relational_qa(
                 # Horizontal question: B → A
                 horiz_answer_ba = "left" if horiz_ba == "left_of" else "right"
                 qa.append({
-                    "question": f"What is the horizontal relation of {obj_b.color} {obj_b.shape} to {obj_a.color} {obj_a.shape}?",
+                    "question": f"Where is the {obj_b.color} {obj_b.shape} in relation to {obj_a.color} {obj_a.shape}?",
                     "answer": horiz_answer_ba,  # "left" or "right"
                     "question_type": "horizontal",
                     "subject_id": id_b,
@@ -163,7 +165,7 @@ def _generate_relational_qa(
                 combined_ba = get_combined_answer(vert_ba, horiz_ba)
                 if combined_ba:
                     qa.append({
-                        "question": f"Where is {obj_b.color} {obj_b.shape} relative to {obj_a.color} {obj_a.shape}?",
+                        "question": f"Where is the {obj_b.color} {obj_b.shape} in relation to {obj_a.color} {obj_a.shape}?",
                         "answer": combined_ba,  # "top-left", "top-right", "bottom-left", "bottom-right"
                         "question_type": "combined",
                         "subject_id": id_b,

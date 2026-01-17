@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of orange square to yellow circle?",
+      "question": "Where is the orange square in relation to yellow circle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of yellow circle to orange square?",
+      "question": "Where is the yellow circle in relation to orange square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,

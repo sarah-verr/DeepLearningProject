@@ -148,7 +148,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of purple circle to green triangle?",
+      "question": "Where is the purple circle in relation to green triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -158,7 +158,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of purple circle to green triangle?",
+      "question": "Where is the purple circle in relation to green triangle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -168,7 +168,7 @@
       "id": 1
     },
     {
-      "question": "Where is purple circle relative to green triangle?",
+      "question": "Where is the purple circle in relation to green triangle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -178,7 +178,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of green triangle to purple circle?",
+      "question": "Where is the green triangle in relation to purple circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -188,7 +188,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of green triangle to purple circle?",
+      "question": "Where is the green triangle in relation to purple circle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -198,7 +198,7 @@
       "id": 4
     },
     {
-      "question": "Where is green triangle relative to purple circle?",
+      "question": "Where is the green triangle in relation to purple circle?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 1,

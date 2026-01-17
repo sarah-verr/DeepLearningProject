@@ -301,7 +301,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of orange star to green star?",
+      "question": "Where is the orange star in relation to green star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -311,7 +311,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of orange star to green star?",
+      "question": "Where is the orange star in relation to green star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -321,7 +321,7 @@
       "id": 1
     },
     {
-      "question": "Where is orange star relative to green star?",
+      "question": "Where is the orange star in relation to green star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -331,7 +331,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of green star to orange star?",
+      "question": "Where is the green star in relation to orange star?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -341,7 +341,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of green star to orange star?",
+      "question": "Where is the green star in relation to orange star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -351,7 +351,7 @@
       "id": 4
     },
     {
-      "question": "Where is green star relative to orange star?",
+      "question": "Where is the green star in relation to orange star?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -361,7 +361,7 @@
       "id": 5
     },
     {
-      "question": "What is the horizontal relation of orange star to lime square?",
+      "question": "Where is the orange star in relation to lime square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -371,7 +371,7 @@
       "id": 6
     },
     {
-      "question": "What is the horizontal relation of lime square to orange star?",
+      "question": "Where is the lime square in relation to orange star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -381,7 +381,7 @@
       "id": 7
     },
     {
-      "question": "What is the vertical relation of green star to lime square?",
+      "question": "Where is the green star in relation to lime square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -391,7 +391,7 @@
       "id": 8
     },
     {
-      "question": "What is the horizontal relation of green star to lime square?",
+      "question": "Where is the green star in relation to lime square?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -401,7 +401,7 @@
       "id": 9
     },
     {
-      "question": "Where is green star relative to lime square?",
+      "question": "Where is the green star in relation to lime square?",
       "answer": "bottom-left",
       "question_type": "combined",
       "subject_id": 1,
@@ -411,7 +411,7 @@
       "id": 10
     },
     {
-      "question": "What is the vertical relation of lime square to green star?",
+      "question": "Where is the lime square in relation to green star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 2,
@@ -421,7 +421,7 @@
       "id": 11
     },
     {
-      "question": "What is the horizontal relation of lime square to green star?",
+      "question": "Where is the lime square in relation to green star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 2,
@@ -431,7 +431,7 @@
       "id": 12
     },
     {
-      "question": "Where is lime square relative to green star?",
+      "question": "Where is the lime square in relation to green star?",
       "answer": "top-right",
       "question_type": "combined",
       "subject_id": 2,

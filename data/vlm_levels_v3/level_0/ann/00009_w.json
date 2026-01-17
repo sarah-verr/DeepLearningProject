@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of blue star to cyan triangle?",
+      "question": "Where is the blue star in relation to cyan triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of cyan triangle to blue star?",
+      "question": "Where is the cyan triangle in relation to blue star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,

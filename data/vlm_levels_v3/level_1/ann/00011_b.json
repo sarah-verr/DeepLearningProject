@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of red triangle to green circle?",
+      "question": "Where is the red triangle in relation to green circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of green circle to red triangle?",
+      "question": "Where is the green circle in relation to red triangle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,

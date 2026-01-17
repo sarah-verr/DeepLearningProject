@@ -106,7 +106,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of orange star to red star?",
+      "question": "Where is the orange star in relation to red star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -116,7 +116,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of red star to orange star?",
+      "question": "Where is the red star in relation to orange star?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,

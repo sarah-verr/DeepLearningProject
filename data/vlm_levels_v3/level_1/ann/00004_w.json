@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of blue circle to orange circle?",
+      "question": "Where is the blue circle in relation to orange circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of orange circle to blue circle?",
+      "question": "Where is the orange circle in relation to blue circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,

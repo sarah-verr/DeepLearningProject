@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of purple triangle to yellow square?",
+      "question": "Where is the purple triangle in relation to yellow square?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of yellow square to purple triangle?",
+      "question": "Where is the yellow square in relation to purple triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,

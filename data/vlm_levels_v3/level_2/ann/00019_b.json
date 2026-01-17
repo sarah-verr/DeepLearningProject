@@ -148,7 +148,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of blue circle to pink square?",
+      "question": "Where is the blue circle in relation to pink square?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -158,7 +158,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of blue circle to pink square?",
+      "question": "Where is the blue circle in relation to pink square?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -168,7 +168,7 @@
       "id": 1
     },
     {
-      "question": "Where is blue circle relative to pink square?",
+      "question": "Where is the blue circle in relation to pink square?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 0,
@@ -178,7 +178,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of pink square to blue circle?",
+      "question": "Where is the pink square in relation to blue circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,
@@ -188,7 +188,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of pink square to blue circle?",
+      "question": "Where is the pink square in relation to blue circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -198,7 +198,7 @@
       "id": 4
     },
     {
-      "question": "Where is pink square relative to blue circle?",
+      "question": "Where is the pink square in relation to blue circle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 1,

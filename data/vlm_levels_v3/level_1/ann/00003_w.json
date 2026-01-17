@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of cyan square to pink circle?",
+      "question": "Where is the cyan square in relation to pink circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of pink circle to cyan square?",
+      "question": "Where is the pink circle in relation to cyan square?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 1,

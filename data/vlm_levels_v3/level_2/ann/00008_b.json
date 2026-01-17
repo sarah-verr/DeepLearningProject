@@ -148,7 +148,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of cyan star to orange circle?",
+      "question": "Where is the cyan star in relation to orange circle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -158,7 +158,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of cyan star to orange circle?",
+      "question": "Where is the cyan star in relation to orange circle?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -168,7 +168,7 @@
       "id": 1
     },
     {
-      "question": "Where is cyan star relative to orange circle?",
+      "question": "Where is the cyan star in relation to orange circle?",
       "answer": "bottom-right",
       "question_type": "combined",
       "subject_id": 0,
@@ -178,7 +178,7 @@
       "id": 2
     },
     {
-      "question": "What is the vertical relation of orange circle to cyan star?",
+      "question": "Where is the orange circle in relation to cyan star?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,
@@ -188,7 +188,7 @@
       "id": 3
     },
     {
-      "question": "What is the horizontal relation of orange circle to cyan star?",
+      "question": "Where is the orange circle in relation to cyan star?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
@@ -198,7 +198,7 @@
       "id": 4
     },
     {
-      "question": "Where is orange circle relative to cyan star?",
+      "question": "Where is the orange circle in relation to cyan star?",
       "answer": "top-left",
       "question_type": "combined",
       "subject_id": 1,

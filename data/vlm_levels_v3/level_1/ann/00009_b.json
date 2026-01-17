@@ -90,7 +90,7 @@
   ],
   "qa": [
     {
-      "question": "What is the vertical relation of yellow circle to orange triangle?",
+      "question": "Where is the yellow circle in relation to orange triangle?",
       "answer": "below",
       "question_type": "vertical",
       "subject_id": 0,
@@ -100,7 +100,7 @@
       "id": 0
     },
     {
-      "question": "What is the vertical relation of orange triangle to yellow circle?",
+      "question": "Where is the orange triangle in relation to yellow circle?",
       "answer": "above",
       "question_type": "vertical",
       "subject_id": 1,

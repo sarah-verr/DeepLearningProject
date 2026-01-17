@@ -106,7 +106,7 @@
   ],
   "qa": [
     {
-      "question": "What is the horizontal relation of orange triangle to green square?",
+      "question": "Where is the orange triangle in relation to green square?",
       "answer": "right",
       "question_type": "horizontal",
       "subject_id": 0,
@@ -116,7 +116,7 @@
       "id": 0
     },
     {
-      "question": "What is the horizontal relation of green square to orange triangle?",
+      "question": "Where is the green square in relation to orange triangle?",
       "answer": "left",
       "question_type": "horizontal",
       "subject_id": 1,
