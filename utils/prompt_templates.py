@@ -89,7 +89,7 @@ def build_visual_relational_prompt(question: str, question_type: str) -> Convers
                         f"Allowed Relations: {options}.\n"
                         "Instruction: Compare the centers of the two objects mentioned. "
                         f"Question: {question}\n"
-                        "Answer with exactly one word (or hyphenated word) from the allowed relations list."
+                        "Answer with exactly one option from the allowed relations list."
                     ),
                 },
             ],
