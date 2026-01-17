@@ -24,7 +24,7 @@ from .prompt_templates import (
 )
 
 from .attention_utils import (get_phrase_token_positions, get_image_token_indices, get_last_token_index, get_text_token_indices, get_entity_indices, get_image_entity_indices, aggregate_attention_between_groups, compute_com)
-from .mask_utils import compute_attention_mask_for_qa
+from .mask_utils import compute_attention_mask_for_qa, compute_attention_mask_objects_only
 
 MODEL_ID = "llava-hf/llava-1.5-7b-hf"
 VLM_LEVELS_DIR = "data/vlm_levels"
@@ -161,6 +161,7 @@ def infer_model_for_levels(
     data_dir: Optional[str] = None,
     use_attention_mask: bool = False,
     always_mask: bool = False,
+    mask_type: Literal["opposite_side", "objects_only"] = "opposite_side",
 ) -> Dict[str, Any]:
     """
     Run inference on all QA pairs for images in specified levels.
@@ -236,14 +237,22 @@ def infer_model_for_levels(
                 # Compute attention mask if requested
                 if use_attention_mask:
                     image_token_id = model.config.image_token_index
-                    custom_mask = compute_attention_mask_for_qa(
-                        inputs["input_ids"],
-                        image_token_id,
-                        annotation,
-                        qa_pair,
-                        mask_opposite_side=True,
-                        always_mask=always_mask,
-                    )
+                    if mask_type == "objects_only":
+                        custom_mask = compute_attention_mask_objects_only(
+                            inputs["input_ids"],
+                            image_token_id,
+                            annotation,
+                            qa_pair,
+                        )
+                    else:  # "opposite_side"
+                        custom_mask = compute_attention_mask_for_qa(
+                            inputs["input_ids"],
+                            image_token_id,
+                            annotation,
+                            qa_pair,
+                            mask_opposite_side=True,
+                            always_mask=always_mask,
+                        )
                     if custom_mask is not None:
                         inputs["attention_mask"] = custom_mask
 
@@ -396,8 +405,26 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 # --- 2) Re-run forward pass on *full* sequence (prompt + generated) with attentions ---
                 full_inputs = inputs.copy()
                 full_inputs["input_ids"] = gen_out.sequences  # shape: [batch, prompt+generated_len]
-                # if needed, build a matching attention mask
-                full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
+                # Preserve custom attention mask if it exists, otherwise use all ones
+                if "attention_mask" in inputs and inputs["attention_mask"] is not None:
+                    # Extend the original mask to cover generated tokens (set generated tokens to 1)
+                    original_mask = inputs["attention_mask"]
+                    prompt_len = original_mask.shape[1]
+                    gen_len = gen_out.sequences.shape[1] - prompt_len
+                    if gen_len > 0:
+                        # Create extended mask: original mask + ones for generated tokens
+                        extended_mask = torch.cat([
+                            original_mask,
+                            torch.ones((original_mask.shape[0], gen_len), 
+                                     dtype=original_mask.dtype, 
+                                     device=original_mask.device)
+                        ], dim=1)
+                        full_inputs["attention_mask"] = extended_mask
+                    else:
+                        full_inputs["attention_mask"] = original_mask
+                else:
+                    # No custom mask, use all ones
+                    full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
 
                 with torch.no_grad():
                     fwd_out = model(
@@ -547,7 +574,26 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     # Prepare full inputs (prompt + generated)
     full_inputs = inputs.copy()
     full_inputs["input_ids"] = gen_out.sequences
-    full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
+    # Preserve custom attention mask if it exists, otherwise use all ones
+    if "attention_mask" in inputs and inputs["attention_mask"] is not None:
+        # Extend the original mask to cover generated tokens (set generated tokens to 1)
+        original_mask = inputs["attention_mask"]
+        prompt_len = original_mask.shape[1]
+        gen_len = gen_out.sequences.shape[1] - prompt_len
+        if gen_len > 0:
+            # Create extended mask: original mask + ones for generated tokens
+            extended_mask = torch.cat([
+                original_mask,
+                torch.ones((original_mask.shape[0], gen_len), 
+                         dtype=original_mask.dtype, 
+                         device=original_mask.device)
+            ], dim=1)
+            full_inputs["attention_mask"] = extended_mask
+        else:
+            full_inputs["attention_mask"] = original_mask
+    else:
+        # No custom mask, use all ones
+        full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
     
     # Forward pass with attentions
     with torch.no_grad():
