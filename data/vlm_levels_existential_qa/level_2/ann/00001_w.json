@@ -1,0 +1,186 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "red",
+      "center": [
+        161,
+        105
+      ],
+      "size": 17,
+      "bbox": [
+        153,
+        97,
+        169,
+        113
+      ],
+      "patch_indices": [
+        154,
+        155,
+        156,
+        178,
+        179,
+        180,
+        202,
+        203,
+        204
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        105,
+        175
+      ],
+      "size": 28,
+      "bbox": [
+        91,
+        161,
+        119,
+        189
+      ],
+      "patch_indices": [
+        270,
+        271,
+        272,
+        294,
+        295,
+        296,
+        318,
+        319,
+        320
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red square is above the pink square.",
+    "The red square is right of the pink square.",
+    "The pink square is to the left of the red square.",
+    "The pink square is below the red square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red square is above the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red square is right of the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink square is to the left of the red square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink square is below the red square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a yellow star?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the pink object?",
+      "answer": "square"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "square"
+    }
+  ]
+}

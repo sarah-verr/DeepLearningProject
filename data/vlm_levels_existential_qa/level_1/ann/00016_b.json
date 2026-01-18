@@ -1,0 +1,132 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "purple",
+      "center": [
+        63,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        240,
+        68,
+        250
+      ],
+      "patch_indices": [
+        412
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "lime",
+      "center": [
+        21,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        16,
+        240,
+        26,
+        250
+      ],
+      "patch_indices": [
+        409
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple star is to the right of the lime triangle.",
+    "The lime triangle is left of the purple star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple star is to the right of the lime triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime triangle is left of the purple star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a lime triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a lime circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a purple star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a cyan square?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the lime object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What shape is the purple object?",
+      "answer": "star"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "lime"
+    }
+  ]
+}

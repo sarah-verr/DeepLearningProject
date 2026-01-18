@@ -1,0 +1,132 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        175,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        170,
+        240,
+        180,
+        250
+      ],
+      "patch_indices": [
+        420
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        189,
+        245
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        240,
+        194,
+        250
+      ],
+      "patch_indices": [
+        421
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange square is to the left of the yellow circle.",
+    "The yellow circle is right of the orange square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange square is to the left of the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is right of the orange square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a lime star?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the yellow object?",
+      "answer": "circle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "yellow"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the orange object?",
+      "answer": "square"
+    }
+  ]
+}

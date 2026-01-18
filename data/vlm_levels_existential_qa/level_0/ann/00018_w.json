@@ -1,0 +1,132 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        77,
+        161
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        156,
+        82,
+        166
+      ],
+      "patch_indices": [
+        269
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "green",
+      "center": [
+        63,
+        161
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        156,
+        68,
+        166
+      ],
+      "patch_indices": [
+        268
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green square is to the left of the red triangle.",
+    "The red triangle is to the right of the green square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green square is to the left of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red triangle is to the right of the green square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a yellow triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a green square?",
+      "answer": "yes"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the green object?",
+      "answer": "square"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the square?",
+      "answer": "green"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    }
+  ]
+}

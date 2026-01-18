@@ -1,0 +1,128 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        273,
+        301
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        296,
+        278,
+        306
+      ],
+      "patch_indices": [
+        523
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        287,
+        301
+      ],
+      "size": 10,
+      "bbox": [
+        282,
+        296,
+        292,
+        306
+      ],
+      "patch_indices": [
+        524
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange square is right of the cyan square.",
+    "The cyan square is to the left of the orange square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange square is right of the cyan square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan square is to the left of the orange square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a cyan square?",
+      "answer": "yes"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the orange object?",
+      "answer": "square"
+    },
+    {
+      "question": "What shape is the cyan object?",
+      "answer": "square"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    }
+  ]
+}

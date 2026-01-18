@@ -1,0 +1,132 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        189,
+        231
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        226,
+        194,
+        236
+      ],
+      "patch_indices": [
+        397
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        189,
+        273
+      ],
+      "size": 10,
+      "bbox": [
+        184,
+        268,
+        194,
+        278
+      ],
+      "patch_indices": [
+        469
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow square is below the purple triangle.",
+    "The purple triangle is above the yellow square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow square is below the purple triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple triangle is above the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a purple triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a yellow star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a lime triangle?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the yellow object?",
+      "answer": "square"
+    },
+    {
+      "question": "What shape is the purple object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "purple"
+    }
+  ]
+}

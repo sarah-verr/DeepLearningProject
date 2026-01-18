@@ -1,0 +1,132 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        35,
+        77
+      ],
+      "size": 10,
+      "bbox": [
+        30,
+        72,
+        40,
+        82
+      ],
+      "patch_indices": [
+        122
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "green",
+      "center": [
+        35,
+        21
+      ],
+      "size": 10,
+      "bbox": [
+        30,
+        16,
+        40,
+        26
+      ],
+      "patch_indices": [
+        26
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green circle is above the red triangle.",
+    "The red triangle is below the green circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green circle is above the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red triangle is below the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a green circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a red triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a yellow star?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "circle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "green"
+    }
+  ]
+}

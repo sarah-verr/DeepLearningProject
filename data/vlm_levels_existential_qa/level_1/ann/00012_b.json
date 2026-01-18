@@ -1,0 +1,128 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        273,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        30,
+        278,
+        40
+      ],
+      "patch_indices": [
+        67
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        315,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        310,
+        30,
+        320,
+        40
+      ],
+      "patch_indices": [
+        70
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink circle is to the left of the yellow circle.",
+    "The yellow circle is right of the pink circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink circle is to the left of the yellow circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow circle is right of the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a yellow circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a orange circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a yellow square?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the pink object?",
+      "answer": "circle"
+    },
+    {
+      "question": "What shape is the yellow object?",
+      "answer": "circle"
+    }
+  ]
+}

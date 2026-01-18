@@ -1,0 +1,132 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "purple",
+      "center": [
+        49,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        44,
+        30,
+        54,
+        40
+      ],
+      "patch_indices": [
+        51
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        49,
+        77
+      ],
+      "size": 10,
+      "bbox": [
+        44,
+        72,
+        54,
+        82
+      ],
+      "patch_indices": [
+        123
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple star is above the pink triangle.",
+    "The pink triangle is below the purple star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple star is above the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink triangle is below the purple star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a purple triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a purple star?",
+      "answer": "yes"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the pink object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "purple"
+    },
+    {
+      "question": "What shape is the purple object?",
+      "answer": "star"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        119,
+        245
+      ],
+      "size": 28,
+      "bbox": [
+        105,
+        231,
+        133,
+        259
+      ],
+      "patch_indices": [
+        391,
+        392,
+        393,
+        415,
+        416,
+        417,
+        439,
+        440,
+        441
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        273,
+        133
+      ],
+      "size": 25,
+      "bbox": [
+        261,
+        121,
+        285,
+        145
+      ],
+      "patch_indices": [
+        210,
+        211,
+        212,
+        234,
+        235,
+        236,
+        258,
+        259,
+        260
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red circle is above the green star.",
+    "The red circle is right of the green star.",
+    "The green star is left of the red circle.",
+    "The green star is below the red circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red circle is above the green star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red circle is right of the green star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The green star is left of the red circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The green star is below the red circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a blue circle?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the green object?",
+      "answer": "star"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "circle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "red"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    }
+  ]
+}

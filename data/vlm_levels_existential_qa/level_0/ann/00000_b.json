@@ -1,0 +1,132 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        287,
+        105
+      ],
+      "size": 10,
+      "bbox": [
+        282,
+        100,
+        292,
+        110
+      ],
+      "patch_indices": [
+        188
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        287,
+        119
+      ],
+      "size": 10,
+      "bbox": [
+        282,
+        114,
+        292,
+        124
+      ],
+      "patch_indices": [
+        212
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green star is below the pink circle.",
+    "The pink circle is above the green star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green star is below the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is above the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a pink star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a pink circle?",
+      "answer": "yes"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the green object?",
+      "answer": "star"
+    },
+    {
+      "question": "What shape is the pink object?",
+      "answer": "circle"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "green"
+    }
+  ]
+}

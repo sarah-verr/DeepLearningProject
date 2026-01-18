@@ -1,0 +1,132 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "orange",
+      "center": [
+        245,
+        35
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        30,
+        250,
+        40
+      ],
+      "patch_indices": [
+        65
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "yellow",
+      "center": [
+        245,
+        91
+      ],
+      "size": 10,
+      "bbox": [
+        240,
+        86,
+        250,
+        96
+      ],
+      "patch_indices": [
+        161
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow triangle is below the orange circle.",
+    "The orange circle is above the yellow triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow triangle is below the orange circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange circle is above the yellow triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a orange circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a yellow triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a purple square?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "What shape is the orange object?",
+      "answer": "circle"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the yellow object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "orange"
+    }
+  ]
+}

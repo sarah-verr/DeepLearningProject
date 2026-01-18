@@ -1,0 +1,128 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "lime",
+      "center": [
+        231,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        226,
+        128,
+        236,
+        138
+      ],
+      "patch_indices": [
+        232
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "blue",
+      "center": [
+        231,
+        119
+      ],
+      "size": 10,
+      "bbox": [
+        226,
+        114,
+        236,
+        124
+      ],
+      "patch_indices": [
+        208
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue triangle is above the lime triangle.",
+    "The lime triangle is below the blue triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue triangle is above the lime triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime triangle is below the blue triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "qa_existential_yesno": [
+    {
+      "question": "Is there a purple star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is there a lime triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a blue triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is there a red star?",
+      "answer": "no"
+    }
+  ],
+  "qa_existential_attribute": [
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What shape is the blue object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What shape is the lime object?",
+      "answer": "triangle"
+    }
+  ]
+}
