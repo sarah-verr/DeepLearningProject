@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        259,
+        231
+      ],
+      "size": 10,
+      "bbox": [
+        254,
+        226,
+        264,
+        236
+      ],
+      "patch_indices": [
+        186
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        259,
+        203
+      ],
+      "size": 10,
+      "bbox": [
+        254,
+        198,
+        264,
+        208
+      ],
+      "patch_indices": [
+        234
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan square is below the pink circle.",
+    "The pink circle is above the cyan square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan square is above the pink circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is below the cyan square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink circle below the cyan square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan square above the pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan square below the pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan square left of the pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink circle left of the cyan square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink circle above the cyan square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink circle above the cyan square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan square below the pink circle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

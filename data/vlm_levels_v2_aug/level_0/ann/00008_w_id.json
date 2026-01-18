@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        86,
+        287
+      ],
+      "size": 10,
+      "bbox": [
+        81,
+        282,
+        91,
+        292
+      ],
+      "patch_indices": [
+        486
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "red",
+      "center": [
+        100,
+        287
+      ],
+      "size": 10,
+      "bbox": [
+        95,
+        282,
+        105,
+        292
+      ],
+      "patch_indices": [
+        487
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green star is left of the red star.",
+    "The red star is right of the green star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red star is right of the green star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green star is to the left of the red star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red star left of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star left of the red star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red star below the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star left of the red star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red star above the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red star right of the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green star right of the red star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red star right of the green star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

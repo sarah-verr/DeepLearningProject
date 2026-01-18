@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        225,
+        189
+      ],
+      "size": 10,
+      "bbox": [
+        220,
+        184,
+        230,
+        194
+      ],
+      "patch_indices": [
+        256
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "green",
+      "center": [
+        169,
+        189
+      ],
+      "size": 10,
+      "bbox": [
+        164,
+        184,
+        174,
+        194
+      ],
+      "patch_indices": [
+        252
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan circle is right of the green circle.",
+    "The green circle is left of the cyan circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green circle is left of the cyan circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan circle is right of the green circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan circle right of the green circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green circle left of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle above the green circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan circle below the green circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green circle left of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle right of the green circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green circle below the cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green circle right of the cyan circle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

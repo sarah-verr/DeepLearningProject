@@ -1,0 +1,170 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "orange",
+      "center": [
+        91,
+        315
+      ],
+      "size": 25,
+      "bbox": [
+        79,
+        303,
+        103,
+        327
+      ],
+      "patch_indices": [
+        509,
+        510,
+        511,
+        533,
+        534,
+        535,
+        557,
+        558,
+        559
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "red",
+      "center": [
+        259,
+        315
+      ],
+      "size": 26,
+      "bbox": [
+        246,
+        302,
+        272,
+        328
+      ],
+      "patch_indices": [
+        521,
+        522,
+        523,
+        545,
+        546,
+        547,
+        569,
+        570,
+        571
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red star is to the right of the orange star.",
+    "The orange star is to the left of the red star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red star is to the right of the orange star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange star is to the left of the red star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red star right of the orange star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the red star to the left of the orange star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the orange star to the left of the red star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the orange star to the right of the red star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 1,
+  "removed_object": {
+    "id": 1,
+    "shape": "star",
+    "color": "red",
+    "bbox": [
+      246,
+      302,
+      272,
+      328
+    ]
+  }
+}

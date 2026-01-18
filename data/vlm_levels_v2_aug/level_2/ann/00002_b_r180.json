@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        217,
+        91
+      ],
+      "size": 28,
+      "bbox": [
+        203,
+        77,
+        231,
+        105
+      ],
+      "patch_indices": [
+        391,
+        392,
+        393,
+        415,
+        416,
+        417,
+        439,
+        440,
+        441
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        63,
+        203
+      ],
+      "size": 25,
+      "bbox": [
+        51,
+        191,
+        75,
+        215
+      ],
+      "patch_indices": [
+        210,
+        211,
+        212,
+        234,
+        235,
+        236,
+        258,
+        259,
+        260
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The green star is right of the red circle.",
+    "The green star is above the red circle.",
+    "The red circle is left of the green star.",
+    "The red circle is below the green star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The red circle is right of the green star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The green star is below the red circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The green star is to the left of the red circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The red circle is above the green star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the red circle above the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle right of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star right of the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red circle left of the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green star below the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle below the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green star left of the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star above the red circle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

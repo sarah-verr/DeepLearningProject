@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "red",
+      "center": [
+        300,
+        203
+      ],
+      "size": 10,
+      "bbox": [
+        295,
+        198,
+        305,
+        208
+      ],
+      "patch_indices": [
+        62
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        300,
+        217
+      ],
+      "size": 10,
+      "bbox": [
+        295,
+        212,
+        305,
+        222
+      ],
+      "patch_indices": [
+        63
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The red square is below the orange square.",
+    "The orange square is above the red square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange square is to the right of the red square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red square is left of the orange square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the orange square right of the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange square above the red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square left of the red square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square below the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange square above the red square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square below the orange square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red square above the orange square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red square left of the orange square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}
