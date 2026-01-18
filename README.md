@@ -4,6 +4,54 @@ This project provides a suite of tools to run inference on the LLaVA model for v
 
 ---
 
+## Quick Start: Key Results
+
+If you just want the main results, use the commands below after setup.
+
+**1) Accuracy runs (all datasets)**
+```bash
+python experiments/run_all_accuracy_experiments.py
+```
+Outputs CSVs and summaries under `results_llava_hf/<model>/accuracy_question_ablation/`.
+
+**2) Masked attention accuracy**
+```bash
+python experiments/run_masked_accuracy_experiments.py
+```
+Writes masked-accuracy CSVs in the same results tree.
+
+**3) Logit lens (yes/no)**
+```bash
+python experiments/logit_lens/run_visual_logit_lens.py
+```
+Outputs per-example JSONL under `results_llava-hf/llava-1.5-7b-hf/visual_logit_lens/`.
+
+**4) Logit lens (attribute: shape/color)**
+```bash
+python experiments/logit_lens/run_visual_logit_lens_attribute.py
+```
+Outputs per-example JSONL under `results_llava-hf/llava-1.5-7b-hf/visual_logit_lens_attribute/`.
+
+**5) Plotting (logit lens)**
+```bash
+python experiments/logit_lens/plots/plot_logit_lens.py
+python experiments/logit_lens/plots/plot_logit_lens_raw.py
+python experiments/logit_lens/plots/plot_logit_lens_attribute.py
+```
+Plots are written under `results_llava-hf/llava-1.5-7b-hf/logit_lens*`.
+
+**6) Occlusion bias analysis (optional)**
+```bash
+python experiments/logit_lens/plots/plot_occlusion_bias.py \
+  --base_dir results_llava-hf/llava-1.5-7b-hf/visual_logit_lens_occluded \
+  --out_dir results_llava-hf/llava-1.5-7b-hf/analysis_occlusion_bias
+```
+
+**Cluster runs (Slurm)**
+- `run_eval.sh`: batch evaluation job (accuracy script).
+- `run_experiment.sh`: batch run for `main.py`.
+- `run_logit.sh`: batch logit-lens runs; edit the active command in the script before submission.
+
 ## 1. Environment Setup
 
 Before running any scripts, ensure your environment is configured correctly.
@@ -180,3 +228,4 @@ Text-only baseline:
   - For older datasets without caption linkage, it falls back to a simple scene description.
   - The CSV logs the full transcript in the `Prompt` column (input prompt + `MODEL: <completion>`) and also stores the raw generated text in `Completion`.
   - The CSV includes a `Mode` column to distinguish `image` vs `text_only` runs.
+  

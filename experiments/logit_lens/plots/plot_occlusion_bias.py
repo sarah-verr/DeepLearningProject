@@ -119,6 +119,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Filter occluded records to those that are FP (gt=no, pred=yes) in the original results.",
     )
+    ap.add_argument(
+        "--quick",
+        action="store_true",
+        help="Print a quick summary table for the FP per-level comparison and exit.",
+    )
     return ap.parse_args()
 
 
@@ -368,6 +373,10 @@ def _run_plots(records: list[dict], out_dir: str, *, title_suffix: str) -> None:
         y_rate = b["pred_yes"] / c if c else 0.0
         n_rate = b["pred_no"] / c if c else 0.0
         print(f"{g}\tcount={c}\tmean_p_yes={mean_p_y:.4f}\tmean_p_no={mean_p_n:.4f}\tyes_rate={y_rate:.4f}\tno_rate={n_rate:.4f}")
+    return {
+        "subject_removed": {"count": stats["subject_removed"]["count"], "mean_p_yes": mean_p_yes[0], "yes_rate": yes_rate[0]},
+        "object_removed": {"count": stats["object_removed"]["count"], "mean_p_yes": mean_p_yes[1], "yes_rate": yes_rate[1]},
+    }
 
 
 def main() -> None:
@@ -415,7 +424,102 @@ def main() -> None:
         title_suffix = " (filtered to gt=no)"
         title_suffix_conf = "\n(filtered to gt=no)"
 
-    _run_plots(all_records, args.out_dir, title_suffix=title_suffix)
+    occlusion_stats = _run_plots(all_records, args.out_dir, title_suffix=title_suffix)
+
+    if args.quick:
+        if not (args.fp_filter_dir and args.filter_original_fp):
+            raise SystemExit("--quick requires --fp_filter_dir and --filter_original_fp")
+
+        # Quick summary for the per-level FP comparison.
+        level_groups = []
+        level_map = {}
+        if args.combine_low_levels:
+            low = [lvl for lvl in levels if lvl in ("level_0", "level_1", "level_2")]
+            rest = [lvl for lvl in levels if lvl not in ("level_0", "level_1", "level_2")]
+            if low:
+                level_groups.append("levels_0_2")
+                level_map["levels_0_2"] = low
+            for lvl in rest:
+                level_groups.append(lvl)
+                level_map[lvl] = [lvl]
+        else:
+            for lvl in levels:
+                level_groups.append(lvl)
+                level_map[lvl] = [lvl]
+
+        orig_level_map = {}
+        for lvl in _find_level_dirs(args.fp_filter_dir):
+            summary_path = os.path.join(args.fp_filter_dir, lvl, "summary.jsonl")
+            orig_level_map[lvl] = _load_records(summary_path)
+
+        rows = []
+        for group in level_groups:
+            orig_group = []
+            for lvl in level_map[group]:
+                orig_group.extend(orig_level_map.get(lvl, []))
+            orig_fp = [
+                r
+                for r in orig_group
+                if (r.get("answer") or "").strip().lower() == "no"
+                and (r.get("prediction") or "").strip().lower() == "yes"
+            ]
+            orig_p_yes_vals = [float(r.get("p_yes")) for r in orig_fp if r.get("p_yes") is not None]
+            original_mean = sum(orig_p_yes_vals) / len(orig_p_yes_vals) if orig_p_yes_vals else 0.0
+
+            group_records = []
+            for lvl in level_map[group]:
+                summary_path = os.path.join(args.base_dir, lvl, "summary.jsonl")
+                group_records.extend(_load_records(summary_path))
+            if original_map is not None:
+                filtered = []
+                for r in group_records:
+                    image_id = _base_image_id(r.get("image_id") or "")
+                    question = (r.get("question") or "").strip()
+                    key = (image_id, question)
+                    if key not in original_map:
+                        continue
+                    gt, pred = original_map[key]
+                    if gt == "no" and pred == "yes":
+                        filtered.append(r)
+                group_records = filtered
+
+            stats = {
+                "subject_removed": {"count": 0, "p_yes": 0.0},
+                "object_removed": {"count": 0, "p_yes": 0.0},
+            }
+            for r in group_records:
+                ann = _load_ann(r.get("ann_path"))
+                if not ann:
+                    continue
+                removed_id = ann.get("removed_object_id")
+                if removed_id is None:
+                    continue
+                qa = _match_qa(ann, r.get("question"))
+                if not qa:
+                    continue
+                subj_id = qa.get("subject_id")
+                obj_id = qa.get("object_id")
+                if removed_id == subj_id:
+                    role = "subject_removed"
+                elif removed_id == obj_id:
+                    role = "object_removed"
+                else:
+                    continue
+                p_yes = r.get("p_yes")
+                if p_yes is None:
+                    continue
+                bucket = stats[role]
+                bucket["count"] += 1
+                bucket["p_yes"] += float(p_yes)
+
+            subj_mean = stats["subject_removed"]["p_yes"] / stats["subject_removed"]["count"] if stats["subject_removed"]["count"] else 0.0
+            obj_mean = stats["object_removed"]["p_yes"] / stats["object_removed"]["count"] if stats["object_removed"]["count"] else 0.0
+            rows.append((group, original_mean, subj_mean, obj_mean))
+
+        print("level\toriginal_fp_mean_pyes\tsubject_removed_mean_pyes\tobject_removed_mean_pyes")
+        for group, orig_mean, subj_mean, obj_mean in rows:
+            print(f"{group}\t{orig_mean:.4f}\t{subj_mean:.4f}\t{obj_mean:.4f}")
+        return
 
     conf = _confusion_from_records(all_records, original_map=original_map)
     _plot_confusion(
@@ -556,8 +660,142 @@ def main() -> None:
         ax.set_ylabel(ylabel)
         ax.set_title(title)
         ax.legend()
+        ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
         fig.tight_layout()
         fig.savefig(os.path.join(args.out_dir, out_name), dpi=160)
+        plt.close(fig)
+
+    if args.fp_filter_dir and args.filter_original_fp:
+        orig_records = []
+        for lvl in _find_level_dirs(args.fp_filter_dir):
+            summary_path = os.path.join(args.fp_filter_dir, lvl, "summary.jsonl")
+            orig_records.extend(_load_records(summary_path))
+        orig_fp = [r for r in orig_records if (r.get("answer") or "").strip().lower() == "no" and (r.get("prediction") or "").strip().lower() == "yes"]
+        orig_p_yes_vals = [float(r.get("p_yes")) for r in orig_fp if r.get("p_yes") is not None]
+        orig_mean_p_yes = sum(orig_p_yes_vals) / len(orig_p_yes_vals) if orig_p_yes_vals else 0.0
+        orig_yes_rate = 1.0 if orig_fp else 0.0
+
+        groups = ["original_fp", "subject_removed", "object_removed"]
+        yes_rates = [
+            orig_yes_rate,
+            occlusion_stats["subject_removed"]["yes_rate"],
+            occlusion_stats["object_removed"]["yes_rate"],
+        ]
+        _plot_bars(
+            "Yes rate: original FP vs occluded FP",
+            "Yes rate",
+            groups,
+            yes_rates,
+            os.path.join(args.out_dir, "occlusion_fp_yes_rate_comparison.png"),
+        )
+
+        mean_p_yes_vals = [
+            orig_mean_p_yes,
+            occlusion_stats["subject_removed"]["mean_p_yes"],
+            occlusion_stats["object_removed"]["mean_p_yes"],
+        ]
+        _plot_bars(
+            "Mean p(yes): original FP vs occluded FP",
+            "Mean p(yes)",
+            groups,
+            mean_p_yes_vals,
+            os.path.join(args.out_dir, "occlusion_fp_pyes_comparison.png"),
+        )
+
+        # Per-level mean p(yes) comparison: original FP vs occluded (subject/object removed)
+        level_groups = []
+        level_map = {}
+        if args.combine_low_levels:
+            low = [lvl for lvl in levels if lvl in ("level_0", "level_1", "level_2")]
+            rest = [lvl for lvl in levels if lvl not in ("level_0", "level_1", "level_2")]
+            if low:
+                level_groups.append("levels_0_2")
+                level_map["levels_0_2"] = low
+            for lvl in rest:
+                level_groups.append(lvl)
+                level_map[lvl] = [lvl]
+        else:
+            for lvl in levels:
+                level_groups.append(lvl)
+                level_map[lvl] = [lvl]
+
+        orig_level_map = {}
+        for lvl in _find_level_dirs(args.fp_filter_dir):
+            summary_path = os.path.join(args.fp_filter_dir, lvl, "summary.jsonl")
+            orig_level_map[lvl] = _load_records(summary_path)
+
+        original_vals = []
+        subj_vals = []
+        obj_vals = []
+        for group in level_groups:
+            orig_group = []
+            for lvl in level_map[group]:
+                orig_group.extend(orig_level_map.get(lvl, []))
+            orig_fp = [r for r in orig_group if (r.get("answer") or "").strip().lower() == "no" and (r.get("prediction") or "").strip().lower() == "yes"]
+            orig_p_yes_vals = [float(r.get("p_yes")) for r in orig_fp if r.get("p_yes") is not None]
+            original_vals.append(sum(orig_p_yes_vals) / len(orig_p_yes_vals) if orig_p_yes_vals else 0.0)
+
+            # Occluded stats for this group
+            group_records = []
+            for lvl in level_map[group]:
+                summary_path = os.path.join(args.base_dir, lvl, "summary.jsonl")
+                group_records.extend(_load_records(summary_path))
+            if original_map is not None:
+                filtered = []
+                for r in group_records:
+                    image_id = _base_image_id(r.get("image_id") or "")
+                    question = (r.get("question") or "").strip()
+                    key = (image_id, question)
+                    if key not in original_map:
+                        continue
+                    gt, pred = original_map[key]
+                    if gt == "no" and pred == "yes":
+                        filtered.append(r)
+                group_records = filtered
+            stats = {
+                "subject_removed": {"count": 0, "p_yes": 0.0},
+                "object_removed": {"count": 0, "p_yes": 0.0},
+            }
+            for r in group_records:
+                ann = _load_ann(r.get("ann_path"))
+                if not ann:
+                    continue
+                removed_id = ann.get("removed_object_id")
+                if removed_id is None:
+                    continue
+                qa = _match_qa(ann, r.get("question"))
+                if not qa:
+                    continue
+                subj_id = qa.get("subject_id")
+                obj_id = qa.get("object_id")
+                if removed_id == subj_id:
+                    role = "subject_removed"
+                elif removed_id == obj_id:
+                    role = "object_removed"
+                else:
+                    continue
+                p_yes = r.get("p_yes")
+                if p_yes is None:
+                    continue
+                bucket = stats[role]
+                bucket["count"] += 1
+                bucket["p_yes"] += float(p_yes)
+            subj_vals.append(stats["subject_removed"]["p_yes"] / stats["subject_removed"]["count"] if stats["subject_removed"]["count"] else 0.0)
+            obj_vals.append(stats["object_removed"]["p_yes"] / stats["object_removed"]["count"] if stats["object_removed"]["count"] else 0.0)
+
+        x = list(range(len(level_groups)))
+        width = 0.25
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.bar([i - width for i in x], original_vals, width, label="original_fp")
+        ax.bar(x, subj_vals, width, label="subject_removed")
+        ax.bar([i + width for i in x], obj_vals, width, label="object_removed")
+        ax.set_xticks(x)
+        ax.set_xticklabels(level_groups, rotation=0)
+        ax.set_ylabel("Mean p(yes)")
+        ax.set_title("Mean p(yes) by level (original FP vs occluded FP)")
+        ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
+        fig.tight_layout()
+        fig.savefig(os.path.join(args.out_dir, "occlusion_fp_pyes_by_level.png"), dpi=160)
         plt.close(fig)
 
     print(f"Saved plots to: {args.out_dir}")
