@@ -387,50 +387,6 @@
       "id": 3
     },
     {
-      "question": "Is the blue square right of the pink circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the blue square to the left of the pink circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
-      "question": "Is the blue square below the pink circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the blue square above the pink circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the pink circle above the green circle?",
       "answer": "yes",
       "subject_id": 2,
@@ -453,28 +409,6 @@
       "id": 9
     },
     {
-      "question": "Is the pink circle to the left of the blue square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the pink circle right of the blue square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 5,
-      "id": 11
-    },
-    {
       "question": "Is the blue square above the green circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -495,28 +429,6 @@
       "rel_phrase": "below",
       "caption_id": 6,
       "id": 13
-    },
-    {
-      "question": "Is the pink circle above the blue square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the pink circle below the blue square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 7,
-      "id": 15
     },
     {
       "question": "Is the green circle to the right of the pink circle?",

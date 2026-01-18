@@ -387,28 +387,6 @@
       "id": 3
     },
     {
-      "question": "Is the lime circle below the cyan circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the lime circle above the cyan circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
       "question": "Is the cyan circle left of the purple square?",
       "answer": "yes",
       "subject_id": 1,
@@ -431,28 +409,6 @@
       "id": 7
     },
     {
-      "question": "Is the cyan circle above the lime circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the cyan circle below the lime circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
       "question": "Is the purple square above the cyan circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -473,28 +429,6 @@
       "rel_phrase": "below",
       "caption_id": 5,
       "id": 11
-    },
-    {
-      "question": "Is the cyan circle to the left of the lime circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the cyan circle to the right of the lime circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 6,
-      "id": 13
     },
     {
       "question": "Is the purple square right of the lime circle?",
@@ -539,28 +473,6 @@
       "rel_phrase": "to the left of",
       "caption_id": 8,
       "id": 17
-    },
-    {
-      "question": "Is the lime circle to the right of the cyan circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the lime circle to the left of the cyan circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 9,
-      "id": 19
     },
     {
       "question": "Is the lime circle to the left of the purple square?",

@@ -345,28 +345,6 @@
       "id": 3
     },
     {
-      "question": "Is the red star below the green triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the red star above the green triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
       "question": "Is the red star right of the purple circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -409,28 +387,6 @@
       "rel_phrase": "below",
       "caption_id": 4,
       "id": 9
-    },
-    {
-      "question": "Is the green triangle above the red star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the green triangle below the red star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 5,
-      "id": 11
     },
     {
       "question": "Is the purple circle to the left of the green triangle?",

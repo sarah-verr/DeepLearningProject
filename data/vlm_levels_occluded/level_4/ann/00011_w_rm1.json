@@ -600,28 +600,6 @@
   ],
   "qa": [
     {
-      "question": "Is the purple star to the right of the orange triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the purple star to the left of the orange triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
       "question": "Is the blue circle left of the purple star?",
       "answer": "yes",
       "subject_id": 1,
@@ -688,160 +666,6 @@
       "id": 7
     },
     {
-      "question": "Is the green star left of the purple star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the green star right of the purple star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
-      "question": "Is the orange triangle below the purple star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the orange triangle above the purple star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 5,
-      "id": 11
-    },
-    {
-      "question": "Is the purple star above the green star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the purple star below the green star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the orange triangle above the green star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the orange triangle below the green star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the purple star to the right of the green star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the purple star left of the green star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the orange triangle to the left of the green star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the orange triangle to the right of the green star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the purple star above the orange triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the purple star below the orange triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 10,
-      "id": 21
-    },
-    {
       "question": "Is the blue circle right of the orange triangle?",
       "answer": "yes",
       "subject_id": 1,
@@ -884,28 +708,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 12,
       "id": 25
-    },
-    {
-      "question": "Is the green star to the right of the orange triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the green star left of the orange triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 13,
-      "id": 27
     },
     {
       "question": "Is the purple star right of the blue circle?",
@@ -952,28 +754,6 @@
       "id": 31
     },
     {
-      "question": "Is the green star below the purple star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 16,
-      "id": 32
-    },
-    {
-      "question": "Is the green star above the purple star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 16,
-      "id": 33
-    },
-    {
       "question": "Is the blue circle below the purple star?",
       "answer": "yes",
       "subject_id": 1,
@@ -994,28 +774,6 @@
       "rel_phrase": "above",
       "caption_id": 17,
       "id": 35
-    },
-    {
-      "question": "Is the orange triangle to the left of the purple star?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 18,
-      "id": 36
-    },
-    {
-      "question": "Is the orange triangle to the right of the purple star?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 18,
-      "id": 37
     },
     {
       "question": "Is the purple star above the blue circle?",
@@ -1060,28 +818,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 20,
       "id": 41
-    },
-    {
-      "question": "Is the green star below the orange triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 21,
-      "id": 42
-    },
-    {
-      "question": "Is the green star above the orange triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 21,
-      "id": 43
     }
   ],
   "meta": {

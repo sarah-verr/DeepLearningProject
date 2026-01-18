@@ -560,28 +560,6 @@
       "id": 1
     },
     {
-      "question": "Is the pink triangle above the green circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the pink triangle below the green circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
       "question": "Is the pink triangle right of the purple circle?",
       "answer": "yes",
       "subject_id": 2,
@@ -624,138 +602,6 @@
       "rel_phrase": "below",
       "caption_id": 3,
       "id": 7
-    },
-    {
-      "question": "Is the red triangle below the green circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the red triangle above the green circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
-      "question": "Is the green circle to the left of the pink triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the green circle right of the pink triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 5,
-      "id": 11
-    },
-    {
-      "question": "Is the green circle above the red triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the green circle below the red triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the red triangle left of the pink triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the red triangle right of the pink triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the red triangle below the pink triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the red triangle above the pink triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the pink triangle to the right of the red triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the pink triangle left of the red triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 9,
-      "id": 19
     },
     {
       "question": "Is the purple circle above the red triangle?",
@@ -846,28 +692,6 @@
       "id": 27
     },
     {
-      "question": "Is the pink triangle above the red triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 14,
-      "id": 28
-    },
-    {
-      "question": "Is the pink triangle below the red triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 14,
-      "id": 29
-    },
-    {
       "question": "Is the green circle below the purple circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -888,28 +712,6 @@
       "rel_phrase": "above",
       "caption_id": 15,
       "id": 31
-    },
-    {
-      "question": "Is the pink triangle to the right of the green circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 16,
-      "id": 32
-    },
-    {
-      "question": "Is the pink triangle left of the green circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 16,
-      "id": 33
     },
     {
       "question": "Is the purple circle to the left of the pink triangle?",
@@ -954,28 +756,6 @@
       "rel_phrase": "above",
       "caption_id": 18,
       "id": 37
-    },
-    {
-      "question": "Is the green circle below the pink triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 19,
-      "id": 38
-    },
-    {
-      "question": "Is the green circle above the pink triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 19,
-      "id": 39
     }
   ],
   "meta": {

@@ -688,28 +688,6 @@
       "id": 5
     },
     {
-      "question": "Is the yellow circle above the pink square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the yellow circle below the pink square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the yellow circle to the left of the lime triangle?",
       "answer": "yes",
       "subject_id": 1,
@@ -732,138 +710,6 @@
       "id": 9
     },
     {
-      "question": "Is the pink square right of the yellow circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 5,
-      "id": 10
-    },
-    {
-      "question": "Is the pink square left of the yellow circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 5,
-      "id": 11
-    },
-    {
-      "question": "Is the pink square to the left of the cyan square?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the pink square to the right of the cyan square?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the pink square below the yellow circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the pink square above the yellow circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the yellow circle above the cyan square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the yellow circle below the cyan square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the cyan square below the yellow circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the cyan square above the yellow circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the pink square above the cyan square?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the pink square below the cyan square?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 10,
-      "id": 21
-    },
-    {
       "question": "Is the lime triangle to the left of the cyan square?",
       "answer": "yes",
       "subject_id": 2,
@@ -884,50 +730,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 11,
       "id": 23
-    },
-    {
-      "question": "Is the cyan square below the pink square?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 12,
-      "id": 24
-    },
-    {
-      "question": "Is the cyan square above the pink square?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 12,
-      "id": 25
-    },
-    {
-      "question": "Is the cyan square to the right of the yellow circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the cyan square left of the yellow circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 13,
-      "id": 27
     },
     {
       "question": "Is the lime triangle above the pink square?",
@@ -1062,50 +864,6 @@
       "id": 39
     },
     {
-      "question": "Is the yellow circle to the left of the pink square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 20,
-      "id": 40
-    },
-    {
-      "question": "Is the yellow circle to the right of the pink square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 20,
-      "id": 41
-    },
-    {
-      "question": "Is the yellow circle left of the cyan square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 21,
-      "id": 42
-    },
-    {
-      "question": "Is the yellow circle to the right of the cyan square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 21,
-      "id": 43
-    },
-    {
       "question": "Is the pink square left of the lime triangle?",
       "answer": "yes",
       "subject_id": 0,
@@ -1126,28 +884,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 22,
       "id": 45
-    },
-    {
-      "question": "Is the cyan square right of the pink square?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 23,
-      "id": 46
-    },
-    {
-      "question": "Is the cyan square to the left of the pink square?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 23,
-      "id": 47
     }
   ],
   "meta": {

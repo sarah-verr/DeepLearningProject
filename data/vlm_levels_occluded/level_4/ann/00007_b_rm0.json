@@ -622,50 +622,6 @@
   ],
   "qa": [
     {
-      "question": "Is the blue triangle below the pink star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the blue triangle above the pink star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
-      "question": "Is the pink star right of the blue triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the pink star left of the blue triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
       "question": "Is the pink star right of the yellow star?",
       "answer": "yes",
       "subject_id": 3,
@@ -688,50 +644,6 @@
       "id": 5
     },
     {
-      "question": "Is the blue triangle to the left of the red circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the blue triangle to the right of the red circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
-      "question": "Is the red circle to the left of the pink star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the red circle right of the pink star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
       "question": "Is the blue triangle below the yellow star?",
       "answer": "yes",
       "subject_id": 2,
@@ -752,28 +664,6 @@
       "rel_phrase": "above",
       "caption_id": 5,
       "id": 11
-    },
-    {
-      "question": "Is the red circle above the pink star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the red circle below the pink star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 13
     },
     {
       "question": "Is the yellow star above the blue triangle?",
@@ -908,28 +798,6 @@
       "id": 25
     },
     {
-      "question": "Is the blue triangle below the red circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the blue triangle above the red circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 13,
-      "id": 27
-    },
-    {
       "question": "Is the pink star below the yellow star?",
       "answer": "yes",
       "subject_id": 3,
@@ -974,28 +842,6 @@
       "id": 31
     },
     {
-      "question": "Is the red circle above the blue triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 16,
-      "id": 32
-    },
-    {
-      "question": "Is the red circle below the blue triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 16,
-      "id": 33
-    },
-    {
       "question": "Is the red circle below the yellow star?",
       "answer": "yes",
       "subject_id": 1,
@@ -1018,94 +864,6 @@
       "id": 35
     },
     {
-      "question": "Is the pink star above the blue triangle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 18,
-      "id": 36
-    },
-    {
-      "question": "Is the pink star below the blue triangle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 18,
-      "id": 37
-    },
-    {
-      "question": "Is the pink star to the right of the red circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 19,
-      "id": 38
-    },
-    {
-      "question": "Is the pink star to the left of the red circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 19,
-      "id": 39
-    },
-    {
-      "question": "Is the blue triangle left of the pink star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 20,
-      "id": 40
-    },
-    {
-      "question": "Is the blue triangle to the right of the pink star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 20,
-      "id": 41
-    },
-    {
-      "question": "Is the pink star below the red circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 21,
-      "id": 42
-    },
-    {
-      "question": "Is the pink star above the red circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 21,
-      "id": 43
-    },
-    {
       "question": "Is the yellow star above the red circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -1126,28 +884,6 @@
       "rel_phrase": "below",
       "caption_id": 22,
       "id": 45
-    },
-    {
-      "question": "Is the red circle to the right of the blue triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 23,
-      "id": 46
-    },
-    {
-      "question": "Is the red circle to the left of the blue triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 23,
-      "id": 47
     }
   ],
   "meta": {

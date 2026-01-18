@@ -343,28 +343,6 @@
   ],
   "qa": [
     {
-      "question": "Is the orange square left of the purple triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the orange square to the right of the purple triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
       "question": "Is the red triangle to the right of the purple triangle?",
       "answer": "yes",
       "subject_id": 0,
@@ -385,28 +363,6 @@
       "rel_phrase": "to the left of",
       "caption_id": 1,
       "id": 3
-    },
-    {
-      "question": "Is the purple triangle above the orange square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the purple triangle below the orange square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 2,
-      "id": 5
     },
     {
       "question": "Is the orange square below the red triangle?",
@@ -497,28 +453,6 @@
       "id": 13
     },
     {
-      "question": "Is the purple triangle to the right of the orange square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the purple triangle left of the orange square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
       "question": "Is the red triangle below the purple triangle?",
       "answer": "yes",
       "subject_id": 0,
@@ -583,28 +517,6 @@
       "rel_phrase": "below",
       "caption_id": 10,
       "id": 21
-    },
-    {
-      "question": "Is the orange square below the purple triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 11,
-      "id": 22
-    },
-    {
-      "question": "Is the orange square above the purple triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 11,
-      "id": 23
     }
   ],
   "meta": {

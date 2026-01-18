@@ -475,50 +475,6 @@
       "rel_phrase": "below",
       "caption_id": 7,
       "id": 15
-    },
-    {
-      "question": "Is the pink star above the yellow star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the pink star below the yellow star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the yellow star below the pink star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the yellow star above the pink star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 19
     }
   ],
   "meta": {

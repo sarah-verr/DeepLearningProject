@@ -301,50 +301,6 @@
   ],
   "qa": [
     {
-      "question": "Is the pink square to the right of the orange star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the pink square to the left of the orange star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
-      "question": "Is the orange star below the pink square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the orange star above the pink square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
       "question": "Is the orange star below the cyan square?",
       "answer": "yes",
       "subject_id": 1,
@@ -365,28 +321,6 @@
       "rel_phrase": "above",
       "caption_id": 2,
       "id": 5
-    },
-    {
-      "question": "Is the orange star left of the pink square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the orange star to the right of the pink square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 3,
-      "id": 7
     },
     {
       "question": "Is the orange star right of the cyan square?",
@@ -475,28 +409,6 @@
       "rel_phrase": "right of",
       "caption_id": 7,
       "id": 15
-    },
-    {
-      "question": "Is the pink square above the orange star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the pink square below the orange star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 17
     },
     {
       "question": "Is the pink square to the right of the cyan square?",

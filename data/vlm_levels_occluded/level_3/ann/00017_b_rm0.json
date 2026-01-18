@@ -387,28 +387,6 @@
       "id": 3
     },
     {
-      "question": "Is the green square below the yellow star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the green square above the yellow star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
       "question": "Is the pink star right of the yellow star?",
       "answer": "yes",
       "subject_id": 0,
@@ -429,28 +407,6 @@
       "rel_phrase": "left of",
       "caption_id": 3,
       "id": 7
-    },
-    {
-      "question": "Is the yellow star to the left of the green square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the yellow star right of the green square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 4,
-      "id": 9
     },
     {
       "question": "Is the green square below the pink star?",
@@ -497,28 +453,6 @@
       "id": 13
     },
     {
-      "question": "Is the green square to the right of the yellow star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the green square left of the yellow star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
       "question": "Is the pink star below the yellow star?",
       "answer": "yes",
       "subject_id": 0,
@@ -539,28 +473,6 @@
       "rel_phrase": "above",
       "caption_id": 8,
       "id": 17
-    },
-    {
-      "question": "Is the yellow star above the green square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the yellow star below the green square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 19
     },
     {
       "question": "Is the pink star right of the green square?",

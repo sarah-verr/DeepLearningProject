@@ -365,28 +365,6 @@
       "id": 1
     },
     {
-      "question": "Is the lime triangle below the purple circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the lime triangle above the purple circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
       "question": "Is the purple circle left of the pink triangle?",
       "answer": "yes",
       "subject_id": 0,
@@ -431,28 +409,6 @@
       "id": 7
     },
     {
-      "question": "Is the purple circle above the lime triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the purple circle below the lime triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
       "question": "Is the pink triangle above the lime triangle?",
       "answer": "yes",
       "subject_id": 1,
@@ -495,50 +451,6 @@
       "rel_phrase": "above",
       "caption_id": 6,
       "id": 13
-    },
-    {
-      "question": "Is the lime triangle to the right of the purple circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the lime triangle to the left of the purple circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the purple circle to the left of the lime triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the purple circle to the right of the lime triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 8,
-      "id": 17
     },
     {
       "question": "Is the purple circle above the pink triangle?",

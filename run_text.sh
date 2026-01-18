@@ -31,7 +31,8 @@ source venv/bin/activate
 # python3 Text-Only/Analysis/analyze_objective_attention.py
 # python experiments/logit_lens/run_text_only_objective.py
 # python experiments/logit_lens/run_visual_logit_lens.py
-python experiments/logit_lens/run_visual_logit_lens_attribute.py
+# python experiments/logit_lens/run_visual_logit_lens_attribute.py
+python experiments/logit_lens/run_visual_logit_lens.py   --base_data_path data/vlm_levels_occluded   --out_dir results_llava-hf/llava-1.5-7b-hf/visual_logit_lens_occluded --levels level_0
 
 
 EOF

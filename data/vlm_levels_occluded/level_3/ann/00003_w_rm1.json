@@ -343,28 +343,6 @@
   ],
   "qa": [
     {
-      "question": "Is the purple square to the left of the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the purple square to the right of the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
       "question": "Is the purple square left of the yellow triangle?",
       "answer": "yes",
       "subject_id": 0,
@@ -407,28 +385,6 @@
       "rel_phrase": "above",
       "caption_id": 2,
       "id": 5
-    },
-    {
-      "question": "Is the red star right of the purple square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the red star to the left of the purple square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 3,
-      "id": 7
     },
     {
       "question": "Is the yellow triangle to the right of the purple square?",
@@ -495,50 +451,6 @@
       "rel_phrase": "above",
       "caption_id": 6,
       "id": 13
-    },
-    {
-      "question": "Is the purple square above the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the purple square below the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
-      "question": "Is the red star below the purple square?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the red star above the purple square?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 17
     },
     {
       "question": "Is the yellow triangle left of the red star?",

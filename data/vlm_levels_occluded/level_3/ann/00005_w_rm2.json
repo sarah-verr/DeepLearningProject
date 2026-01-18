@@ -409,28 +409,6 @@
       "id": 5
     },
     {
-      "question": "Is the blue circle to the left of the pink star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the blue circle right of the pink star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the pink star below the green square?",
       "answer": "yes",
       "subject_id": 0,
@@ -473,28 +451,6 @@
       "rel_phrase": "right of",
       "caption_id": 5,
       "id": 11
-    },
-    {
-      "question": "Is the pink star to the right of the blue circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the pink star to the left of the blue circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 6,
-      "id": 13
     },
     {
       "question": "Is the green square above the pink star?",
@@ -541,28 +497,6 @@
       "id": 17
     },
     {
-      "question": "Is the pink star below the blue circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the pink star above the blue circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
       "question": "Is the pink star to the right of the green square?",
       "answer": "yes",
       "subject_id": 0,
@@ -583,28 +517,6 @@
       "rel_phrase": "to the left of",
       "caption_id": 10,
       "id": 21
-    },
-    {
-      "question": "Is the blue circle above the pink star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 11,
-      "id": 22
-    },
-    {
-      "question": "Is the blue circle below the pink star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 11,
-      "id": 23
     }
   ],
   "meta": {

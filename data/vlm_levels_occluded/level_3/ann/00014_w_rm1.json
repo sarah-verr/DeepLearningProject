@@ -301,28 +301,6 @@
   ],
   "qa": [
     {
-      "question": "Is the lime square to the left of the orange star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 0,
-      "id": 0
-    },
-    {
-      "question": "Is the lime square right of the orange star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 0,
-      "id": 1
-    },
-    {
       "question": "Is the orange star above the green star?",
       "answer": "yes",
       "subject_id": 0,
@@ -475,28 +453,6 @@
       "rel_phrase": "below",
       "caption_id": 7,
       "id": 15
-    },
-    {
-      "question": "Is the orange star to the right of the lime square?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the orange star left of the lime square?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 8,
-      "id": 17
     },
     {
       "question": "Is the green star to the left of the orange star?",

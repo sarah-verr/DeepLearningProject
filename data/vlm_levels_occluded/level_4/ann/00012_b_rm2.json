@@ -688,28 +688,6 @@
       "id": 5
     },
     {
-      "question": "Is the green circle above the blue triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the green circle below the blue triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the cyan circle left of the blue triangle?",
       "answer": "yes",
       "subject_id": 2,
@@ -798,72 +776,6 @@
       "id": 15
     },
     {
-      "question": "Is the lime circle to the right of the green circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the lime circle left of the green circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the blue triangle below the green circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the blue triangle above the green circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the blue triangle above the lime circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the blue triangle below the lime circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 10,
-      "id": 21
-    },
-    {
       "question": "Is the cyan circle right of the green circle?",
       "answer": "yes",
       "subject_id": 2,
@@ -908,28 +820,6 @@
       "id": 25
     },
     {
-      "question": "Is the lime circle to the left of the blue triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 13,
-      "id": 26
-    },
-    {
-      "question": "Is the lime circle to the right of the blue triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 13,
-      "id": 27
-    },
-    {
       "question": "Is the cyan circle above the lime circle?",
       "answer": "yes",
       "subject_id": 2,
@@ -952,72 +842,6 @@
       "id": 29
     },
     {
-      "question": "Is the blue triangle right of the lime circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 15,
-      "id": 30
-    },
-    {
-      "question": "Is the blue triangle left of the lime circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 15,
-      "id": 31
-    },
-    {
-      "question": "Is the lime circle below the blue triangle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 16,
-      "id": 32
-    },
-    {
-      "question": "Is the lime circle above the blue triangle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 3,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 16,
-      "id": 33
-    },
-    {
-      "question": "Is the green circle to the left of the blue triangle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 17,
-      "id": 34
-    },
-    {
-      "question": "Is the green circle to the right of the blue triangle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 3,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 17,
-      "id": 35
-    },
-    {
       "question": "Is the lime circle left of the cyan circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -1038,94 +862,6 @@
       "rel_phrase": "right of",
       "caption_id": 18,
       "id": 37
-    },
-    {
-      "question": "Is the green circle above the lime circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 19,
-      "id": 38
-    },
-    {
-      "question": "Is the green circle below the lime circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 19,
-      "id": 39
-    },
-    {
-      "question": "Is the blue triangle to the right of the green circle?",
-      "answer": "yes",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 20,
-      "id": 40
-    },
-    {
-      "question": "Is the blue triangle left of the green circle?",
-      "answer": "no",
-      "subject_id": 3,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 20,
-      "id": 41
-    },
-    {
-      "question": "Is the lime circle below the green circle?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 21,
-      "id": 42
-    },
-    {
-      "question": "Is the lime circle above the green circle?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 21,
-      "id": 43
-    },
-    {
-      "question": "Is the green circle left of the lime circle?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 22,
-      "id": 44
-    },
-    {
-      "question": "Is the green circle to the right of the lime circle?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the right of",
-      "caption_id": 22,
-      "id": 45
     },
     {
       "question": "Is the lime circle below the cyan circle?",

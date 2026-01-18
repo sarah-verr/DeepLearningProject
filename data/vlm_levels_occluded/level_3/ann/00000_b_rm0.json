@@ -409,28 +409,6 @@
       "id": 5
     },
     {
-      "question": "Is the red square to the left of the lime triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the red square right of the lime triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the red square left of the green square?",
       "answer": "yes",
       "subject_id": 2,
@@ -475,50 +453,6 @@
       "id": 11
     },
     {
-      "question": "Is the red square below the lime triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the red square above the lime triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the lime triangle right of the red square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the lime triangle left of the red square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 7,
-      "id": 15
-    },
-    {
       "question": "Is the green square above the red square?",
       "answer": "yes",
       "subject_id": 0,
@@ -539,28 +473,6 @@
       "rel_phrase": "below",
       "caption_id": 8,
       "id": 17
-    },
-    {
-      "question": "Is the lime triangle above the red square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the lime triangle below the red square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 9,
-      "id": 19
     },
     {
       "question": "Is the lime triangle below the green square?",

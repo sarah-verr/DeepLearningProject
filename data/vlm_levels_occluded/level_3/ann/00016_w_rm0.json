@@ -387,50 +387,6 @@
       "id": 3
     },
     {
-      "question": "Is the pink star right of the blue star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the pink star left of the blue star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
-      "question": "Is the pink star above the blue star?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the pink star below the blue star?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the blue star left of the yellow star?",
       "answer": "yes",
       "subject_id": 2,
@@ -473,50 +429,6 @@
       "rel_phrase": "below",
       "caption_id": 5,
       "id": 11
-    },
-    {
-      "question": "Is the blue star below the pink star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the blue star above the pink star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
-      "question": "Is the blue star left of the pink star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 7,
-      "id": 14
-    },
-    {
-      "question": "Is the blue star right of the pink star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 7,
-      "id": 15
     },
     {
       "question": "Is the pink star above the yellow star?",

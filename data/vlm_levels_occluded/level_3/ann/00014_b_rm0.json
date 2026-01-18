@@ -345,72 +345,6 @@
       "id": 3
     },
     {
-      "question": "Is the green star left of the lime square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 2,
-      "id": 4
-    },
-    {
-      "question": "Is the green star right of the lime square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 2,
-      "id": 5
-    },
-    {
-      "question": "Is the green star below the lime square?",
-      "answer": "yes",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the green star above the lime square?",
-      "answer": "no",
-      "subject_id": 1,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
-      "question": "Is the lime square above the green star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 4,
-      "id": 8
-    },
-    {
-      "question": "Is the lime square below the green star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 4,
-      "id": 9
-    },
-    {
       "question": "Is the orange star right of the green star?",
       "answer": "yes",
       "subject_id": 0,
@@ -475,28 +409,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 7,
       "id": 15
-    },
-    {
-      "question": "Is the lime square right of the green star?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the lime square left of the green star?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 1,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 8,
-      "id": 17
     },
     {
       "question": "Is the orange star right of the lime square?",

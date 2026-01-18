@@ -409,28 +409,6 @@
       "id": 5
     },
     {
-      "question": "Is the red star above the cyan triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 3,
-      "id": 6
-    },
-    {
-      "question": "Is the red star below the cyan triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 3,
-      "id": 7
-    },
-    {
       "question": "Is the orange star below the red star?",
       "answer": "yes",
       "subject_id": 1,
@@ -475,28 +453,6 @@
       "id": 11
     },
     {
-      "question": "Is the cyan triangle right of the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the cyan triangle left of the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
       "question": "Is the red star above the orange star?",
       "answer": "yes",
       "subject_id": 2,
@@ -539,50 +495,6 @@
       "rel_phrase": "right of",
       "caption_id": 8,
       "id": 17
-    },
-    {
-      "question": "Is the red star to the left of the cyan triangle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the red star right of the cyan triangle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 9,
-      "id": 19
-    },
-    {
-      "question": "Is the cyan triangle below the red star?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 10,
-      "id": 20
-    },
-    {
-      "question": "Is the cyan triangle above the red star?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 10,
-      "id": 21
     },
     {
       "question": "Is the orange star right of the red star?",

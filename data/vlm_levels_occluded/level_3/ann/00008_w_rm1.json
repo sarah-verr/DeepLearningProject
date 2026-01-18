@@ -365,28 +365,6 @@
       "id": 1
     },
     {
-      "question": "Is the blue circle to the left of the yellow square?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "to the left of",
-      "caption_id": 1,
-      "id": 2
-    },
-    {
-      "question": "Is the blue circle right of the yellow square?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 1,
-      "id": 3
-    },
-    {
       "question": "Is the blue circle above the pink circle?",
       "answer": "yes",
       "subject_id": 0,
@@ -475,28 +453,6 @@
       "id": 11
     },
     {
-      "question": "Is the yellow square below the blue circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 6,
-      "id": 12
-    },
-    {
-      "question": "Is the yellow square above the blue circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 6,
-      "id": 13
-    },
-    {
       "question": "Is the yellow square to the left of the pink circle?",
       "answer": "yes",
       "subject_id": 2,
@@ -517,50 +473,6 @@
       "rel_phrase": "to the right of",
       "caption_id": 7,
       "id": 15
-    },
-    {
-      "question": "Is the blue circle above the yellow square?",
-      "answer": "yes",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "above",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "above",
-      "caption_id": 8,
-      "id": 16
-    },
-    {
-      "question": "Is the blue circle below the yellow square?",
-      "answer": "no",
-      "subject_id": 0,
-      "object_id": 2,
-      "rel_type": "below",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "below",
-      "caption_id": 8,
-      "id": 17
-    },
-    {
-      "question": "Is the yellow square right of the blue circle?",
-      "answer": "yes",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "right_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "right of",
-      "caption_id": 9,
-      "id": 18
-    },
-    {
-      "question": "Is the yellow square left of the blue circle?",
-      "answer": "no",
-      "subject_id": 2,
-      "object_id": 0,
-      "rel_type": "left_of",
-      "rel_group": "PRIMARY",
-      "rel_phrase": "left of",
-      "caption_id": 9,
-      "id": 19
     },
     {
       "question": "Is the blue circle to the left of the pink circle?",
