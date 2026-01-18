@@ -1,0 +1,188 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        217,
+        217
+      ],
+      "size": 27,
+      "bbox": [
+        204,
+        204,
+        230,
+        230
+      ],
+      "patch_indices": [
+        343,
+        344,
+        345,
+        367,
+        368,
+        369,
+        391,
+        392,
+        393
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        287,
+        63
+      ],
+      "size": 21,
+      "bbox": [
+        277,
+        53,
+        297,
+        73
+      ],
+      "patch_indices": [
+        74,
+        75,
+        76,
+        98,
+        99,
+        100,
+        122,
+        123,
+        124
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink triangle is left of the cyan circle.",
+    "The pink triangle is below the cyan circle.",
+    "The cyan circle is right of the pink triangle.",
+    "The cyan circle is above the pink triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan circle is left of the pink triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink triangle is below the cyan circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The cyan circle is above the pink triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The pink triangle is right of the cyan circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan circle below the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle left of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle right of the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink triangle right of the cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan circle left of the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle above the cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle below the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle above the pink triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

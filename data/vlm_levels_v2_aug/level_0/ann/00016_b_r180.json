@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "purple",
+      "center": [
+        131,
+        13
+      ],
+      "size": 10,
+      "bbox": [
+        126,
+        8,
+        136,
+        18
+      ],
+      "patch_indices": [
+        542
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "cyan",
+      "center": [
+        117,
+        13
+      ],
+      "size": 10,
+      "bbox": [
+        112,
+        8,
+        122,
+        18
+      ],
+      "patch_indices": [
+        543
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple square is right of the cyan circle.",
+    "The cyan circle is left of the purple square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple square is left of the cyan circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The cyan circle is right of the purple square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan circle left of the purple square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple square above the cyan circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple square right of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple square right of the cyan circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle above the purple square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan circle right of the purple square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the cyan circle left of the purple square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the cyan circle below the purple square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,627 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "red",
+      "center": [
+        231,
+        231
+      ],
+      "size": 23,
+      "bbox": [
+        220,
+        220,
+        242,
+        242
+      ],
+      "patch_indices": [
+        375,
+        376,
+        377,
+        399,
+        400,
+        401,
+        423,
+        424,
+        425
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        21,
+        273
+      ],
+      "size": 26,
+      "bbox": [
+        8,
+        260,
+        34,
+        286
+      ],
+      "patch_indices": [
+        432,
+        433,
+        434,
+        456,
+        457,
+        458,
+        480,
+        481,
+        482
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        175,
+        133
+      ],
+      "size": 22,
+      "bbox": [
+        164,
+        122,
+        186,
+        144
+      ],
+      "patch_indices": [
+        203,
+        204,
+        205,
+        227,
+        228,
+        229,
+        251,
+        252,
+        253
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 2,
+      "object_id": 1
+    }
+  ],
+  "captions": [
+    "The purple triangle is right of the orange square.",
+    "The purple triangle is above the red triangle.",
+    "The orange square is below the purple triangle.",
+    "The purple triangle is left of the red triangle.",
+    "The orange square is to the left of the purple triangle.",
+    "The red triangle is to the right of the purple triangle.",
+    "The purple triangle is above the orange square.",
+    "The red triangle is below the purple triangle.",
+    "The red triangle is to the right of the orange square.",
+    "The red triangle is above the orange square.",
+    "The orange square is left of the red triangle.",
+    "The orange square is below the red triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple triangle is right of the orange square.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple triangle is above the red triangle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The orange square is below the purple triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The purple triangle is left of the red triangle.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The orange square is to the left of the purple triangle.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The red triangle is to the right of the purple triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The purple triangle is above the orange square.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The red triangle is below the purple triangle.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The red triangle is to the right of the orange square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The red triangle is above the orange square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The orange square is left of the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The orange square is below the red triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the purple triangle to the right of the orange square?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the purple triangle to the left of the orange square?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the purple triangle above the red triangle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the purple triangle below the red triangle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 1,
+      "id": 3
+    },
+    {
+      "question": "Is the orange square below the purple triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 2,
+      "id": 4
+    },
+    {
+      "question": "Is the orange square above the purple triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 2,
+      "id": 5
+    },
+    {
+      "question": "Is the purple triangle to the left of the red triangle?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 3,
+      "id": 6
+    },
+    {
+      "question": "Is the purple triangle to the right of the red triangle?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 3,
+      "id": 7
+    },
+    {
+      "question": "Is the orange square left of the purple triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 4,
+      "id": 8
+    },
+    {
+      "question": "Is the orange square to the right of the purple triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 4,
+      "id": 9
+    },
+    {
+      "question": "Is the red triangle to the right of the purple triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 5,
+      "id": 10
+    },
+    {
+      "question": "Is the red triangle left of the purple triangle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 5,
+      "id": 11
+    },
+    {
+      "question": "Is the purple triangle above the orange square?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 6,
+      "id": 12
+    },
+    {
+      "question": "Is the purple triangle below the orange square?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 6,
+      "id": 13
+    },
+    {
+      "question": "Is the red triangle below the purple triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 7,
+      "id": 14
+    },
+    {
+      "question": "Is the red triangle above the purple triangle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 7,
+      "id": 15
+    },
+    {
+      "question": "Is the red triangle to the right of the orange square?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 8,
+      "id": 16
+    },
+    {
+      "question": "Is the red triangle left of the orange square?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 8,
+      "id": 17
+    },
+    {
+      "question": "Is the red triangle above the orange square?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 9,
+      "id": 18
+    },
+    {
+      "question": "Is the red triangle below the orange square?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 9,
+      "id": 19
+    },
+    {
+      "question": "Is the orange square to the left of the red triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 10,
+      "id": 20
+    },
+    {
+      "question": "Is the orange square to the right of the red triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 10,
+      "id": 21
+    },
+    {
+      "question": "Is the orange square below the red triangle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 11,
+      "id": 22
+    },
+    {
+      "question": "Is the orange square above the red triangle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 11,
+      "id": 23
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 2,
+  "removed_object": {
+    "id": 2,
+    "shape": "triangle",
+    "color": "purple",
+    "bbox": [
+      164,
+      122,
+      186,
+      144
+    ]
+  }
+}

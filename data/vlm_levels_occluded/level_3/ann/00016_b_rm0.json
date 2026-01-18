@@ -1,0 +1,627 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "yellow",
+      "center": [
+        315,
+        231
+      ],
+      "size": 29,
+      "bbox": [
+        301,
+        217,
+        329,
+        245
+      ],
+      "patch_indices": [
+        381,
+        382,
+        383,
+        405,
+        406,
+        407,
+        429,
+        430,
+        431
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "pink",
+      "center": [
+        301,
+        161
+      ],
+      "size": 21,
+      "bbox": [
+        291,
+        151,
+        311,
+        171
+      ],
+      "patch_indices": [
+        260,
+        261,
+        262,
+        284,
+        285,
+        286,
+        308,
+        309,
+        310
+      ]
+    },
+    {
+      "id": 2,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        119,
+        259
+      ],
+      "size": 30,
+      "bbox": [
+        104,
+        244,
+        134,
+        274
+      ],
+      "patch_indices": [
+        415,
+        416,
+        417,
+        439,
+        440,
+        441,
+        463,
+        464,
+        465
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 2
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 0
+    },
+    {
+      "type": "left_of",
+      "subject_id": 2,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 2,
+      "object_id": 1
+    }
+  ],
+  "captions": [
+    "The blue star is below the yellow star.",
+    "The blue star is to the left of the pink star.",
+    "The blue star is to the left of the yellow star.",
+    "The yellow star is below the pink star.",
+    "The pink star is to the right of the blue star.",
+    "The pink star is above the yellow star.",
+    "The yellow star is to the right of the blue star.",
+    "The yellow star is above the blue star.",
+    "The blue star is below the pink star.",
+    "The pink star is to the left of the yellow star.",
+    "The pink star is above the blue star.",
+    "The yellow star is to the right of the pink star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue star is below the yellow star.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The blue star is to the left of the pink star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The blue star is to the left of the yellow star.",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The yellow star is below the pink star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    },
+    {
+      "id": 4,
+      "caption": "The pink star is to the right of the blue star.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        8
+      ],
+      "contradicted_qa_ids": [
+        9
+      ]
+    },
+    {
+      "id": 5,
+      "caption": "The pink star is above the yellow star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        10
+      ],
+      "contradicted_qa_ids": [
+        11
+      ]
+    },
+    {
+      "id": 6,
+      "caption": "The yellow star is to the right of the blue star.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        12
+      ],
+      "contradicted_qa_ids": [
+        13
+      ]
+    },
+    {
+      "id": 7,
+      "caption": "The yellow star is above the blue star.",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        14
+      ],
+      "contradicted_qa_ids": [
+        15
+      ]
+    },
+    {
+      "id": 8,
+      "caption": "The blue star is below the pink star.",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        16
+      ],
+      "contradicted_qa_ids": [
+        17
+      ]
+    },
+    {
+      "id": 9,
+      "caption": "The pink star is to the left of the yellow star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        18
+      ],
+      "contradicted_qa_ids": [
+        19
+      ]
+    },
+    {
+      "id": 10,
+      "caption": "The pink star is above the blue star.",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        20
+      ],
+      "contradicted_qa_ids": [
+        21
+      ]
+    },
+    {
+      "id": 11,
+      "caption": "The yellow star is to the right of the pink star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        22
+      ],
+      "contradicted_qa_ids": [
+        23
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the blue star below the yellow star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the blue star above the yellow star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the blue star to the left of the pink star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the blue star right of the pink star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 1,
+      "id": 3
+    },
+    {
+      "question": "Is the blue star to the left of the yellow star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 2,
+      "id": 4
+    },
+    {
+      "question": "Is the blue star to the right of the yellow star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 2,
+      "id": 5
+    },
+    {
+      "question": "Is the yellow star below the pink star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 3,
+      "id": 6
+    },
+    {
+      "question": "Is the yellow star above the pink star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 3,
+      "id": 7
+    },
+    {
+      "question": "Is the pink star to the right of the blue star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 4,
+      "id": 8
+    },
+    {
+      "question": "Is the pink star left of the blue star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 4,
+      "id": 9
+    },
+    {
+      "question": "Is the pink star above the yellow star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 5,
+      "id": 10
+    },
+    {
+      "question": "Is the pink star below the yellow star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 5,
+      "id": 11
+    },
+    {
+      "question": "Is the yellow star to the right of the blue star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 6,
+      "id": 12
+    },
+    {
+      "question": "Is the yellow star to the left of the blue star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 6,
+      "id": 13
+    },
+    {
+      "question": "Is the yellow star above the blue star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 7,
+      "id": 14
+    },
+    {
+      "question": "Is the yellow star below the blue star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 7,
+      "id": 15
+    },
+    {
+      "question": "Is the blue star below the pink star?",
+      "answer": "yes",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 8,
+      "id": 16
+    },
+    {
+      "question": "Is the blue star above the pink star?",
+      "answer": "no",
+      "subject_id": 2,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 8,
+      "id": 17
+    },
+    {
+      "question": "Is the pink star to the left of the yellow star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 9,
+      "id": 18
+    },
+    {
+      "question": "Is the pink star to the right of the yellow star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 9,
+      "id": 19
+    },
+    {
+      "question": "Is the pink star above the blue star?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 10,
+      "id": 20
+    },
+    {
+      "question": "Is the pink star below the blue star?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 2,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 10,
+      "id": 21
+    },
+    {
+      "question": "Is the yellow star to the right of the pink star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 11,
+      "id": 22
+    },
+    {
+      "question": "Is the yellow star left of the pink star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 11,
+      "id": 23
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 0,
+  "removed_object": {
+    "id": 0,
+    "shape": "star",
+    "color": "yellow",
+    "bbox": [
+      301,
+      217,
+      329,
+      245
+    ]
+  }
+}

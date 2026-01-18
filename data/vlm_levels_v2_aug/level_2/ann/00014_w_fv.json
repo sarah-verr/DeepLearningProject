@@ -1,0 +1,188 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        32,
+        131
+      ],
+      "size": 30,
+      "bbox": [
+        17,
+        116,
+        47,
+        146
+      ],
+      "patch_indices": [
+        313,
+        314,
+        315,
+        337,
+        338,
+        339,
+        361,
+        362,
+        363
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "pink",
+      "center": [
+        60,
+        271
+      ],
+      "size": 22,
+      "bbox": [
+        49,
+        260,
+        71,
+        282
+      ],
+      "patch_indices": [
+        75,
+        76,
+        77,
+        99,
+        100,
+        101,
+        123,
+        124,
+        125
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple triangle is left of the pink square.",
+    "The purple triangle is above the pink square.",
+    "The pink square is right of the purple triangle.",
+    "The pink square is below the purple triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple triangle is to the left of the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink square is above the purple triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The pink square is to the right of the purple triangle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The purple triangle is below the pink square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink square left of the purple triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple triangle right of the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink square right of the purple triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the purple triangle below the pink square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink square right of the purple triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square above the purple triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the purple triangle above the pink square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink square below the purple triangle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

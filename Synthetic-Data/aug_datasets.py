@@ -5,11 +5,12 @@ from PIL import Image, ImageOps
 
 # ------------ CONFIG ------------
 
-ROOT_IN  = "data/vlm_levels"         # where generate_dataset.py wrote level_1..level_6
-ROOT_OUT = "data/vlm_levels_aug"     # where we will write augmented data
+ROOT_IN  = "data/vlm_levels_v2"         # where generate_dataset.py wrote level_1..level_6
+ROOT_OUT = "data/vlm_levels_v2_aug"     # where we will write augmented data
 
 LEVELS   = [0, 1, 2, 3, 4]   # which levels to augment
 N_AUG_PER_IMAGE = 6             # how many transforms per image (max; we sample from TRANSFORMS)
+QA_MODE = "attribute"           # "attribute" or "yesno"
 
 os.makedirs(ROOT_OUT, exist_ok=True)
 
@@ -128,30 +129,26 @@ def make_captions(objects: List[Dict], relations: List[Dict], max_caps=6) -> Lis
         if len(out) >= max_caps: break
     return out
 
-def make_qa(objects: List[Dict], relations: List[Dict], max_qa=8) -> List[Dict]:
+def make_qa_yesno(objects: List[Dict], relations: List[Dict], max_qa=8) -> List[Dict]:
     """Produces a balanced set of yes/no QA."""
     by_id = {o["id"]: o for o in objects}
     ids = sorted(by_id.keys())
-    
+
     yes_qa = []
-    # 1. Generate 'yes' questions from true relations
     for r in relations:
         a = by_id[r["subject_id"]]; b = by_id[r["object_id"]]
-        # forward
         qf = f"Is the {a['color']} {a['shape']} {rel_phrase(r['type'])} the {b['color']} {b['shape']}?"
         yes_qa.append({"question": qf, "answer": "yes"})
-        # inverse
         inv = inverse_rel(r["type"])
         qi = f"Is the {b['color']} {b['shape']} {rel_phrase(inv)} the {a['color']} {a['shape']}?"
         yes_qa.append({"question": qi, "answer": "yes"})
-    
-    # 2. Generate 'no' questions from false primary relations
+
     no_qa = []
     true_rels_set = set((r["type"], r["subject_id"], r["object_id"]) for r in relations)
 
     for i in range(len(ids)):
         for j in range(len(ids)):
-            if i == j: 
+            if i == j:
                 continue
             a_id = ids[i]; b_id = ids[j]
             a = by_id[a_id]; b = by_id[b_id]
@@ -160,22 +157,63 @@ def make_qa(objects: List[Dict], relations: List[Dict], max_qa=8) -> List[Dict]:
                     q_no = f"Is the {a['color']} {a['shape']} {rel_phrase(rel_type)} the {b['color']} {b['shape']}?"
                     no_qa.append({"question": q_no, "answer": "no"})
 
-    # 3. Balance yes/no
     num_yes = len(yes_qa)
-    num_no  = len(no_qa)
+    num_no = len(no_qa)
     if num_yes > 0 and num_no > 0:
         if num_yes > num_no:
             yes_qa = random.sample(yes_qa, num_no)
         else:
-            no_qa  = random.sample(no_qa, num_yes)
+            no_qa = random.sample(no_qa, num_yes)
 
     combined = yes_qa + no_qa
     random.shuffle(combined)
     return combined[:max_qa]
 
+
+def make_qa_attribute(objects: List[Dict], relations: List[Dict], max_qa=8) -> List[Dict]:
+    """Produces attribute QA (color/shape) for each relation."""
+    by_id = {o["id"]: o for o in objects}
+    qa = []
+    for r in relations:
+        a = by_id[r["subject_id"]]
+        b = by_id[r["object_id"]]
+        phrase = rel_phrase(r["type"])
+        qa.append({
+            "question": f"What is the color of the object {phrase} the {b['color']} {b['shape']}?",
+            "answer": a["color"],
+            "question_type": "color",
+            "subject_id": a["id"],
+            "object_id": b["id"],
+            "rel_type": r["type"],
+            "rel_group": "PRIMARY",
+            "rel_phrase": phrase,
+        })
+        qa.append({
+            "question": f"What is the shape of the object {phrase} the {b['color']} {b['shape']}?",
+            "answer": a["shape"],
+            "question_type": "shape",
+            "subject_id": a["id"],
+            "object_id": b["id"],
+            "rel_type": r["type"],
+            "rel_group": "PRIMARY",
+            "rel_phrase": phrase,
+        })
+
+    random.shuffle(qa)
+    qa = qa[:max_qa]
+    for i, item in enumerate(qa):
+        item["id"] = i
+    return qa
+
+
+def make_qa(objects: List[Dict], relations: List[Dict], max_qa=8, *, mode: str = "attribute") -> List[Dict]:
+    if mode == "yesno":
+        return make_qa_yesno(objects, relations, max_qa=max_qa)
+    return make_qa_attribute(objects, relations, max_qa=max_qa)
+
 # ------------ annotation transform ------------
 
-def transform_ann(ann, tr_name, W, H, new_W, new_H, crop_box=None):
+def transform_ann(ann, tr_name, W, H, new_W, new_H, crop_box=None, *, qa_mode: str = "attribute"):
     """
     Transforms objects (bbox+center), remaps ALL relations in ann['relations'] (list),
     then regenerates captions and QA to stay consistent.
@@ -236,7 +274,7 @@ def transform_ann(ann, tr_name, W, H, new_W, new_H, crop_box=None):
 
     # 4) regenerate captions + QA
     new_captions = make_captions(objs, new_relations, max_caps=6)
-    new_qa       = make_qa(objs, new_relations, max_qa=8)
+    new_qa       = make_qa(objs, new_relations, max_qa=8, mode=qa_mode)
 
     ann2 = dict(ann)
     ann2["objects"]   = objs
@@ -256,7 +294,7 @@ def random_crop_box(W, H, min_scale=0.9):
 
 # ------------ per-image augmentation ------------
 
-def augment_one(img_path, ann_path, out_img_dir, out_ann_dir):
+def augment_one(img_path, ann_path, out_img_dir, out_ann_dir, *, qa_mode: str = "attribute"):
     img = Image.open(img_path).convert("RGB")
     W, H = img.size
     with open(ann_path) as f:
@@ -284,12 +322,16 @@ def augment_one(img_path, ann_path, out_img_dir, out_ann_dir):
         if random.random() < 0.5:
             crop = random_crop_box(new_W, new_H, min_scale=0.9)
             im2c = im2.crop(crop)
-            ann2 = transform_ann(ann, tname, W, H, im2c.size[0], im2c.size[1], crop_box=crop)
+            ann2 = transform_ann(
+                ann, tname, W, H, im2c.size[0], im2c.size[1], crop_box=crop, qa_mode=qa_mode
+            )
             if ann2 is None:
                 continue
             im_save, ann_save = im2c, ann2
         else:
-            ann2 = transform_ann(ann, tname, W, H, new_W, new_H, crop_box=None)
+            ann2 = transform_ann(
+                ann, tname, W, H, new_W, new_H, crop_box=None, qa_mode=qa_mode
+            )
             if ann2 is None:
                 continue
             im_save, ann_save = im2, ann2
@@ -306,7 +348,7 @@ def augment_one(img_path, ann_path, out_img_dir, out_ann_dir):
 
 # ------------ augment one level ------------
 
-def augment_level(level: int):
+def augment_level(level: int, *, qa_mode: str = "attribute"):
     base_dir = os.path.join(ROOT_IN,  f"level_{level}")
     img_dir  = os.path.join(base_dir, "images")
     ann_dir  = os.path.join(base_dir, "ann")
@@ -325,15 +367,18 @@ def augment_level(level: int):
         if not os.path.exists(ann_path):
             print(f"[level {level}] Missing ann for {fn}, skipping")
             continue
-        total += augment_one(img_path, ann_path, out_img, out_ann)
+        total += augment_one(img_path, ann_path, out_img, out_ann, qa_mode=qa_mode)
     print(f"[level {level}] Augmented samples written: {total} → {out_dir}/")
 
 # ------------ main ------------
 
 def main():
     random.seed(1234)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--qa_mode", choices=["attribute", "yesno"], default=QA_MODE)
+    args = parser.parse_args()
     for lvl in LEVELS:
-        augment_level(lvl)
+        augment_level(lvl, qa_mode=args.qa_mode)
     print("All levels done.")
 
 if __name__ == "__main__":

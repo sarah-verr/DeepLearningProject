@@ -1,0 +1,154 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "cyan",
+      "center": [
+        259,
+        105
+      ],
+      "size": 10,
+      "bbox": [
+        254,
+        100,
+        264,
+        110
+      ],
+      "patch_indices": [
+        186
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        259,
+        133
+      ],
+      "size": 10,
+      "bbox": [
+        254,
+        128,
+        264,
+        138
+      ],
+      "patch_indices": [
+        234
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The cyan square is above the pink circle.",
+    "The pink circle is below the cyan square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The cyan square is above the pink circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is below the cyan square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the cyan square above the pink circle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the cyan square below the pink circle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the pink circle below the cyan square?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the pink circle above the cyan square?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 1,
+  "removed_object": {
+    "id": 1,
+    "shape": "circle",
+    "color": "pink",
+    "bbox": [
+      254,
+      128,
+      264,
+      138
+    ]
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "yellow",
+      "center": [
+        133,
+        91
+      ],
+      "size": 22,
+      "bbox": [
+        122,
+        80,
+        144,
+        102
+      ],
+      "patch_indices": [
+        128,
+        129,
+        130,
+        152,
+        153,
+        154,
+        176,
+        177,
+        178
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "purple",
+      "center": [
+        301,
+        133
+      ],
+      "size": 21,
+      "bbox": [
+        291,
+        123,
+        311,
+        143
+      ],
+      "patch_indices": [
+        212,
+        213,
+        214,
+        236,
+        237,
+        238,
+        260,
+        261,
+        262
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow circle is left of the purple triangle.",
+    "The purple triangle is below the yellow circle.",
+    "The purple triangle is to the right of the yellow circle.",
+    "The yellow circle is above the purple triangle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow circle is left of the purple triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The purple triangle is below the yellow circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The purple triangle is to the right of the yellow circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The yellow circle is above the purple triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow circle left of the purple triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the yellow circle to the right of the purple triangle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the purple triangle below the yellow circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the purple triangle above the yellow circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 1,
+      "id": 3
+    },
+    {
+      "question": "Is the purple triangle right of the yellow circle?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "caption_id": 2,
+      "id": 4
+    },
+    {
+      "question": "Is the purple triangle left of the yellow circle?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "caption_id": 2,
+      "id": 5
+    },
+    {
+      "question": "Is the yellow circle above the purple triangle?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "caption_id": 3,
+      "id": 6
+    },
+    {
+      "question": "Is the yellow circle below the purple triangle?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "caption_id": 3,
+      "id": 7
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 1,
+  "removed_object": {
+    "id": 1,
+    "shape": "triangle",
+    "color": "purple",
+    "bbox": [
+      291,
+      123,
+      311,
+      143
+    ]
+  }
+}

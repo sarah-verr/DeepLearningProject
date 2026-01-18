@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "star",
+      "color": "lime",
+      "center": [
+        273,
+        231
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        226,
+        278,
+        236
+      ],
+      "patch_indices": [
+        403
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "circle",
+      "color": "red",
+      "center": [
+        273,
+        287
+      ],
+      "size": 10,
+      "bbox": [
+        268,
+        282,
+        278,
+        292
+      ],
+      "patch_indices": [
+        499
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "above",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "below",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime star is above the red circle.",
+    "The red circle is below the lime star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The lime star is above the red circle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The red circle is below the lime star.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the lime star left of the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle below the lime star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime star above the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime star right of the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime star above the red circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime star below the red circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the red circle below the lime star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the red circle left of the lime star?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "orange",
+      "center": [
+        63,
+        63
+      ],
+      "size": 10,
+      "bbox": [
+        58,
+        58,
+        68,
+        68
+      ],
+      "patch_indices": [
+        100
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "purple",
+      "center": [
+        77,
+        63
+      ],
+      "size": 10,
+      "bbox": [
+        72,
+        58,
+        82,
+        68
+      ],
+      "patch_indices": [
+        101
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The purple star is right of the orange square.",
+    "The orange square is left of the purple star."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The purple star is right of the orange square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The orange square is left of the purple star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the purple star to the right of the orange square?",
+      "answer": "yes",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 0,
+      "id": 0
+    },
+    {
+      "question": "Is the purple star to the left of the orange square?",
+      "answer": "no",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 0,
+      "id": 1
+    },
+    {
+      "question": "Is the orange square to the left of the purple star?",
+      "answer": "yes",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "caption_id": 1,
+      "id": 2
+    },
+    {
+      "question": "Is the orange square to the right of the purple star?",
+      "answer": "no",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "caption_id": 1,
+      "id": 3
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  },
+  "removed_object_id": 1,
+  "removed_object": {
+    "id": 1,
+    "shape": "star",
+    "color": "purple",
+    "bbox": [
+      72,
+      58,
+      82,
+      68
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "pink",
+      "center": [
+        229,
+        285
+      ],
+      "size": 10,
+      "bbox": [
+        224,
+        280,
+        234,
+        290
+      ],
+      "patch_indices": [
+        188
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "green",
+      "center": [
+        215,
+        285
+      ],
+      "size": 10,
+      "bbox": [
+        210,
+        280,
+        220,
+        290
+      ],
+      "patch_indices": [
+        212
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The pink circle is left of the green star.",
+    "The green star is right of the pink circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The green star is below the pink circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink circle is above the green star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink circle above the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink circle right of the green star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star above the pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star left of the pink circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the green star right of the pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink circle left of the green star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the green star right of the pink circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink circle left of the green star?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

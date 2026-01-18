@@ -1,0 +1,188 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "blue",
+      "center": [
+        301,
+        20
+      ],
+      "size": 28,
+      "bbox": [
+        287,
+        6,
+        315,
+        34
+      ],
+      "patch_indices": [
+        501,
+        502,
+        503,
+        525,
+        526,
+        527,
+        549,
+        550,
+        551
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "triangle",
+      "color": "pink",
+      "center": [
+        105,
+        104
+      ],
+      "size": 17,
+      "bbox": [
+        97,
+        96,
+        113,
+        112
+      ],
+      "patch_indices": [
+        159,
+        160,
+        161,
+        183,
+        184,
+        185,
+        207,
+        208,
+        209
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The blue circle is below the pink triangle.",
+    "The blue circle is left of the pink triangle.",
+    "The pink triangle is above the blue circle.",
+    "The pink triangle is right of the blue circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The pink triangle is above the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The pink triangle is to the left of the blue circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "caption": "The blue circle is right of the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "right of",
+      "entailed_qa_ids": [
+        4
+      ],
+      "contradicted_qa_ids": [
+        5
+      ]
+    },
+    {
+      "id": 3,
+      "caption": "The blue circle is below the pink triangle.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        6
+      ],
+      "contradicted_qa_ids": [
+        7
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the pink triangle left of the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle above the blue circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle below the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the pink triangle right of the blue circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle above the pink triangle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the pink triangle below the blue circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue circle left of the pink triangle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue circle right of the pink triangle?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

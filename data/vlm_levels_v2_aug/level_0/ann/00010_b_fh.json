@@ -1,0 +1,130 @@
+{
+  "background": "b",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "circle",
+      "color": "orange",
+      "center": [
+        315,
+        77
+      ],
+      "size": 10,
+      "bbox": [
+        310,
+        72,
+        320,
+        82
+      ],
+      "patch_indices": [
+        121
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        315,
+        63
+      ],
+      "size": 10,
+      "bbox": [
+        310,
+        58,
+        320,
+        68
+      ],
+      "patch_indices": [
+        97
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The orange circle is below the yellow square.",
+    "The yellow square is above the orange circle."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The orange circle is below the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow square is above the orange circle.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the yellow square below the orange circle?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange circle right of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange circle above the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square above the orange circle?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange circle below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the orange circle left of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the orange circle below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow square above the orange circle?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        118,
+        287
+      ],
+      "size": 10,
+      "bbox": [
+        113,
+        282,
+        123,
+        292
+      ],
+      "patch_indices": [
+        380
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "star",
+      "color": "blue",
+      "center": [
+        76,
+        287
+      ],
+      "size": 10,
+      "bbox": [
+        71,
+        282,
+        81,
+        292
+      ],
+      "patch_indices": [
+        452
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "left_of",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "right_of",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The yellow square is left of the blue star.",
+    "The blue star is right of the yellow square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The blue star is below the yellow square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "below",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "below",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The yellow square is above the blue star.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "above",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "above",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the blue star above the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square left of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue star left of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square left of the blue star?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow square below the blue star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square right of the blue star?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the blue star right of the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the blue star right of the yellow square?",
+      "answer": "yes"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

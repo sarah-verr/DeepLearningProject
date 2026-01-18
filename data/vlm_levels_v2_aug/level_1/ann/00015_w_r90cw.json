@@ -1,0 +1,130 @@
+{
+  "background": "w",
+  "objects": [
+    {
+      "id": 0,
+      "shape": "square",
+      "color": "lime",
+      "center": [
+        311,
+        57
+      ],
+      "size": 10,
+      "bbox": [
+        306,
+        52,
+        316,
+        62
+      ],
+      "patch_indices": [
+        547
+      ]
+    },
+    {
+      "id": 1,
+      "shape": "square",
+      "color": "yellow",
+      "center": [
+        311,
+        85
+      ],
+      "size": 10,
+      "bbox": [
+        306,
+        80,
+        316,
+        90
+      ],
+      "patch_indices": [
+        545
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "below",
+      "subject_id": 0,
+      "object_id": 1
+    },
+    {
+      "type": "above",
+      "subject_id": 1,
+      "object_id": 0
+    }
+  ],
+  "captions": [
+    "The lime square is below the yellow square.",
+    "The yellow square is above the lime square."
+  ],
+  "captions_meta": [
+    {
+      "id": 0,
+      "caption": "The yellow square is to the left of the lime square.",
+      "subject_id": 1,
+      "object_id": 0,
+      "rel_type": "left_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the left of",
+      "entailed_qa_ids": [
+        0
+      ],
+      "contradicted_qa_ids": [
+        1
+      ]
+    },
+    {
+      "id": 1,
+      "caption": "The lime square is to the right of the yellow square.",
+      "subject_id": 0,
+      "object_id": 1,
+      "rel_type": "right_of",
+      "rel_group": "PRIMARY",
+      "rel_phrase": "to the right of",
+      "entailed_qa_ids": [
+        2
+      ],
+      "contradicted_qa_ids": [
+        3
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "question": "Is the lime square below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square below the yellow square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow square left of the lime square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square above the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the yellow square above the lime square?",
+      "answer": "yes"
+    },
+    {
+      "question": "Is the lime square above the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the lime square right of the yellow square?",
+      "answer": "no"
+    },
+    {
+      "question": "Is the yellow square below the lime square?",
+      "answer": "no"
+    }
+  ],
+  "meta": {
+    "img_size": 336,
+    "patch": 14,
+    "grid_dim": 24
+  }
+}

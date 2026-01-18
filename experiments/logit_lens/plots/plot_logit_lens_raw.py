@@ -359,6 +359,12 @@ def main() -> None:
     )
     yes_full_curves = {k: _mean_by_layer(v) for k, v in outcome_yes_full.items()}
     no_full_curves = {k: _mean_by_layer(v) for k, v in outcome_no_full.items()}
+    _plot_four_curves(
+        yes_full_curves,
+        os.path.join(args.out_dir, "logit_lens_softmax_pyes_by_outcome.png"),
+        f"Logit lens softmax p(yes) by outcome ({title_suffix})",
+        "P(yes)",
+    )
     _plot_multi_curves(
         {
             "TP_yes": yes_full_curves.get("TP", []),
