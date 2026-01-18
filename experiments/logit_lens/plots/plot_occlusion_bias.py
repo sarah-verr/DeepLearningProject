@@ -46,7 +46,16 @@ def _mean_curve_list(curves: list[list[float]]) -> list[float]:
 
 
 def _load_ann(path: str) -> dict | None:
-    if not path or not os.path.exists(path):
+    if not path:
+        return None
+    if not os.path.exists(path):
+        marker = "DeepLearningProject/"
+        idx = path.find(marker)
+        if idx >= 0:
+            local = os.path.join(_REPO_ROOT, path[idx + len(marker) :])
+            if os.path.exists(local):
+                path = local
+    if not os.path.exists(path):
         return None
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -93,6 +102,22 @@ def parse_args() -> argparse.Namespace:
         "--combine_low_levels",
         action="store_true",
         help="Combine levels 0-2 into a single group for level-comparison plots.",
+    )
+    ap.add_argument(
+        "--fp_filter_dir",
+        type=str,
+        default=None,
+        help="Optional dir with summary.jsonl files to build FP filter (gt=no, pred=yes).",
+    )
+    ap.add_argument(
+        "--filter_original_gt_no",
+        action="store_true",
+        help="Filter occluded records to those with gt=no in the original results.",
+    )
+    ap.add_argument(
+        "--filter_original_fp",
+        action="store_true",
+        help="Filter occluded records to those that are FP (gt=no, pred=yes) in the original results.",
     )
     return ap.parse_args()
 
@@ -149,7 +174,80 @@ def _extract_full_softmax_curves(lens: list[dict]) -> tuple[list[float], list[fl
     return yes, no
 
 
-def _run_plots(records: list[dict], out_dir: str) -> None:
+def _confusion_from_records(
+    records: list[dict],
+    *,
+    original_map: dict[tuple[str, str], tuple[str, str]] | None = None,
+) -> list[list[int]]:
+    # Rows: gt yes/no, Cols: pred yes/no
+    mat = [[0, 0], [0, 0]]
+    for r in records:
+        if original_map is not None:
+            image_id = _base_image_id(r.get("image_id") or "")
+            question = (r.get("question") or "").strip()
+            key = (image_id, question)
+            if key not in original_map:
+                continue
+            gt = original_map[key][0]
+        else:
+            gt = (r.get("answer") or "").strip().lower()
+        pred = (r.get("prediction") or "").strip().lower()
+        if gt not in ("yes", "no") or pred not in ("yes", "no"):
+            continue
+        gi = 0 if gt == "yes" else 1
+        pi = 0 if pred == "yes" else 1
+        mat[gi][pi] += 1
+    return mat
+
+
+def _plot_confusion(mat: list[list[int]], out_path: str, title: str, normalize: bool) -> None:
+    import numpy as np
+
+    arr = np.array(mat, dtype=float)
+    if normalize:
+        row_sums = arr.sum(axis=1, keepdims=True)
+        arr = np.divide(arr, row_sums, out=np.zeros_like(arr), where=row_sums != 0)
+    plt.figure(figsize=(4, 4))
+    plt.imshow(arr, interpolation="nearest", cmap="Blues", vmin=0.0 if normalize else None, vmax=1.0 if normalize else None)
+    plt.title(title)
+    plt.colorbar(label="Rate" if normalize else "Count")
+    plt.xticks([0, 1], ["pred_yes", "pred_no"])
+    plt.yticks([0, 1], ["gt_yes", "gt_no"])
+    for i in range(2):
+        for j in range(2):
+            val = arr[i, j]
+            text = f"{val:.2f}" if normalize else f"{int(val)}"
+            plt.text(j, i, text, ha="center", va="center")
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=160)
+    plt.close()
+
+
+def _base_image_id(image_id: str) -> str:
+    if not image_id:
+        return ""
+    if "_rm" in image_id:
+        return image_id.split("_rm", 1)[0]
+    return image_id
+
+
+def _build_original_map(fp_dir: str) -> dict[tuple[str, str], tuple[str, str]]:
+    levels = _find_level_dirs(fp_dir)
+    out: dict[tuple[str, str], tuple[str, str]] = {}
+    for lvl in levels:
+        summary_path = os.path.join(fp_dir, lvl, "summary.jsonl")
+        records = _load_records(summary_path)
+        for r in records:
+            gt = (r.get("answer") or "").strip().lower()
+            pred = (r.get("prediction") or "").strip().lower()
+            image_id = _base_image_id(r.get("image_id") or "")
+            question = (r.get("question") or "").strip()
+            if image_id and question and gt in ("yes", "no") and pred in ("yes", "no"):
+                out[(image_id, question)] = (gt, pred)
+    return out
+
+
+def _run_plots(records: list[dict], out_dir: str, *, title_suffix: str) -> None:
     stats = {
         "subject_removed": {"count": 0, "p_yes": 0.0, "p_no": 0.0, "pred_yes": 0, "pred_no": 0},
         "object_removed": {"count": 0, "p_yes": 0.0, "p_no": 0.0, "pred_yes": 0, "pred_no": 0},
@@ -212,28 +310,28 @@ def _run_plots(records: list[dict], out_dir: str) -> None:
         no_rate.append(bucket["pred_no"] / count if count else 0.0)
 
     _plot_bars(
-        "Mean p(yes) by removal role (gt treated as no)",
+        f"Mean p(yes) by removal role{title_suffix}",
         "Mean p(yes)",
         groups,
         mean_p_yes,
         os.path.join(out_dir, "occlusion_mean_pyes_by_role.png"),
     )
     _plot_bars(
-        "Mean p(no) by removal role (gt treated as no)",
+        f"Mean p(no) by removal role{title_suffix}",
         "Mean p(no)",
         groups,
         mean_p_no,
         os.path.join(out_dir, "occlusion_mean_pno_by_role.png"),
     )
     _plot_bars(
-        "Yes prediction rate by removal role (gt treated as no)",
+        f"Yes prediction rate by removal role{title_suffix}",
         "Yes rate",
         groups,
         yes_rate,
         os.path.join(out_dir, "occlusion_yes_rate_by_role.png"),
     )
     _plot_bars(
-        "No prediction rate by removal role (gt treated as no)",
+        f"No prediction rate by removal role{title_suffix}",
         "No rate",
         groups,
         no_rate,
@@ -249,13 +347,13 @@ def _run_plots(records: list[dict], out_dir: str) -> None:
         "object_removed": _mean_curve_list(curve_no["object_removed"]),
     }
     _plot_lines(
-        "Softmax p(yes) by layer (gt treated as no)",
+        f"Softmax p(yes) by layer{title_suffix}",
         "P(yes)",
         curve_yes_mean,
         os.path.join(out_dir, "occlusion_softmax_pyes_by_layer.png"),
     )
     _plot_lines(
-        "Softmax p(no) by layer (gt treated as no)",
+        f"Softmax p(no) by layer{title_suffix}",
         "P(no)",
         curve_no_mean,
         os.path.join(out_dir, "occlusion_softmax_pno_by_layer.png"),
@@ -287,15 +385,90 @@ def main() -> None:
         summary_path = os.path.join(args.base_dir, lvl, "summary.jsonl")
         all_records.extend(_load_records(summary_path))
 
-    _run_plots(all_records, args.out_dir)
+    original_map = _build_original_map(args.fp_filter_dir) if args.fp_filter_dir else None
+    if original_map is not None:
+        filtered = []
+        for r in all_records:
+            image_id = _base_image_id(r.get("image_id") or "")
+            question = (r.get("question") or "").strip()
+            key = (image_id, question)
+            if key not in original_map:
+                continue
+            gt, pred = original_map[key]
+            if args.filter_original_fp:
+                if gt == "no" and pred == "yes":
+                    filtered.append(r)
+            elif args.filter_original_gt_no:
+                if gt == "no":
+                    filtered.append(r)
+            else:
+                filtered.append(r)
+        all_records = filtered
+
+    title_suffix = ""
+    title_suffix = ""
+    title_suffix_conf = ""
+    if args.filter_original_fp:
+        title_suffix = " (filtered to FP)"
+        title_suffix_conf = "\n(filtered to FP)"
+    elif args.filter_original_gt_no:
+        title_suffix = " (filtered to gt=no)"
+        title_suffix_conf = "\n(filtered to gt=no)"
+
+    _run_plots(all_records, args.out_dir, title_suffix=title_suffix)
+
+    conf = _confusion_from_records(all_records, original_map=original_map)
+    _plot_confusion(
+        conf,
+        os.path.join(args.out_dir, "occlusion_confusion_counts.png"),
+        f"Occlusion confusion matrix (counts){title_suffix_conf}",
+        normalize=False,
+    )
+    _plot_confusion(
+        conf,
+        os.path.join(args.out_dir, "occlusion_confusion_norm.png"),
+        f"Occlusion confusion matrix (normalized){title_suffix_conf}",
+        normalize=True,
+    )
 
     if args.split_by_level:
         for lvl in levels:
             summary_path = os.path.join(args.base_dir, lvl, "summary.jsonl")
             records = _load_records(summary_path)
+            if original_map is not None:
+                filtered = []
+                for r in records:
+                    image_id = _base_image_id(r.get("image_id") or "")
+                    question = (r.get("question") or "").strip()
+                    key = (image_id, question)
+                    if key not in original_map:
+                        continue
+                    gt, pred = original_map[key]
+                    if args.filter_original_fp:
+                        if gt == "no" and pred == "yes":
+                            filtered.append(r)
+                    elif args.filter_original_gt_no:
+                        if gt == "no":
+                            filtered.append(r)
+                    else:
+                        filtered.append(r)
+                records = filtered
             level_out = os.path.join(args.out_dir, lvl)
             os.makedirs(level_out, exist_ok=True)
-            _run_plots(records, level_out)
+            _run_plots(records, level_out, title_suffix=title_suffix)
+            conf = _confusion_from_records(records, original_map=original_map)
+            _plot_confusion(
+                conf,
+                os.path.join(level_out, "occlusion_confusion_counts.png"),
+                f"Occlusion confusion matrix (counts){title_suffix_conf}",
+                normalize=False,
+            )
+            _plot_confusion(
+                conf,
+                os.path.join(level_out, "occlusion_confusion_norm.png"),
+                f"Occlusion confusion matrix (normalized){title_suffix_conf}",
+                normalize=True,
+            )
 
     level_groups = []
     level_map = {}
@@ -369,8 +542,8 @@ def main() -> None:
         return out
 
     for metric, title, out_name, ylabel in [
-        ("p_yes", "Mean p(yes) by level", "occlusion_mean_pyes_by_level.png", "Mean p(yes)"),
-        ("yes_rate", "Yes rate by level", "occlusion_yes_rate_by_level.png", "Yes rate"),
+        ("p_yes", f"Mean p(yes) by level{title_suffix}", "occlusion_mean_pyes_by_level.png", "Mean p(yes)"),
+        ("yes_rate", f"Yes rate by level{title_suffix}", "occlusion_yes_rate_by_level.png", "Yes rate"),
     ]:
         vals = _extract_group_metric("p_yes" if metric == "p_yes" else "yes_rate")
         x = list(range(len(level_groups)))
