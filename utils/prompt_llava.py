@@ -303,7 +303,7 @@ def infer_model_for_levels(
                     "qa_id": qa_pair.get("id", idx),  # Use index if no id field
                     "question": qa_pair["question"],
                     "ground_truth": qa_pair["answer"],
-                    "relation_type": qa_pair["rel_type"],
+                    "relation_type": qa_pair.get("rel_type", None),  # Optional field for exsitential questions
                     "response": full_output,
                     "prediction": prediction,
                     "confidence": confidence,
@@ -319,19 +319,23 @@ def infer_model_for_levels(
     return results_list
 
 
-def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl", use_attention_mask: bool = False, always_mask: bool = False, num_questions_per_image: Optional[int] = None):
+def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy: Literal["visual", "caption", "scene"] = "visual", output_filename="attention_results_all_levels.jsonl", use_attention_mask: bool = False, always_mask: bool = False, num_questions_per_image: Optional[int] = None, data_dir: Optional[str] = None):
     """
     Runs model but this time with attention values aggregated according to source and target in the params
     
     Args:
         num_questions_per_image: Maximum number of questions to process per image. If None, process all questions.
+        data_dir: Directory containing the level data (default: VLM_LEVELS_DIR)
     """
+    if data_dir is None:
+        data_dir = VLM_LEVELS_DIR
+    
     # --- Load data for all levels (same as infer_model_for_levels) ---
     annotations_all_levels = []
     images_by_level = []
     for level in level_ids:
-        annotations_all_levels.append(_load_annotation(level))
-        images_by_level.append(_get_images(level))
+        annotations_all_levels.append(_load_annotation(level, data_dir=data_dir))
+        images_by_level.append(_get_images(level, data_dir=data_dir))
 
     # --- Load model & processor once, with attentions enabled ---
     processor, model, device = _init_model(MODEL_ID, output_hidden_states=False)
@@ -340,6 +344,9 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
     from utils.plotter import Plotter
     plotter = Plotter()
 
+    # Accumulate all results across all levels
+    all_attn_results: List[Dict[str, Any]] = []
+    
     # --- Loop over levels / images / QAs with tqdm progress bars ---
     for level_id, ann_for_level, imgs_for_level in tqdm(
         list(zip(level_ids, annotations_all_levels, images_by_level)),
@@ -389,6 +396,11 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                     )
                     if custom_mask is not None:
                         inputs["attention_mask"] = custom_mask
+                        masked_positions = (custom_mask[0] == 0).sum().item()
+                        total_positions = custom_mask.shape[1]
+                        print(f"[DEBUG] Attention mask applied: {masked_positions}/{total_positions} positions masked (QA: {qa.get('id', 'unknown')})")
+                    else:
+                        print(f"[DEBUG] Attention mask not computed (returned None) for QA: {qa.get('id', 'unknown')}")
 
 
                 # --- 1) Generation to get prediction (pure inference) ---
@@ -409,7 +421,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 if "attention_mask" in inputs and inputs["attention_mask"] is not None:
                     # Extend the original mask to cover generated tokens (set generated tokens to 1)
                     original_mask = inputs["attention_mask"]
-                    prompt_len = original_mask.shape[1]
+                    prompt_len = inputs["input_ids"].shape[1]  # Use actual input_ids length, not mask length
                     gen_len = gen_out.sequences.shape[1] - prompt_len
                     if gen_len > 0:
                         # Create extended mask: original mask + ones for generated tokens
@@ -420,11 +432,16 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                                      device=original_mask.device)
                         ], dim=1)
                         full_inputs["attention_mask"] = extended_mask
+                        if use_attention_mask:
+                            masked_in_extended = (extended_mask[0] == 0).sum().item()
+                            print(f"[DEBUG] Extended mask for attention pass: {masked_in_extended}/{extended_mask.shape[1]} positions masked")
                     else:
                         full_inputs["attention_mask"] = original_mask
                 else:
                     # No custom mask, use all ones
                     full_inputs["attention_mask"] = torch.ones_like(gen_out.sequences).to(device)
+                    if use_attention_mask:
+                        print(f"[WARNING] No attention mask found in inputs despite use_attention_mask=True!")
 
                 with torch.no_grad():
                     fwd_out = model(
@@ -494,7 +511,7 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                         "response": full_output,
                         "prediction": prediction,
                         "confidence": confidence,
-                        "relation_type": qa["rel_type"],
+                        "relation_type": qa.get("rel_type", None),  # Optional field for exsitential questions
                         "attention_metrics": attention_metrics,
                     }
                 )
@@ -503,14 +520,16 @@ def infer_model_with_attention(level_ids: List[str], key_pairs, prompt_strategy:
                 del gen_out, inputs, full_inputs, attentions_cpu, full_ids_1d
                 torch.cuda.empty_cache()
 
-        # After finishing this level, append results to a single file
+        # After finishing this level, accumulate results and append to file
+        all_attn_results.extend(attn_results)
+        
         output_path = plotter.results_dir / output_filename
         with open(output_path, "a") as f:
             for item in attn_results:
                 f.write(json.dumps(item) + "\n")
 
-    # Optionally, return nothing or a summary
-    return None
+    # Return all accumulated results
+    return all_attn_results
 
 
 def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor=None, model=None, device=None, use_attention_mask=False, always_mask=False):
@@ -578,7 +597,7 @@ def visualise_full_attention(level_id: str, image_id: str, qa_id: int, processor
     if "attention_mask" in inputs and inputs["attention_mask"] is not None:
         # Extend the original mask to cover generated tokens (set generated tokens to 1)
         original_mask = inputs["attention_mask"]
-        prompt_len = original_mask.shape[1]
+        prompt_len = inputs["input_ids"].shape[1]  # Use actual input_ids length, not mask length
         gen_len = gen_out.sequences.shape[1] - prompt_len
         if gen_len > 0:
             # Create extended mask: original mask + ones for generated tokens

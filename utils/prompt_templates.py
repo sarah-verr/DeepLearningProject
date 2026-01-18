@@ -49,10 +49,8 @@ def build_visual_attribute_prompt(question: str, question_type: str) -> Conversa
                 {
                     "type": "text",
                     "text": (
-                        f"Task: Identify the {target_attr} of a specific object.\n"
                         f"Allowed {target_attr}s: {allowed_options}.\n\n"
-                        "Use the spatial layout to find the object described. "
-                        "Then, provide the answer using exactly one word from the list above.\n"
+                        f"Use the spatial layout to answer the following question with exactly one option from the allowed {target_attr}s list."
                         f"QUESTION: {q}\n"
                     ),
                 },
@@ -66,13 +64,13 @@ def build_visual_relational_prompt(question: str, question_type: str) -> Convers
     question_type: 'vertical', 'horizontal', and 'combined'
     """
     if question_type == 'vertical':
-        options = "above, below"
+        options = '"above" or "below"'
         task = "vertical"
     elif question_type == 'horizontal':
-        options = "left, right"
+        options = '"left" or "right"'
         task = "horizontal"
     else:
-        options = "top-left, top-right, bottom-left, bottom-right"
+        options = '"top-left", "top-right","bottom-left" or "bottom-right"'
         task = ""
     
     # options = "above, below, left, right, top-left, top-right, bottom-left, bottom-right"
@@ -85,11 +83,9 @@ def build_visual_relational_prompt(question: str, question_type: str) -> Convers
                 {
                     "type": "text",
                     "text": (
-                        f"Task: {task.capitalize()} spatial reasoning.\n"
-                        f"Allowed Relations: {options}.\n"
-                        "Instruction: Compare the centers of the two objects mentioned. "
-                        f"Question: {question}\n"
-                        "Answer with exactly one option from the allowed relations list."
+                        f"Allowed relationships: {options}.\n"
+                        "Use the spatial layout in the image to answer the following question with exactly one option from the allowed relations list."
+                        f"QUESTION: {question}\n"
                     ),
                 },
             ],
@@ -122,6 +118,22 @@ def build_existential_yesno_prompt(question: str) -> Conversation:
 def build_existential_attribute_prompt(question: str) -> Conversation:
     """Return a chat-style conversation for existential attribute questions."""
     q = (question or "").strip()
+
+    if "color" in q:
+        target_attr = "colors"
+        text = (
+            'Allowed colors: "red", "blue", "green", "yellow", "purple", "cyan", "orange", "pink" or "lime". '
+        )
+    elif "many" in q:
+        target_attr = "numbers"
+        text = (
+            'Allowed numbers: "1", "2", "3", or "4". '
+        )
+    else:
+        target_attr = "shapes"
+        text = (
+            'Allowed shapes: "square", "circle", "triangle", or "star". '
+        )
     return [
         {
             "role": "user",
@@ -129,11 +141,8 @@ def build_existential_attribute_prompt(question: str) -> Conversation:
                 {
                     "type": "text",
                     "text": (
-                        'Available answers: <number>, <color>, <shape>, <color> <shape>. '
-                        'Available colors: red, blue, green, yellow, purple, cyan, orange, pink, lime. '
-                        'Available shapes: square, circle, triangle, star. '
-                        'Available numbers: 1 2 3 4.'
-                        'Answer the following question about the image with a descriptive answer.\n'
+                        f'{text}'
+                        f'Answer the following question with exactly one option from the allowed {target_attr} list.\n'
                         f"QUESTION: {q}\n"
                     ),
                 },
