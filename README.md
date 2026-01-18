@@ -228,4 +228,145 @@ Text-only baseline:
   - For older datasets without caption linkage, it falls back to a simple scene description.
   - The CSV logs the full transcript in the `Prompt` column (input prompt + `MODEL: <completion>`) and also stores the raw generated text in `Completion`.
   - The CSV includes a `Mode` column to distinguish `image` vs `text_only` runs.
+
+---
+
+## Extended Technical Breakdown
+
+### Synthetic Data Codebase Overview (`Synthetic-Data/`)
+The generation pipeline is comprised of four primary Python modules:
+- `core_config.py`: Defines global constants including `COLORS_RGB`, `ALL_SHAPES`, and `LEVEL_CONFIG` (min/max shapes and language flags).
+- `core_utils.py`: Contains the geometric engine, including functions for Bounding Box (BBox) overlap, Intersection over Union (IoU) calculation, and patch-index mapping.
+- `levels.py`: Implements scene-specific generators (e.g., `scene_nested`) and relation-check logic for each level.
+- `generate_data.py`: The primary execution script that handles the randomization of object properties and output serialization.
+
+To generate the base dataset and subsequent augmentations, execute the following commands in sequence:
+1. **Base Generation:** Run the primary script to create the geometric scenes.
+   ```bash
+   python generate_data.py --primary \
+     --scenes_per_level 20
+   ```
+   This generates images and corresponding JSON files containing shapes, locations, relations, and balanced QA pairs.
+2. **Data Augmentation:** Apply transformations to increase dataset volume.
+   ```bash
+   python aug_datasets.py
+   ```
+   This script performs rotations and flips while automatically updating relation labels (e.g., a 90-degree rotation transforms `left_of` to `above`) to maintain logical consistency.
+
+To modify or add a new level of complexity:
+1. **Configuration:** Update `LEVEL_CONFIG` in `core_config.py` to set shape counts and the `adv_lang` flag.
+2. **Scene Logic:** Implement a new scene generator in `levels.py` to define how shapes interact (e.g., defining a specific margin or enclosure logic).
+3. **Relation Mapping:** Map the new scene generator to a relation function in `LEVEL_MAPPING` within `levels.py`.
+
+Generated JSON annotations follow a structured schema to facilitate attention probing:
+- `objects`: List of entities with `id`, `bbox`, and `patch_indices`.
+- `relations`: Set of true relational triplets (Subject, Relation, Object).
+- `qa`: Balanced list of questions with `entailed_qa_ids` and `contradicted_qa_ids` linked to specific captions (`core_utils.py`).
+
+### Utility Codebase Overview (`utils/`)
+- `attention_utils.py`: Helpers for extracting token spans and computing attention statistics.
+- `logit_lens.py`: Logit-lens utilities (collecting per-layer logits/probabilities, including attribute tracking).
+- `mask_utils.py`: Utilities for constructing and applying attention masks.
+- `plotter.py`: Common plotting and result-saving utilities used across experiments.
+- `probing.py`: Probing helpers for analyzing model representations.
+- `prompt_llava.py`: Model inference wrappers and prompt strategy dispatch (visual, existential, attribute, etc.).
+- `prompt_templates.py`: Prompt-building functions and templates for different QA styles.
+- `results_processing.py`: Post-processing of model outputs (e.g., raw answer extraction and normalization).
+
+### Experiments Codebase Overview (`experiments/`)
+
+#### Top-level scripts
+- `analyze_accuracy_results.py`: Aggregates accuracy CSVs across experiments; prints tables and generates plots by level, question type, and dataset.
+- `attention_analysis.py`: Re-runs inference to compute attention maps and saves aggregated attention metrics and visualizations.
+- `compare_background_accuracy.py`: Compares accuracy for black vs white backgrounds and optionally saves plots.
+- `compute_accuracy.py`: Computes accuracy across all levels for a chosen prompt strategy; saves CSVs and confusion matrices.
+- `run_all_accuracy_experiments.py`: Runs accuracy experiments over multiple datasets (vlm_levels, v2, v3, existential yes/no, existential attribute).
+- `run_masked_accuracy_experiments.py`: Runs accuracy experiments with attention masking (conditional or always-mask variants).
+- `plot_attention_analysis.ipynb`: Notebook for plotting attention outputs.
+- `plot_prelimary_analysis.ipynb`: Notebook for exploratory/preliminary analysis.
+
+#### Subdirectories
+**`experiments/data/`**
+- `run_accuracy.py`: Accuracy run for `data/vlm_levels` (visual yes/no).
+- `run_accuracy_w_attention_mask.py`: Accuracy run with attention masking when relation exists.
+- `run_accuracy_w_attention_mask_for_existing_relation.py`: Accuracy run with always-on masking for relation questions.
+
+**`experiments/data_v2/`**
+- `run_accuracy.py`: Accuracy run for `data/vlm_levels_v2` (visual attribute).
+- `run_accuracy_w_attention_mask.py`: Masked attention variant for v2.
+
+**`experiments/data_v3/`**
+- `run_accuracy.py`: Accuracy run for `data/vlm_levels_v3` (visual relational).
+- `run_accuracy_w_attention_mask.py`: Masked attention variant for v3.
+
+**`experiments/existential_qa/`**
+- `add_existential_questions.py`: Adds existential question variants to annotations.
+- `run_accuracy.py`: Accuracy run for existential yes/no and attribute questions.
+
+**`experiments/logit_lens/`**
+- `run_text_only_objective.py`: Text-only logit lens run for baselines/controls.
+- `run_visual_logit_lens.py`: Visual logit lens (yes/no) run.
+- `run_visual_logit_lens_attribute.py`: Visual logit lens for attribute (shape/color) questions.
+- `plots/`: Plotting and analysis scripts for logit lens results, including:
+  - `plot_logit_lens.py`, `plot_logit_lens_raw.py`: Core logit lens and raw/softmax plots.
+  - `plot_logit_lens_attribute.py`: Attribute-specific plots (per-choice logits, confusion matrices).
+  - `plot_occlusion_bias.py`: Occlusion bias plots (p(yes)/p(no), rates, FP filtering).
+  - `compare_text_image_analysis.py`, `plot_logit_lens_text_vs_image.py`: Compare text-only vs image-assisted runs.
+  - `compare_aug_vs_normal.py`, `analyze_objective_attention.py`, `text_only_phrase_attention.py`: Supporting analyses for attention and data comparisons.
+
+### Shell Scripts Overview (Repo Root)
+
+#### `run_eval.sh`
+- Slurm job wrapper for evaluation.
+- Activates `venv` and runs:
+  - `compute_accuracy.py` with a level list and output paths.
+- Writes logs to `logs/eval_%j.out` and `logs/eval_%j.err`.
+- Uses `HF_HOME=/work/scratch/$USER` for cache.
+
+#### `run_experiment.sh`
+- Slurm job wrapper for the main experiment pipeline.
+- Activates `venv`, sources `setup.sh`, then runs:
+  - `main.py` (project entry point).
+- Writes logs to `logs/eval_%j.out` and `logs/eval_%j.err`.
+- Uses `HF_HOME=/work/scratch/$USER` for cache.
+
+#### `run_logit.sh`
+- Submits a Slurm job via an embedded `sbatch` heredoc.
+- Sets Hugging Face and torch caches under `/work/scratch/$USER`.
+- Activates `venv` and runs logit-lens scripts (only one active at a time).
+- Current active command (as written):
+  - `experiments/logit_lens/run_visual_logit_lens.py` on occluded data.
+- Other scripts are included but commented out for easy toggling:
+  - text-only logit lens
+  - visual logit lens
+  - attribute logit lens
+  - attention analysis
+
+#### `setup.sh`
+- Environment bootstrap script (non-Slurm).
+- Creates and activates `venv` if missing.
+- Installs dependencies from `requirements.txt`.
+- Sets `HF_HOME=/work/scratch/$USER`.
+
+### Results Folder Overview (`results_llava-hf/llava-1.5-7b-hf/`)
+- `analysis_aug_vs_normal`: Plots comparing augmented and original datasets for logit-lens outputs.
+- `analysis_compare_text_image`: Comparisons between text-only and image-conditioned logit-lens runs.
+- `analysis_objective_attention`: Attention analysis tied to text-only runs with objective captions for context.
+- `analysis_occlusion_bias`: Plots analyzing occlusion bias (p(yes)/p(no), yes/no rates, layer curves).
+- `attention_analysis`: Attention metrics and visualizations from inference replays.
+- `attention_analysis_by_level_groups`: Attention summaries grouped by level subsets.
+- `attention_entropy_analysis`: Entropy-based attention statistics/plots.
+- `attention_fraction_analysis`: Fraction-of-attention breakdowns (text vs image, relation vs object, etc.).
+- `aug_logit_lens`: Logit-lens outputs for augmented datasets.
+- `compute_accuracy`: Accuracy CSVs and plots produced by `compute_accuracy.py`.
+- `logit_lens`: Aggregated logit-lens plots (standard yes/no).
+- `logit_lens_FP`: Occlusion analyses filtered to original false positives (FP) plus comparison plots.
+- `logit_lens_attribute`: Attribute logit-lens plots (shape/color).
+- `logit_lens_raw`: Raw-logit and softmax-probability logit-lens plots.
+- `logit_lens_text`: Text-only logit-lens plots.
+- `text_only_objective`: Text-only objective outputs and attention analysis artifacts.
+- `visual_logit_lens`: Raw per-example visual logit-lens outputs (summary.jsonl per level).
+- `visual_logit_lens_Explain`: Visual logit-lens runs with explanation-focused prompting.
+- `visual_logit_lens_attribute`: Per-example attribute logit-lens outputs (shape/color).
+- `visual_logit_lens_occluded`: Per-example logit-lens outputs on occluded images.
   
