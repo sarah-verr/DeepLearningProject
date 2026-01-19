@@ -8,11 +8,7 @@
 
 export HF_HOME="/work/scratch/$USER"
 
-# 1. Load modules (adjust based on your cluster's setup)
-# module load cuda/12.1
-
-# 2. Activate your virtual environment
-# Replace 'venv' with the actual path to your environment
+# Activate virtual environment
 source venv/bin/activate
 source setup.sh
 
