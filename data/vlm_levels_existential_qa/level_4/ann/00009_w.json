@@ -565,16 +565,20 @@
       "answer": "4"
     },
     {
-      "question": "What shape is the green object?",
-      "answer": "triangle"
-    },
-    {
-      "question": "What shape is the purple object?",
-      "answer": "square"
-    },
-    {
       "question": "What color is the star?",
       "answer": "red"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "green"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "star"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "triangle"
     }
   ]
 }

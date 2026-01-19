@@ -99,7 +99,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a green star?",
+      "question": "Is there a pink circle?",
       "answer": "yes"
     },
     {
@@ -107,11 +107,19 @@
       "answer": "no"
     },
     {
-      "question": "Is there a pink circle?",
+      "question": "Is there a green star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
+    {
+      "question": "What color is the circle?",
+      "answer": "pink"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
     {
       "question": "What shape is the green object?",
       "answer": "star"
@@ -119,10 +127,6 @@
     {
       "question": "What shape is the pink object?",
       "answer": "circle"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
     },
     {
       "question": "What color is the star?",

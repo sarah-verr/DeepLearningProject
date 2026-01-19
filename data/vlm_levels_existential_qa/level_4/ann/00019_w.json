@@ -605,7 +605,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a pink triangle?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     },
     {
@@ -613,7 +613,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a red triangle?",
+      "question": "Is there a pink triangle?",
       "answer": "yes"
     },
     {
@@ -623,20 +623,16 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the yellow object?",
-      "answer": "square"
+      "question": "How many objects are present in the image?",
+      "answer": "4"
     },
     {
       "question": "What shape is the cyan object?",
       "answer": "square"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "triangle"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
+      "question": "What shape is the yellow object?",
+      "answer": "square"
     }
   ]
 }

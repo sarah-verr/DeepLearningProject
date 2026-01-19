@@ -157,11 +157,11 @@
       "answer": "no"
     },
     {
-      "question": "Is there a yellow square?",
+      "question": "Is there a red star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a red star?",
+      "question": "Is there a yellow square?",
       "answer": "yes"
     },
     {
@@ -179,12 +179,16 @@
       "answer": "red"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "star"
-    },
-    {
       "question": "What shape is the yellow object?",
       "answer": "square"
+    },
+    {
+      "question": "What color is the square?",
+      "answer": "yellow"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "star"
     }
   ]
 }

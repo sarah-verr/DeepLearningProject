@@ -310,11 +310,11 @@
       "answer": "no"
     },
     {
-      "question": "Is there a cyan square?",
+      "question": "Is there a pink square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a orange star?",
+      "question": "Is there a cyan square?",
       "answer": "yes"
     },
     {
@@ -332,12 +332,12 @@
       "answer": "orange"
     },
     {
-      "question": "What shape is the pink object?",
-      "answer": "square"
-    },
-    {
       "question": "How many objects are present in the image?",
       "answer": "3"
+    },
+    {
+      "question": "What shape is the pink object?",
+      "answer": "square"
     }
   ]
 }

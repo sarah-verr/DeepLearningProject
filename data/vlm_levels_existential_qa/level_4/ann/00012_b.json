@@ -631,11 +631,11 @@
       "answer": "no"
     },
     {
-      "question": "Is there a blue triangle?",
+      "question": "Is there a lime circle?",
       "answer": "yes"
     },
     {
-      "question": "Is there a green circle?",
+      "question": "Is there a cyan circle?",
       "answer": "yes"
     },
     {
@@ -645,8 +645,8 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the blue object?",
-      "answer": "triangle"
+      "question": "What shape is the green object?",
+      "answer": "circle"
     },
     {
       "question": "How many objects are present in the image?",

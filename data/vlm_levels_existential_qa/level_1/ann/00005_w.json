@@ -103,18 +103,18 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange triangle?",
+      "question": "Is there a lime star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a lime star?",
+      "question": "Is there a orange triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What color is the triangle?",
-      "answer": "orange"
+      "question": "What color is the star?",
+      "answer": "lime"
     },
     {
       "question": "What shape is the lime object?",
@@ -127,6 +127,10 @@
     {
       "question": "How many objects are present in the image?",
       "answer": "2"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "orange"
     }
   ]
 }

@@ -627,11 +627,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a cyan star?",
+      "question": "Is there a yellow circle?",
       "answer": "yes"
     },
     {
-      "question": "Is there a purple star?",
+      "question": "Is there a cyan star?",
       "answer": "yes"
     },
     {
@@ -649,8 +649,8 @@
       "answer": "star"
     },
     {
-      "question": "What shape is the purple object?",
-      "answer": "star"
+      "question": "What shape is the yellow object?",
+      "answer": "circle"
     },
     {
       "question": "What color is the circle?",

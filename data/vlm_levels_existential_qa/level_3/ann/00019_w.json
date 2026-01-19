@@ -348,11 +348,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a cyan triangle?",
+      "question": "Is there a lime star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a purple square?",
+      "question": "Is there a cyan triangle?",
       "answer": "yes"
     },
     {
@@ -370,12 +370,16 @@
       "answer": "3"
     },
     {
-      "question": "What shape is the cyan object?",
-      "answer": "triangle"
+      "question": "What shape is the lime object?",
+      "answer": "star"
     },
     {
       "question": "What color is the star?",
       "answer": "lime"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "cyan"
     },
     {
       "question": "What shape is the purple object?",

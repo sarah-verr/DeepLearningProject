@@ -352,7 +352,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a pink star?",
+      "question": "Is there a blue star?",
       "answer": "yes"
     },
     {
@@ -360,15 +360,11 @@
       "answer": "no"
     },
     {
-      "question": "Is there a yellow star?",
+      "question": "Is there a pink star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "3"
-    },
     {
       "question": "What shape is the blue object?",
       "answer": "star"
@@ -378,8 +374,8 @@
       "answer": "star"
     },
     {
-      "question": "What shape is the pink object?",
-      "answer": "star"
+      "question": "How many objects are present in the image?",
+      "answer": "3"
     }
   ]
 }

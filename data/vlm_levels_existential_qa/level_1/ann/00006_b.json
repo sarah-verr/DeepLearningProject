@@ -99,7 +99,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a blue star?",
+      "question": "Is there a yellow square?",
       "answer": "yes"
     },
     {
@@ -107,22 +107,26 @@
       "answer": "no"
     },
     {
-      "question": "Is there a yellow square?",
+      "question": "Is there a blue star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What color is the star?",
-      "answer": "blue"
+      "question": "What shape is the blue object?",
+      "answer": "star"
     },
     {
       "question": "What shape is the yellow object?",
       "answer": "square"
     },
     {
-      "question": "What shape is the blue object?",
-      "answer": "star"
+      "question": "What color is the square?",
+      "answer": "yellow"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "blue"
     },
     {
       "question": "How many objects are present in the image?",

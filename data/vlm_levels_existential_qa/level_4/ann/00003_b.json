@@ -627,7 +627,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a orange triangle?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     },
     {
@@ -635,7 +635,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple star?",
+      "question": "Is there a orange triangle?",
       "answer": "yes"
     },
     {
@@ -645,20 +645,24 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the orange object?",
-      "answer": "triangle"
-    },
-    {
-      "question": "What shape is the red object?",
-      "answer": "triangle"
+      "question": "What color is the star?",
+      "answer": "purple"
     },
     {
       "question": "What color is the circle?",
       "answer": "blue"
     },
     {
+      "question": "What shape is the purple object?",
+      "answer": "star"
+    },
+    {
       "question": "How many objects are present in the image?",
       "answer": "4"
+    },
+    {
+      "question": "What shape is the orange object?",
+      "answer": "triangle"
     }
   ]
 }

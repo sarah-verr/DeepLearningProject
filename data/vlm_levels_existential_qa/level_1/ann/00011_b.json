@@ -95,7 +95,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a green circle?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     },
     {
@@ -103,7 +103,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a red triangle?",
+      "question": "Is there a green circle?",
       "answer": "yes"
     },
     {
@@ -113,20 +113,24 @@
   ],
   "qa_existential_attribute": [
     {
+      "question": "What color is the triangle?",
+      "answer": "red"
+    },
+    {
       "question": "How many objects are present in the image?",
       "answer": "2"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "triangle"
+      "question": "What color is the circle?",
+      "answer": "green"
     },
     {
       "question": "What shape is the green object?",
       "answer": "circle"
     },
     {
-      "question": "What color is the circle?",
-      "answer": "green"
+      "question": "What shape is the red object?",
+      "answer": "triangle"
     }
   ]
 }

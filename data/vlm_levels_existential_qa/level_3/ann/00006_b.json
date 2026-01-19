@@ -356,18 +356,18 @@
       "answer": "no"
     },
     {
-      "question": "Is there a cyan triangle?",
+      "question": "Is there a orange star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a orange star?",
+      "question": "Is there a red star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the red object?",
-      "answer": "star"
+      "question": "What shape is the cyan object?",
+      "answer": "triangle"
     },
     {
       "question": "What shape is the orange object?",

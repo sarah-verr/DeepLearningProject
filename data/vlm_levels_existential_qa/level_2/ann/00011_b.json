@@ -175,12 +175,16 @@
       "answer": "triangle"
     },
     {
+      "question": "What shape is the cyan object?",
+      "answer": "circle"
+    },
+    {
       "question": "How many objects are present in the image?",
       "answer": "2"
     },
     {
-      "question": "What shape is the cyan object?",
-      "answer": "circle"
+      "question": "What color is the circle?",
+      "answer": "cyan"
     },
     {
       "question": "What color is the triangle?",

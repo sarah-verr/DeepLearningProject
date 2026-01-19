@@ -585,7 +585,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a purple circle?",
+      "question": "Is there a orange triangle?",
       "answer": "yes"
     },
     {
@@ -613,10 +613,6 @@
     {
       "question": "What shape is the yellow object?",
       "answer": "triangle"
-    },
-    {
-      "question": "What shape is the pink object?",
-      "answer": "circle"
     }
   ]
 }

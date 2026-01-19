@@ -627,7 +627,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a yellow star?",
+      "question": "Is there a orange circle?",
       "answer": "yes"
     },
     {
@@ -645,12 +645,12 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
+      "question": "What color is the star?",
+      "answer": "yellow"
     },
     {
-      "question": "What shape is the lime object?",
-      "answer": "triangle"
+      "question": "How many objects are present in the image?",
+      "answer": "4"
     },
     {
       "question": "What shape is the yellow object?",
@@ -659,6 +659,10 @@
     {
       "question": "What color is the square?",
       "answer": "purple"
+    },
+    {
+      "question": "What shape is the purple object?",
+      "answer": "square"
     }
   ]
 }

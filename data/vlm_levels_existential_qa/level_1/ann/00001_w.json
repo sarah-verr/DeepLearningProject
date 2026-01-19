@@ -103,30 +103,34 @@
       "answer": "no"
     },
     {
-      "question": "Is there a red triangle?",
+      "question": "Is there a blue star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a blue star?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the blue object?",
-      "answer": "star"
+      "question": "What shape is the red object?",
+      "answer": "triangle"
     },
     {
-      "question": "What color is the triangle?",
-      "answer": "red"
+      "question": "What shape is the blue object?",
+      "answer": "star"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "2"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "triangle"
+      "question": "What color is the star?",
+      "answer": "blue"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "red"
     }
   ]
 }

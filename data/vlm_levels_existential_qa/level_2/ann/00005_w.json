@@ -115,7 +115,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange triangle?",
+      "question": "Is there a green square?",
       "answer": "yes"
     },
     {
@@ -123,7 +123,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a green square?",
+      "question": "Is there a orange triangle?",
       "answer": "yes"
     }
   ],
@@ -133,16 +133,20 @@
       "answer": "2"
     },
     {
-      "question": "What shape is the green object?",
-      "answer": "square"
+      "question": "What color is the square?",
+      "answer": "green"
     },
     {
       "question": "What shape is the orange object?",
       "answer": "triangle"
     },
     {
-      "question": "What color is the square?",
-      "answer": "green"
+      "question": "What color is the triangle?",
+      "answer": "orange"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "square"
     }
   ]
 }

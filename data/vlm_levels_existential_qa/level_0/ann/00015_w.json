@@ -103,23 +103,15 @@
       "answer": "no"
     },
     {
-      "question": "Is there a cyan triangle?",
+      "question": "Is there a red square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a red square?",
+      "question": "Is there a cyan triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
-    {
-      "question": "What shape is the cyan object?",
-      "answer": "triangle"
-    },
-    {
-      "question": "What color is the triangle?",
-      "answer": "cyan"
-    },
     {
       "question": "What shape is the red object?",
       "answer": "square"
@@ -127,6 +119,18 @@
     {
       "question": "How many objects are present in the image?",
       "answer": "2"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "cyan"
+    },
+    {
+      "question": "What shape is the cyan object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the square?",
+      "answer": "red"
     }
   ]
 }

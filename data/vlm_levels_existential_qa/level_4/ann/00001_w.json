@@ -585,7 +585,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a cyan star?",
+      "question": "Is there a yellow triangle?",
       "answer": "yes"
     },
     {
@@ -597,11 +597,15 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange triangle?",
+      "question": "Is there a cyan star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
+    {
+      "question": "What color is the star?",
+      "answer": "cyan"
+    },
     {
       "question": "What shape is the yellow object?",
       "answer": "triangle"
@@ -609,10 +613,6 @@
     {
       "question": "What shape is the cyan object?",
       "answer": "star"
-    },
-    {
-      "question": "What color is the star?",
-      "answer": "cyan"
     },
     {
       "question": "How many objects are present in the image?",

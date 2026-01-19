@@ -593,26 +593,30 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange circle?",
+      "question": "Is there a lime triangle?",
       "answer": "yes"
     },
     {
-      "question": "Is there a cyan star?",
+      "question": "Is there a yellow square?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What color is the star?",
-      "answer": "cyan"
+      "question": "What color is the circle?",
+      "answer": "orange"
+    },
+    {
+      "question": "What shape is the orange object?",
+      "answer": "circle"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "4"
     },
     {
-      "question": "What shape is the cyan object?",
-      "answer": "star"
+      "question": "What color is the star?",
+      "answer": "cyan"
     },
     {
       "question": "What shape is the yellow object?",

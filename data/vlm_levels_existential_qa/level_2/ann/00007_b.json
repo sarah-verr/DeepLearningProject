@@ -183,6 +183,10 @@
       "answer": "triangle"
     },
     {
+      "question": "What color is the triangle?",
+      "answer": "purple"
+    },
+    {
       "question": "How many objects are present in the image?",
       "answer": "2"
     }

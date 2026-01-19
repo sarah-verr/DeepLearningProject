@@ -175,16 +175,20 @@
       "answer": "triangle"
     },
     {
-      "question": "What shape is the green object?",
-      "answer": "square"
-    },
-    {
       "question": "What color is the square?",
       "answer": "green"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "2"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "square"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "pink"
     }
   ]
 }

@@ -103,11 +103,11 @@
       "answer": "no"
     },
     {
-      "question": "Is there a green square?",
+      "question": "Is there a blue square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a blue square?",
+      "question": "Is there a green square?",
       "answer": "yes"
     }
   ],

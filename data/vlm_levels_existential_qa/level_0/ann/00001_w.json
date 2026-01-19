@@ -117,12 +117,16 @@
       "answer": "circle"
     },
     {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
-    },
-    {
       "question": "What color is the circle?",
       "answer": "yellow"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "green"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
     },
     {
       "question": "What shape is the green object?",

@@ -627,7 +627,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a lime star?",
+      "question": "Is there a blue square?",
       "answer": "yes"
     },
     {
@@ -639,7 +639,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a blue square?",
+      "question": "Is there a red star?",
       "answer": "yes"
     }
   ],
@@ -655,10 +655,6 @@
     {
       "question": "How many objects are present in the image?",
       "answer": "4"
-    },
-    {
-      "question": "What shape is the blue object?",
-      "answer": "square"
     }
   ]
 }

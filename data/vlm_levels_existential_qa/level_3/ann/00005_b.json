@@ -348,11 +348,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a blue circle?",
+      "question": "Is there a green square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a pink star?",
+      "question": "Is there a blue circle?",
       "answer": "yes"
     },
     {
@@ -366,20 +366,24 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the green object?",
-      "answer": "square"
+      "question": "What color is the square?",
+      "answer": "green"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "3"
     },
     {
-      "question": "What color is the square?",
-      "answer": "green"
+      "question": "What shape is the green object?",
+      "answer": "square"
     },
     {
       "question": "What shape is the pink object?",
       "answer": "star"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "pink"
     }
   ]
 }

@@ -103,30 +103,34 @@
       "answer": "no"
     },
     {
-      "question": "Is there a red triangle?",
+      "question": "Is there a green square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a green square?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
+      "question": "What color is the square?",
+      "answer": "green"
+    },
+    {
       "question": "What shape is the green object?",
       "answer": "square"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
     },
     {
       "question": "What shape is the red object?",
       "answer": "triangle"
     },
     {
-      "question": "What color is the square?",
-      "answer": "green"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
+      "question": "What color is the triangle?",
+      "answer": "red"
     }
   ]
 }

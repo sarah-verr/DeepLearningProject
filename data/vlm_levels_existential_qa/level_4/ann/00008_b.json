@@ -645,16 +645,20 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
-    },
-    {
       "question": "What shape is the lime object?",
       "answer": "triangle"
     },
     {
       "question": "What shape is the orange object?",
       "answer": "circle"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "4"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "lime"
     },
     {
       "question": "What color is the star?",

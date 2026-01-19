@@ -171,6 +171,10 @@
   ],
   "qa_existential_attribute": [
     {
+      "question": "What shape is the yellow object?",
+      "answer": "circle"
+    },
+    {
       "question": "What shape is the purple object?",
       "answer": "triangle"
     },
@@ -179,8 +183,8 @@
       "answer": "purple"
     },
     {
-      "question": "What shape is the yellow object?",
-      "answer": "circle"
+      "question": "What color is the circle?",
+      "answer": "yellow"
     },
     {
       "question": "How many objects are present in the image?",

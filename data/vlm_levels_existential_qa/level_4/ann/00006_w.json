@@ -555,19 +555,11 @@
       "answer": "yes"
     },
     {
-      "question": "Is there a green circle?",
+      "question": "Is there a pink triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
-    {
-      "question": "What shape is the pink object?",
-      "answer": "triangle"
-    },
-    {
-      "question": "What shape is the purple object?",
-      "answer": "circle"
-    },
     {
       "question": "How many objects are present in the image?",
       "answer": "4"
@@ -575,6 +567,10 @@
     {
       "question": "What shape is the green object?",
       "answer": "circle"
+    },
+    {
+      "question": "What shape is the pink object?",
+      "answer": "triangle"
     }
   ]
 }

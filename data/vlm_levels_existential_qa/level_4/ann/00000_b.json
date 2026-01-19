@@ -639,26 +639,30 @@
       "answer": "no"
     },
     {
-      "question": "Is there a cyan square?",
+      "question": "Is there a pink square?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
-    },
-    {
       "question": "What color is the circle?",
       "answer": "yellow"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "4"
     },
     {
       "question": "What shape is the cyan object?",
       "answer": "square"
     },
     {
-      "question": "What shape is the yellow object?",
-      "answer": "circle"
+      "question": "What shape is the lime object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "lime"
     }
   ]
 }

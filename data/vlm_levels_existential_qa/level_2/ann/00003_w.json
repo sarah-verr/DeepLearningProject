@@ -129,20 +129,24 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
-    },
-    {
       "question": "What color is the triangle?",
       "answer": "blue"
     },
     {
-      "question": "What shape is the yellow object?",
-      "answer": "star"
-    },
-    {
       "question": "What shape is the blue object?",
       "answer": "triangle"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "yellow"
+    },
+    {
+      "question": "What shape is the yellow object?",
+      "answer": "star"
     }
   ]
 }

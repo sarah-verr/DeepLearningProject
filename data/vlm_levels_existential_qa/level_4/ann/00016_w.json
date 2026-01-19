@@ -639,26 +639,30 @@
       "answer": "no"
     },
     {
-      "question": "Is there a pink circle?",
+      "question": "Is there a cyan triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What color is the star?",
-      "answer": "green"
-    },
-    {
-      "question": "What shape is the pink object?",
-      "answer": "circle"
+      "question": "What shape is the green object?",
+      "answer": "star"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "4"
     },
     {
-      "question": "What shape is the green object?",
-      "answer": "star"
+      "question": "What color is the triangle?",
+      "answer": "cyan"
+    },
+    {
+      "question": "What shape is the cyan object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "green"
     }
   ]
 }

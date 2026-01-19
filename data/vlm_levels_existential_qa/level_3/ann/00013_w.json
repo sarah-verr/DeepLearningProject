@@ -306,11 +306,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a pink square?",
+      "question": "Is there a orange star?",
       "answer": "yes"
     },
     {
-      "question": "Is there a orange star?",
+      "question": "Is there a cyan square?",
       "answer": "yes"
     },
     {
@@ -324,20 +324,20 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the pink object?",
-      "answer": "square"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "3"
+      "question": "What color is the star?",
+      "answer": "orange"
     },
     {
       "question": "What shape is the orange object?",
       "answer": "star"
     },
     {
-      "question": "What color is the star?",
-      "answer": "orange"
+      "question": "How many objects are present in the image?",
+      "answer": "3"
+    },
+    {
+      "question": "What shape is the cyan object?",
+      "answer": "square"
     }
   ]
 }

@@ -348,7 +348,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a pink triangle?",
+      "question": "Is there a lime triangle?",
       "answer": "yes"
     },
     {
@@ -370,11 +370,11 @@
       "answer": "3"
     },
     {
-      "question": "What shape is the pink object?",
+      "question": "What shape is the lime object?",
       "answer": "triangle"
     },
     {
-      "question": "What shape is the lime object?",
+      "question": "What shape is the pink object?",
       "answer": "triangle"
     },
     {

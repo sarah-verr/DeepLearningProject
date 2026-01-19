@@ -111,7 +111,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a red star?",
+      "question": "Is there a orange star?",
       "answer": "yes"
     },
     {
@@ -119,7 +119,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange star?",
+      "question": "Is there a red star?",
       "answer": "yes"
     },
     {

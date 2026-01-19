@@ -360,13 +360,13 @@
       "answer": "yes"
     },
     {
-      "question": "Is there a yellow star?",
+      "question": "Is there a green square?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the pink object?",
+      "question": "What shape is the yellow object?",
       "answer": "star"
     },
     {
@@ -378,7 +378,7 @@
       "answer": "green"
     },
     {
-      "question": "What shape is the yellow object?",
+      "question": "What shape is the pink object?",
       "answer": "star"
     }
   ]

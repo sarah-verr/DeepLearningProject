@@ -631,7 +631,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple star?",
+      "question": "Is there a cyan star?",
       "answer": "yes"
     },
     {
@@ -639,26 +639,26 @@
       "answer": "no"
     },
     {
-      "question": "Is there a yellow circle?",
+      "question": "Is there a purple star?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
+      "question": "What shape is the red object?",
+      "answer": "star"
+    },
+    {
+      "question": "What shape is the purple object?",
+      "answer": "star"
     },
     {
       "question": "What color is the circle?",
       "answer": "yellow"
     },
     {
-      "question": "What shape is the yellow object?",
-      "answer": "circle"
-    },
-    {
-      "question": "What shape is the cyan object?",
-      "answer": "star"
+      "question": "How many objects are present in the image?",
+      "answer": "4"
     }
   ]
 }

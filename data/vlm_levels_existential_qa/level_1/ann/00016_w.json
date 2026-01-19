@@ -99,7 +99,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple star?",
+      "question": "Is there a lime triangle?",
       "answer": "yes"
     },
     {
@@ -107,7 +107,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a lime triangle?",
+      "question": "Is there a purple star?",
       "answer": "yes"
     }
   ],
@@ -123,6 +123,10 @@
     {
       "question": "What color is the star?",
       "answer": "purple"
+    },
+    {
+      "question": "What color is the triangle?",
+      "answer": "lime"
     },
     {
       "question": "What shape is the lime object?",

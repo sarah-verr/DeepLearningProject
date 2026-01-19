@@ -631,7 +631,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple triangle?",
+      "question": "Is there a green triangle?",
       "answer": "yes"
     },
     {
@@ -645,20 +645,24 @@
   ],
   "qa_existential_attribute": [
     {
+      "question": "What shape is the purple object?",
+      "answer": "triangle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "pink"
+    },
+    {
       "question": "What color is the star?",
       "answer": "blue"
     },
     {
-      "question": "What shape is the pink object?",
-      "answer": "circle"
+      "question": "How many objects are present in the image?",
+      "answer": "4"
     },
     {
       "question": "What shape is the blue object?",
       "answer": "star"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "4"
     }
   ]
 }

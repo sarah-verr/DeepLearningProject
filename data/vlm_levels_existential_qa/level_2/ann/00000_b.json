@@ -171,20 +171,24 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the green object?",
-      "answer": "square"
+      "question": "What color is the square?",
+      "answer": "green"
     },
     {
-      "question": "What color is the triangle?",
-      "answer": "pink"
+      "question": "How many objects are present in the image?",
+      "answer": "2"
     },
     {
       "question": "What shape is the pink object?",
       "answer": "triangle"
     },
     {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
+      "question": "What color is the triangle?",
+      "answer": "pink"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "square"
     }
   ]
 }

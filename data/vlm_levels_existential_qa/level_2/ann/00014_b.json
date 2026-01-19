@@ -161,22 +161,26 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple triangle?",
+      "question": "Is there a pink square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a pink square?",
+      "question": "Is there a purple triangle?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
       "question": "What shape is the purple object?",
       "answer": "triangle"
     },
     {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
+      "question": "What color is the triangle?",
+      "answer": "purple"
     },
     {
       "question": "What shape is the pink object?",

@@ -631,7 +631,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a green triangle?",
+      "question": "Is there a purple triangle?",
       "answer": "yes"
     },
     {
@@ -649,16 +649,20 @@
       "answer": "4"
     },
     {
-      "question": "What shape is the blue object?",
-      "answer": "star"
+      "question": "What color is the circle?",
+      "answer": "pink"
+    },
+    {
+      "question": "What color is the star?",
+      "answer": "blue"
+    },
+    {
+      "question": "What shape is the green object?",
+      "answer": "triangle"
     },
     {
       "question": "What shape is the purple object?",
       "answer": "triangle"
-    },
-    {
-      "question": "What color is the circle?",
-      "answer": "pink"
     }
   ]
 }

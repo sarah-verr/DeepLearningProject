@@ -95,7 +95,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a lime triangle?",
+      "question": "Is there a purple star?",
       "answer": "yes"
     },
     {
@@ -103,7 +103,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple star?",
+      "question": "Is there a lime triangle?",
       "answer": "yes"
     },
     {
@@ -113,16 +113,20 @@
   ],
   "qa_existential_attribute": [
     {
+      "question": "What color is the star?",
+      "answer": "purple"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
+    },
+    {
       "question": "What shape is the lime object?",
       "answer": "triangle"
     },
     {
       "question": "What shape is the purple object?",
       "answer": "star"
-    },
-    {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
     },
     {
       "question": "What color is the triangle?",

@@ -627,7 +627,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a red circle?",
+      "question": "Is there a blue triangle?",
       "answer": "yes"
     },
     {
@@ -635,7 +635,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a pink star?",
+      "question": "Is there a red circle?",
       "answer": "yes"
     },
     {
@@ -649,8 +649,8 @@
       "answer": "4"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "circle"
+      "question": "What color is the triangle?",
+      "answer": "blue"
     },
     {
       "question": "What color is the circle?",
@@ -659,6 +659,10 @@
     {
       "question": "What shape is the pink object?",
       "answer": "star"
+    },
+    {
+      "question": "What shape is the blue object?",
+      "answer": "triangle"
     }
   ]
 }

@@ -352,7 +352,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a purple square?",
+      "question": "Is there a cyan triangle?",
       "answer": "yes"
     },
     {
@@ -360,22 +360,26 @@
       "answer": "no"
     },
     {
-      "question": "Is there a lime star?",
+      "question": "Is there a purple square?",
       "answer": "yes"
     }
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the purple object?",
-      "answer": "square"
+      "question": "What color is the square?",
+      "answer": "purple"
+    },
+    {
+      "question": "What shape is the cyan object?",
+      "answer": "triangle"
     },
     {
       "question": "How many objects are present in the image?",
       "answer": "3"
     },
     {
-      "question": "What shape is the cyan object?",
-      "answer": "triangle"
+      "question": "What shape is the lime object?",
+      "answer": "star"
     },
     {
       "question": "What color is the star?",

@@ -171,12 +171,16 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the blue object?",
-      "answer": "circle"
-    },
-    {
       "question": "What color is the triangle?",
       "answer": "pink"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "blue"
+    },
+    {
+      "question": "What shape is the blue object?",
+      "answer": "circle"
     },
     {
       "question": "What shape is the pink object?",

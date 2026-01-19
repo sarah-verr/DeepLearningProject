@@ -306,7 +306,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a lime square?",
+      "question": "Is there a green star?",
       "answer": "yes"
     },
     {
@@ -314,7 +314,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a orange star?",
+      "question": "Is there a lime square?",
       "answer": "yes"
     },
     {
@@ -324,20 +324,20 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the lime object?",
-      "answer": "square"
+      "question": "What shape is the orange object?",
+      "answer": "star"
     },
     {
-      "question": "How many objects are present in the image?",
-      "answer": "3"
+      "question": "What shape is the lime object?",
+      "answer": "square"
     },
     {
       "question": "What color is the square?",
       "answer": "lime"
     },
     {
-      "question": "What shape is the orange object?",
-      "answer": "star"
+      "question": "How many objects are present in the image?",
+      "answer": "3"
     }
   ]
 }

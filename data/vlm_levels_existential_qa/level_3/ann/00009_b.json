@@ -370,12 +370,12 @@
       "answer": "blue"
     },
     {
-      "question": "What shape is the pink object?",
-      "answer": "circle"
-    },
-    {
       "question": "What shape is the blue object?",
       "answer": "square"
+    },
+    {
+      "question": "What shape is the pink object?",
+      "answer": "circle"
     },
     {
       "question": "How many objects are present in the image?",

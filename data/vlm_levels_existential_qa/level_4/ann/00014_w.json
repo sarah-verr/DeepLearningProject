@@ -603,12 +603,12 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the yellow object?",
-      "answer": "star"
-    },
-    {
       "question": "What shape is the pink object?",
       "answer": "circle"
+    },
+    {
+      "question": "What shape is the red object?",
+      "answer": "star"
     },
     {
       "question": "How many objects are present in the image?",

@@ -348,7 +348,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a yellow square?",
+      "question": "Is there a blue circle?",
       "answer": "yes"
     },
     {
@@ -360,7 +360,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a blue circle?",
+      "question": "Is there a yellow square?",
       "answer": "yes"
     }
   ],
@@ -378,8 +378,8 @@
       "answer": "yellow"
     },
     {
-      "question": "What shape is the yellow object?",
-      "answer": "square"
+      "question": "What shape is the pink object?",
+      "answer": "circle"
     }
   ]
 }

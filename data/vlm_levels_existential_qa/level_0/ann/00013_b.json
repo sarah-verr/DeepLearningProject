@@ -113,6 +113,14 @@
   ],
   "qa_existential_attribute": [
     {
+      "question": "What shape is the red object?",
+      "answer": "circle"
+    },
+    {
+      "question": "What color is the circle?",
+      "answer": "red"
+    },
+    {
       "question": "How many objects are present in the image?",
       "answer": "2"
     },
@@ -121,12 +129,8 @@
       "answer": "square"
     },
     {
-      "question": "What shape is the red object?",
-      "answer": "circle"
-    },
-    {
-      "question": "What color is the circle?",
-      "answer": "red"
+      "question": "What color is the square?",
+      "answer": "lime"
     }
   ]
 }

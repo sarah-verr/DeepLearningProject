@@ -95,11 +95,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a cyan square?",
+      "question": "Is there a pink square?",
       "answer": "yes"
     },
     {
-      "question": "Is there a pink square?",
+      "question": "Is there a cyan square?",
       "answer": "yes"
     },
     {

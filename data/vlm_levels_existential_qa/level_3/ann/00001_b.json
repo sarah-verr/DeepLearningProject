@@ -348,11 +348,11 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a red triangle?",
+      "question": "Is there a purple triangle?",
       "answer": "yes"
     },
     {
-      "question": "Is there a orange square?",
+      "question": "Is there a red triangle?",
       "answer": "yes"
     },
     {
@@ -370,12 +370,12 @@
       "answer": "orange"
     },
     {
-      "question": "What shape is the orange object?",
-      "answer": "square"
-    },
-    {
       "question": "What shape is the purple object?",
       "answer": "triangle"
+    },
+    {
+      "question": "What shape is the orange object?",
+      "answer": "square"
     },
     {
       "question": "How many objects are present in the image?",

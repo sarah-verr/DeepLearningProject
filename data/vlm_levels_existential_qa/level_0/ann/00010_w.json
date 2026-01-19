@@ -95,7 +95,7 @@
   },
   "qa_existential_yesno": [
     {
-      "question": "Is there a orange circle?",
+      "question": "Is there a yellow square?",
       "answer": "yes"
     },
     {
@@ -103,7 +103,7 @@
       "answer": "no"
     },
     {
-      "question": "Is there a yellow square?",
+      "question": "Is there a orange circle?",
       "answer": "yes"
     },
     {
@@ -113,8 +113,12 @@
   ],
   "qa_existential_attribute": [
     {
-      "question": "What shape is the yellow object?",
-      "answer": "square"
+      "question": "What color is the circle?",
+      "answer": "orange"
+    },
+    {
+      "question": "How many objects are present in the image?",
+      "answer": "2"
     },
     {
       "question": "What color is the square?",
@@ -125,8 +129,8 @@
       "answer": "circle"
     },
     {
-      "question": "How many objects are present in the image?",
-      "answer": "2"
+      "question": "What shape is the yellow object?",
+      "answer": "square"
     }
   ]
 }
