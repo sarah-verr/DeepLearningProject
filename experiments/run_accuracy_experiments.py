@@ -60,7 +60,7 @@ def run_all_experiments(level_ids: list = None, show_output: bool = False):
     
     # Experiment 1: vlm_levels - Yes/No questions (existential)
     print("\n" + "="*80)
-    print("EXPERIMENT 1: vlm_levels - Yes/No Questions")
+    print("EXPERIMENT 1: vlm_levels - Existential Yes/No Questions")
     print("="*80)
     try:
         accuracy_yesno = compute_existential_accuracy(
@@ -77,7 +77,7 @@ def run_all_experiments(level_ids: list = None, show_output: bool = False):
     
     # Experiment 2: vlm_levels - Attribute questions
     print("\n" + "="*80)
-    print("EXPERIMENT 2: vlm_levels - Attribute Questions")
+    print("EXPERIMENT 2: vlm_levels - ExistentialAttribute Questions")
     print("="*80)
     try:
         accuracy_attribute = compute_existential_accuracy(

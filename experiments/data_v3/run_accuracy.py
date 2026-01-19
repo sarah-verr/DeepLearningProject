@@ -6,6 +6,7 @@ It compares model outputs with ground truth answers (spatial relations).
 """
 
 import sys
+import argparse
 from pathlib import Path
 import pandas as pd
 
@@ -70,6 +71,10 @@ def normalize_answer(text: str) -> str:
 def compute_accuracy_for_questions(
     level_ids: list,
     show_output: bool = True,
+    use_attention_mask: bool = False,
+    always_mask: bool = False,
+    mask_type: str = "objects_only",
+    results_subdir: str = "accuracy_question_ablation",
 ) -> pd.Series:
     """Run inference and compute accuracy for relational position questions."""
     print(f"\n{'='*60}")
@@ -78,13 +83,16 @@ def compute_accuracy_for_questions(
     print(f"Levels: {level_ids}")
     print(f"{'='*60}\n")
     
-    # Run inference with full output shown
+    # Run inference with optional attention masking
     results_list = infer_model_for_levels(
         level_ids=level_ids,
         prompt_strategy="visual_relational",
         show_llm_output=show_output,
         qa_key="qa",
         data_dir="data/vlm_levels_v3",
+        use_attention_mask=use_attention_mask,
+        always_mask=always_mask,
+        mask_type=mask_type,
     )
     
     # Convert to DataFrame
@@ -137,7 +145,7 @@ def compute_accuracy_for_questions(
     # Save results to new folder structure
     project_root = Path(__file__).resolve().parents[1]
     model_name = MODEL_ID.split("/")[-1]
-    results_path = project_root / "results_llava_hf" / model_name / "accuracy_question_ablation" / "data_v3"
+    results_path = project_root / "results_llava_hf" / model_name / results_subdir / "data_v3"
     results_path.mkdir(parents=True, exist_ok=True)
     filename = "visual_relational_results.csv"
     output_path = results_path / filename
@@ -150,7 +158,7 @@ def compute_accuracy_for_questions(
         
         # Also compute accuracy by question_type
         if "question_type" in results_df.columns:
-            accuracy_by_type = results_df.groupby("question_type")["correct"].mean()
+            accuracy_by_type = results_df.groupby("question_type")["is_correct"].mean()
             print(f"\nAccuracy by question type:")
             for qtype, acc in accuracy_by_type.items():
                 print(f"  {qtype}: {acc:.2%}")
@@ -167,16 +175,27 @@ def compute_accuracy_for_questions(
 
 
 if __name__ == "__main__":
-    # Run for level_0 only with full output
-    level_ids = ["level_2"]
-    
+    parser = argparse.ArgumentParser(description="Run accuracy for vlm_levels_v3 (relational).")
+    parser.add_argument("--levels", nargs="+", default=["level_0", "level_1", "level_2", "level_3", "level_4"])
+    parser.add_argument("--show-output", action="store_true", help="Show full model outputs during inference")
+    parser.add_argument("--use-attention-mask", action="store_true", help="Enable attention masking")
+    parser.add_argument(
+        "--mask-type",
+        type=str,
+        default="objects_only",
+        help="Masking strategy (passed to infer_model_for_levels)",
+    )
+    args = parser.parse_args()
+
     print("\n" + "="*60)
     print("RELATIONAL POSITION QUESTIONS ACCURACY")
     print("="*60)
     
     accuracy = compute_accuracy_for_questions(
-        level_ids=level_ids,
-        show_output=True,
+        level_ids=args.levels,
+        show_output=args.show_output,
+        use_attention_mask=args.use_attention_mask,
+        mask_type=args.mask_type,
     )
     
     print("\n" + "="*60)

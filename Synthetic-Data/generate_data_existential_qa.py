@@ -67,19 +67,19 @@ def generate_attribute_identification_questions(objects: List[Dict]) -> List[Dic
     - Shapes CAN repeat (multiple objects can have the same shape)
     
     Question types:
-    1. "How many objects are present in the image?" → answer: "<number>"
-    2. "What color is the {shape}?" → answer: "<color>" (only if shape is unique, unambiguous)
-    3. "What shape is the {color} object?" → answer: "<shape>" (always unambiguous - colors are unique!)
+    1. "How many objects are present in the image?" → answer: "<number>" (1 question)
+    2. "What color is the {shape}?" → answer: "<color>" (2 questions, only if shape is unique)
+    3. "What shape is the {color} object?" → answer: "<shape>" (2 questions, always unambiguous - colors are unique!)
     
     Args:
         objects: List of object dictionaries with 'color' and 'shape' keys
         
     Returns:
-        List of QA dictionaries with 'question' and 'answer' keys (exactly 4 questions)
+        List of QA dictionaries with 'question' and 'answer' keys (exactly 5 questions: 1 number + 2 color + 2 shape)
     """
     questions = []
     
-    # Type 1: "How many objects are present in the image?" → answer: "<number>"
+    # Type 1: "How many objects are present in the image?" → answer: "<number>" (exactly 1)
     num_objects = len(objects)
     questions.append({
         "question": "How many objects are present in the image?",
@@ -97,45 +97,42 @@ def generate_attribute_identification_questions(objects: List[Dict]) -> List[Dic
         # Colors are unique, so this is a one-to-one mapping
         color_to_shape[color] = shape
     
-    # Type 2: "What color is the {shape}?" → answer: "<color>"
+    # Type 2: "What color is the {shape}?" → answer: "<color>" (exactly 2 questions)
     # Only ask if shape is unique (unambiguous)
+    color_questions = []
     for shape, colors in shape_to_colors.items():
         if len(colors) == 1:  # Unique shape, unambiguous answer
             question = f"What color is the {shape}?"
-            questions.append({"question": question, "answer": colors[0]})
-        # Skip ambiguous cases (multiple objects with same shape)
+            color_questions.append({"question": question, "answer": colors[0]})
     
-    # Type 3: "What shape is the {color} object?" → answer: "<shape>"
+    # Sample exactly 2 color questions (if available)
+    if len(color_questions) >= 2:
+        questions.extend(random.sample(color_questions, 2))
+    elif len(color_questions) == 1:
+        # If only 1 unique shape, use it (but we need 2 color questions)
+        questions.append(color_questions[0])
+        # Note: If there's only 1 unique shape, we can't generate 2 color questions
+        # In this case, we'll have fewer than 2, but that's the best we can do
+    # If no unique shapes, no color questions can be generated
+    
+    # Type 3: "What shape is the {color} object?" → answer: "<shape>" (exactly 2 questions)
     # ALWAYS unambiguous because colors are unique!
+    shape_questions = []
     for color, shape in color_to_shape.items():
         question = f"What shape is the {color} object?"
-        questions.append({"question": question, "answer": shape})
+        shape_questions.append({"question": question, "answer": shape})
     
-    # Sample exactly 4 questions: 1 counting + (up to 1 color question) + shape questions
-    # Note: Color questions may not exist if all shapes are ambiguous
-    selected = []
+    # Sample exactly 2 shape questions
+    if len(shape_questions) >= 2:
+        questions.extend(random.sample(shape_questions, 2))
+    elif len(shape_questions) == 1:
+        questions.append(shape_questions[0])
+        # Note: If there's only 1 object, we can only generate 1 shape question
+    # If no objects, no shape questions can be generated
     
-    # Always include the counting question
-    counting_q = [q for q in questions if "How many" in q["question"]]
-    if counting_q:
-        selected.append(counting_q[0])
-    
-    # Sample 1 color question (if available)
-    color_questions = [q for q in questions if "What color" in q["question"]]
-    if color_questions:
-        selected.append(random.choice(color_questions))
-    
-    # Sample shape questions - add enough to reach 4 total
-    shape_questions = [q for q in questions if "What shape" in q["question"]]
-    if shape_questions:
-        # Calculate how many shape questions we need to reach 4 total
-        num_needed = 4 - len(selected)
-        num_shape_questions = min(num_needed, len(shape_questions))
-        selected.extend(random.sample(shape_questions, num_shape_questions))
-    
-    # Shuffle and return exactly 4 questions
-    random.shuffle(selected)
-    return selected[:4]
+    # Shuffle and return (should be exactly 5 questions if possible: 1 number + 2 color + 2 shape)
+    random.shuffle(questions)
+    return questions
 
 
 

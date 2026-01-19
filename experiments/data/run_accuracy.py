@@ -6,6 +6,7 @@ It saves results in a unified format matching other accuracy scripts.
 """
 
 import sys
+import argparse
 from pathlib import Path
 import pandas as pd
 
@@ -21,6 +22,10 @@ from utils.results_processing import extract_raw_answer_from_response
 def compute_accuracy_for_questions(
     level_ids: list,
     show_output: bool = True,
+    use_attention_mask: bool = False,
+    always_mask: bool = False,
+    mask_type: str = "objects_only",
+    results_subdir: str = "accuracy_question_ablation",
 ) -> pd.Series:
     """Run inference and compute accuracy for visual yes/no questions."""
     print(f"\n{'='*60}")
@@ -29,13 +34,16 @@ def compute_accuracy_for_questions(
     print(f"Levels: {level_ids}")
     print(f"{'='*60}\n")
     
-    # Run inference with full output shown
+    # Run inference with optional attention masking
     results_list = infer_model_for_levels(
         level_ids=level_ids,
         prompt_strategy="visual",
         show_llm_output=show_output,
         qa_key="qa",
         data_dir="data/vlm_levels",
+        use_attention_mask=use_attention_mask,
+        always_mask=always_mask,
+        mask_type=mask_type,
     )
     
     # Convert to DataFrame
@@ -87,7 +95,7 @@ def compute_accuracy_for_questions(
     # Save results to new folder structure
     project_root = Path(__file__).resolve().parents[1]
     model_name = MODEL_ID.split("/")[-1]
-    results_path = project_root / "results_llava_hf" / model_name / "accuracy_question_ablation" / "data"
+    results_path = project_root / "results_llava_hf" / model_name / results_subdir / "data"
     results_path.mkdir(parents=True, exist_ok=True)
     filename = "visual_yesno_results.csv"
     output_path = results_path / filename
@@ -117,16 +125,27 @@ def compute_accuracy_for_questions(
 
 
 if __name__ == "__main__":
-    # Run for all levels
-    level_ids = ["level_0", "level_1", "level_2", "level_3", "level_4"]
-    
+    parser = argparse.ArgumentParser(description="Run accuracy for vlm_levels (yes/no).")
+    parser.add_argument("--levels", nargs="+", default=["level_0", "level_1", "level_2", "level_3", "level_4"])
+    parser.add_argument("--show-output", action="store_true", help="Show full model outputs during inference")
+    parser.add_argument("--use-attention-mask", action="store_true", help="Enable attention masking")
+    parser.add_argument(
+        "--mask-type",
+        type=str,
+        default="objects_only",
+        help="Masking strategy (passed to infer_model_for_levels)",
+    )
+    args = parser.parse_args()
+
     print("\n" + "="*60)
     print("ORIGINAL DATASET (vlm_levels) ACCURACY")
     print("="*60)
     
     accuracy = compute_accuracy_for_questions(
-        level_ids=level_ids,
-        show_output=True,
+        level_ids=args.levels,
+        show_output=args.show_output,
+        use_attention_mask=args.use_attention_mask,
+        mask_type=args.mask_type,
     )
     
     print("\n" + "="*60)

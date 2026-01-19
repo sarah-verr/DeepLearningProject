@@ -9,6 +9,7 @@ Both show full model output for level_0.
 """
 
 import sys
+import argparse
 from pathlib import Path
 import pandas as pd
 
@@ -28,20 +29,30 @@ def compute_accuracy_for_questions(
     qa_key: str,
     experiment_name: str,
     show_output: bool = True,
+    data_dir: str = "data/vlm_levels_existential_qa",
+    use_attention_mask: bool = False,
+    always_mask: bool = False,
+    mask_type: str = "objects_only",
+    results_subdir: str = "accuracy_question_ablation",
 ) -> pd.Series:
     """Run inference and compute accuracy for a specific question type."""
     print(f"\n{'='*60}")
     print(f"Running {experiment_name} experiment")
     print(f"QA Key: {qa_key}")
     print(f"Levels: {level_ids}")
+    print(f"Data directory: {data_dir}")
     print(f"{'='*60}\n")
     
-    # Run inference with full output shown
+    # Run inference with optional attention masking
     results_list = infer_model_for_levels(
         level_ids=level_ids,
         prompt_strategy=prompt_strategy,
         show_llm_output=show_output,
         qa_key=qa_key,
+        data_dir=data_dir,
+        use_attention_mask=use_attention_mask,
+        always_mask=always_mask,
+        mask_type=mask_type,
     )
     
     # Convert to DataFrame
@@ -59,7 +70,7 @@ def compute_accuracy_for_questions(
     print(f"Debug: DataFrame shape: {results_df.shape}")
     
     # Add dataset name to results
-    results_df["dataset"] = "vlm_levels"
+    results_df["dataset"] = "vlm_levels_existential_qa"
     
     # Extract raw model answers from response (not normalized)
     # For yes/no questions, we still want the raw text answer, not just the token prediction
@@ -111,58 +122,29 @@ def compute_accuracy_for_questions(
             axis=1
         )
         
-        # Normalize for comparison
-        results_df["prediction_clean"] = results_df["generated_text"].str.lower().str.strip()
-        
-        # Handle variations in model output format
+        # Normalize for comparison - all answers are one-word, so just basic cleaning
         def normalize_answer(text):
-            """Normalize model answers to handle variations like 'The star is purple.' -> 'purple star'"""
+            """Normalize model answers: lowercase, strip, remove trailing punctuation."""
             text = str(text).lower().strip()
-            # Remove trailing punctuation first
             text = text.rstrip(".,!?").strip()
-            
-            # Handle "X is Y" format -> "Y X" (e.g., "The star is purple" -> "purple star")
-            if " is " in text:
-                # Remove "the" prefix if present
-                text = text.replace("the ", "").strip()
-                parts = text.split(" is ", 1)
-                if len(parts) == 2:
-                    # "star is purple" -> "purple star"
-                    shape = parts[0].strip()
-                    color = parts[1].strip()
-                    text = f"{color} {shape}"
-            
-            # Remove other common prefixes
-            text = text.replace("the object is a", "").replace("the object is", "").strip()
-            # Remove standalone "the" at the start
-            if text.startswith("the "):
-                text = text[4:].strip()
-            
             return text
         
-        results_df["prediction_normalized"] = results_df["prediction_clean"].apply(normalize_answer)
+        results_df["prediction_clean"] = results_df["generated_text"].apply(normalize_answer)
         
         # Handle ground truth: can be a string or a list of valid answers
-        def check_answer(prediction_norm, prediction_clean, ground_truth):
-            """Check if prediction matches ground truth, trying both normalized and clean versions."""
+        def check_answer(prediction_clean, ground_truth):
+            """Check if prediction matches ground truth (both are normalized)."""
             if isinstance(ground_truth, list):
                 # If ground truth is a list, check if prediction matches any answer
-                gt_clean_list = [str(gt).lower().strip() for gt in ground_truth]
-                gt_norm_list = [normalize_answer(gt) for gt in ground_truth]
-                # Try both normalized and clean versions
-                return (prediction_clean in gt_clean_list) or (prediction_norm in gt_norm_list) or any(
-                    pred in gt or gt in pred for pred in [prediction_clean, prediction_norm] for gt in gt_clean_list
-                )
+                gt_clean_list = [normalize_answer(str(gt)) for gt in ground_truth]
+                return prediction_clean in gt_clean_list
             else:
-                # If ground truth is a string, try both normalized and clean
-                gt_clean = str(ground_truth).lower().strip()
-                gt_norm = normalize_answer(ground_truth)
-                return (prediction_clean == gt_clean) or (prediction_norm == gt_norm) or (
-                    prediction_clean in gt_clean or gt_clean in prediction_clean
-                )
+                # If ground truth is a string, normalize and compare
+                gt_clean = normalize_answer(str(ground_truth))
+                return prediction_clean == gt_clean
         
         results_df["is_correct"] = results_df.apply(
-            lambda row: check_answer(row["prediction_normalized"], row["prediction_clean"], row["ground_truth"]),
+            lambda row: check_answer(row["prediction_clean"], row["ground_truth"]),
             axis=1
         )
     
@@ -195,7 +177,7 @@ def compute_accuracy_for_questions(
         dataset_folder = "existential_attribute"
     else:
         raise ValueError(f"Unknown qa_key: {qa_key}. Expected 'qa_existential_yesno' or 'qa_existential_attribute'")
-    results_path = project_root / "results_llava_hf" / model_name / "accuracy_question_ablation" / dataset_folder
+    results_path = project_root / "results_llava_hf" / model_name / results_subdir / dataset_folder
     results_path.mkdir(parents=True, exist_ok=True)
     filename = f"{experiment_name}_results_{qa_key}.csv"
     output_path = results_path / filename
@@ -218,8 +200,20 @@ def compute_accuracy_for_questions(
         return pd.Series(dtype=float)
 
 if __name__ == "__main__":
-    # Run for level_0 only with full output
-    level_ids = ["level_4"]
+    parser = argparse.ArgumentParser(description="Run existential QA accuracy (yes/no + attribute).")
+    parser.add_argument("--levels", nargs="+", default=["level_0", "level_1", "level_2", "level_3", "level_4"])
+    parser.add_argument("--show-output", action="store_true", help="Show full model outputs during inference")
+    parser.add_argument("--use-attention-mask", action="store_true", help="Enable attention masking")
+    parser.add_argument(
+        "--mask-type",
+        type=str,
+        default="objects_only",
+        help="Masking strategy (passed to infer_model_for_levels)",
+    )
+    args = parser.parse_args()
+
+    # Run for all levels
+    level_ids = args.levels
     
     # Experiment 1: Yes/No questions
     print("\n" + "="*60)
@@ -230,7 +224,9 @@ if __name__ == "__main__":
         prompt_strategy="existential_yesno",
         qa_key="qa_existential_yesno",
         experiment_name="existential_yesno",
-        show_output=True,
+        show_output=args.show_output,  # optional verbose
+        use_attention_mask=args.use_attention_mask,
+        mask_type=args.mask_type,
     )
     
     # Experiment 2: Attribute questions
@@ -242,7 +238,9 @@ if __name__ == "__main__":
         prompt_strategy="existential_attribute",
         qa_key="qa_existential_attribute",
         experiment_name="existential_attribute",
-        show_output=True,
+        show_output=args.show_output,  # optional verbose
+        use_attention_mask=args.use_attention_mask,
+        mask_type=args.mask_type,
     )
     
     print("\n" + "="*60)

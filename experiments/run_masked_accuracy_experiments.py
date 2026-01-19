@@ -1,16 +1,19 @@
 """
-Run accuracy experiments with attention masking for all datasets:
-1. vlm_levels (yes/no questions) - mask when relation exists
-2. vlm_levels (yes/no questions) - always mask (even when relation doesn't exist)
-3. vlm_levels_v2 (attribute questions) - always mask (relations always exist)
-4. vlm_levels_v3 (relational questions) - always mask (relations always exist)
+Run masked accuracy experiments for all datasets (mirrors run_all_accuracy_experiments.py).
 
-This script runs all masked experiments and saves results in a unified CSV format.
+Experiments:
+0. vlm_levels (original) - Yes/No questions (qa)
+1. vlm_levels_existential_qa - Existential Yes/No questions (qa_existential_yesno)
+2. vlm_levels_existential_qa - Existential Attribute questions (qa_existential_attribute)
+3. vlm_levels_v2 - Visual Attribute questions (qa)
+4. vlm_levels_v3 - Visual Relational questions (qa)
+
+All experiments run with attention masking enabled and save results to:
+  results_llava_hf/{model_name}/masked_accuracy_ablation/
 """
 
 import sys
 from pathlib import Path
-import pandas as pd
 import argparse
 
 # Add experiments to path
@@ -19,123 +22,222 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 # Import experiment functions
-from experiments.data.run_accuracy_w_attention_mask import compute_accuracy_for_questions as compute_data_mask_accuracy
-from experiments.data.run_accuracy_w_attention_mask_for_existing_relation import compute_accuracy_for_questions as compute_data_mask_always_accuracy
-from experiments.data_v2.run_accuracy_w_attention_mask import compute_accuracy_for_questions as compute_v2_mask_accuracy
-from experiments.data_v3.run_accuracy_w_attention_mask import compute_accuracy_for_questions as compute_v3_mask_accuracy
+from experiments.data.run_accuracy import compute_accuracy_for_questions as compute_data_accuracy
+from experiments.existential_qa.run_accuracy import compute_accuracy_for_questions as compute_existential_accuracy
+from experiments.data_v2.run_accuracy import compute_accuracy_for_questions as compute_v2_accuracy
+from experiments.data_v3.run_accuracy import compute_accuracy_for_questions as compute_v3_accuracy
+from utils.prompt_llava import MODEL_ID
 
 
-def run_all_masked_experiments(level_ids: list = None, show_output: bool = False):
-    """Run accuracy experiments with attention masking for all datasets.
-    
-    Args:
-        level_ids: List of level IDs to run (default: all levels)
-        show_output: Whether to show model outputs during inference
-    """
+# Default masking configuration (easy to tweak for all experiments)
+DEFAULT_USE_ATTENTION_MASK = True
+DEFAULT_ALWAYS_MASK = True  # Always apply masking, even when relations don't exist
+DEFAULT_MASK_TYPE = "opposite_side"
+DEFAULT_RESULTS_SUBDIR = "always_masked_accuracy_ablation"
+
+
+def run_all_masked_experiments(
+    level_ids: list | None = None,
+    show_output: bool = False,
+    use_attention_mask: bool = DEFAULT_USE_ATTENTION_MASK,
+    always_mask: bool = DEFAULT_ALWAYS_MASK,
+    mask_type: str = DEFAULT_MASK_TYPE,
+    results_subdir: str = DEFAULT_RESULTS_SUBDIR,
+):
+    """Run masked accuracy experiments for all datasets."""
     if level_ids is None:
         level_ids = ["level_0", "level_1", "level_2", "level_3", "level_4"]
-    
-    print("\n" + "="*80)
+
+    model_name = MODEL_ID.split("/")[-1]
+
+    print("\n" + "=" * 80)
     print("RUNNING ALL MASKED ACCURACY EXPERIMENTS")
-    print("="*80)
+    print("=" * 80)
     print(f"Levels: {level_ids}")
     print(f"Show output: {show_output}")
-    print("="*80)
-    
+    print(f"Use attention mask: {use_attention_mask}")
+    print(f"Always mask: {always_mask}")
+    print(f"Mask type: {mask_type}")
+    print(f"Results subdir: {results_subdir}")
+    print("=" * 80)
+
     results_summary = {}
-    
-    # Experiment 1: vlm_levels - Yes/No questions with masking (only when relation exists)
-    print("\n" + "="*80)
-    print("EXPERIMENT 1: vlm_levels - Yes/No Questions WITH MASKING (when relation exists)")
-    print("="*80)
+
+    # Experiment 0: vlm_levels (original dataset) - Yes/No questions
+    print("\n" + "=" * 80)
+    print("EXPERIMENT 0 (MASKED): vlm_levels (original) - Yes/No Questions")
+    print("=" * 80)
     try:
-        accuracy_data_mask = compute_data_mask_accuracy(
+        accuracy_data = compute_data_accuracy(
             level_ids=level_ids,
             show_output=show_output,
+            use_attention_mask=use_attention_mask,
+            always_mask=always_mask,
+            mask_type=mask_type,
+            results_subdir=results_subdir,
         )
-        results_summary["vlm_levels_mask"] = accuracy_data_mask
+        results_summary["vlm_levels"] = accuracy_data
     except Exception as e:
-        print(f"Error in masked yes/no experiment: {e}")
+        print(f"Error in original dataset masked experiment: {e}")
         import traceback
+
         traceback.print_exc()
-        results_summary["vlm_levels_mask"] = None
-    
-    # Experiment 2: vlm_levels - Yes/No questions with masking (always, even when relation doesn't exist)
-    print("\n" + "="*80)
-    print("EXPERIMENT 2: vlm_levels - Yes/No Questions WITH MASKING (always, even when relation doesn't exist)")
-    print("="*80)
+        results_summary["vlm_levels"] = None
+
+    # Experiment 1: existential yes/no
+    print("\n" + "=" * 80)
+    print("EXPERIMENT 1 (MASKED): vlm_levels - Existential Yes/No Questions")
+    print("=" * 80)
     try:
-        accuracy_data_mask_always = compute_data_mask_always_accuracy(
+        accuracy_yesno = compute_existential_accuracy(
+            level_ids=level_ids,
+            prompt_strategy="existential_yesno",
+            qa_key="qa_existential_yesno",
+            experiment_name="existential_yesno",
+            show_output=show_output,
+            use_attention_mask=use_attention_mask,
+            always_mask=always_mask,
+            mask_type=mask_type,
+            results_subdir=results_subdir,
+        )
+        results_summary["vlm_levels_yesno"] = accuracy_yesno
+    except Exception as e:
+        print(f"Error in existential yes/no masked experiment: {e}")
+        import traceback
+
+        traceback.print_exc()
+        results_summary["vlm_levels_yesno"] = None
+
+    # Experiment 2: existential attribute
+    print("\n" + "=" * 80)
+    print("EXPERIMENT 2 (MASKED): vlm_levels - Existential Attribute Questions")
+    print("=" * 80)
+    try:
+        accuracy_attribute = compute_existential_accuracy(
+            level_ids=level_ids,
+            prompt_strategy="existential_attribute",
+            qa_key="qa_existential_attribute",
+            experiment_name="existential_attribute",
+            show_output=show_output,
+            use_attention_mask=use_attention_mask,
+            always_mask=always_mask,
+            mask_type=mask_type,
+            results_subdir=results_subdir,
+        )
+        results_summary["vlm_levels_attribute"] = accuracy_attribute
+    except Exception as e:
+        print(f"Error in existential attribute masked experiment: {e}")
+        import traceback
+
+        traceback.print_exc()
+        results_summary["vlm_levels_attribute"] = None
+
+    # Experiment 3: vlm_levels_v2 - visual attribute
+    print("\n" + "=" * 80)
+    print("EXPERIMENT 3 (MASKED): vlm_levels_v2 - Visual Attribute Questions")
+    print("=" * 80)
+    try:
+        accuracy_v2 = compute_v2_accuracy(
             level_ids=level_ids,
             show_output=show_output,
+            use_attention_mask=use_attention_mask,
+            always_mask=always_mask,
+            mask_type=mask_type,
+            results_subdir=results_subdir,
         )
-        results_summary["vlm_levels_mask_always"] = accuracy_data_mask_always
+        results_summary["vlm_levels_v2"] = accuracy_v2
     except Exception as e:
-        print(f"Error in always-masked yes/no experiment: {e}")
+        print(f"Error in v2 masked experiment: {e}")
         import traceback
+
         traceback.print_exc()
-        results_summary["vlm_levels_mask_always"] = None
-    
-    # Experiment 3: vlm_levels_v2 - Attribute questions with masking
-    print("\n" + "="*80)
-    print("EXPERIMENT 3: vlm_levels_v2 - Attribute Questions WITH MASKING")
-    print("="*80)
+        results_summary["vlm_levels_v2"] = None
+
+    # Experiment 4: vlm_levels_v3 - visual relational
+    print("\n" + "=" * 80)
+    print("EXPERIMENT 4 (MASKED): vlm_levels_v3 - Visual Relational Questions")
+    print("=" * 80)
     try:
-        accuracy_v2_mask = compute_v2_mask_accuracy(
+        accuracy_v3 = compute_v3_accuracy(
             level_ids=level_ids,
             show_output=show_output,
+            use_attention_mask=use_attention_mask,
+            always_mask=always_mask,
+            mask_type=mask_type,
+            results_subdir=results_subdir,
         )
-        results_summary["vlm_levels_v2_mask"] = accuracy_v2_mask
+        results_summary["vlm_levels_v3"] = accuracy_v3
     except Exception as e:
-        print(f"Error in masked v2 experiment: {e}")
+        print(f"Error in v3 masked experiment: {e}")
         import traceback
+
         traceback.print_exc()
-        results_summary["vlm_levels_v2_mask"] = None
-    
-    # Experiment 4: vlm_levels_v3 - Relational questions with masking
-    print("\n" + "="*80)
-    print("EXPERIMENT 4: vlm_levels_v3 - Relational Questions WITH MASKING")
-    print("="*80)
-    try:
-        accuracy_v3_mask = compute_v3_mask_accuracy(
-            level_ids=level_ids,
-            show_output=show_output,
-        )
-        results_summary["vlm_levels_v3_mask"] = accuracy_v3_mask
-    except Exception as e:
-        print(f"Error in masked v3 experiment: {e}")
-        import traceback
-        traceback.print_exc()
-        results_summary["vlm_levels_v3_mask"] = None
-    
+        results_summary["vlm_levels_v3"] = None
+
     # Print summary
-    print("\n" + "="*80)
-    print("SUMMARY OF ALL MASKED EXPERIMENTS")
-    print("="*80)
+    print("\n" + "=" * 80)
+    print("SUMMARY (MASKED)")
+    print("=" * 80)
     for exp_name, accuracy in results_summary.items():
+        print(f"\n{exp_name}:")
         if accuracy is not None and len(accuracy) > 0:
-            print(f"\n{exp_name}:")
-            overall = accuracy.mean() if len(accuracy) > 0 else 0.0
-            print(f"  Overall: {overall:.2%}")
             for level, acc in accuracy.items():
                 print(f"  {level}: {acc:.2%}")
         else:
-            print(f"\n{exp_name}: Failed or no results")
-    
-    print("\n" + "="*80)
-    print("ALL MASKED EXPERIMENTS COMPLETE")
-    print("="*80)
+            print("  No results")
+
+    print("\n" + "=" * 80)
+    print("All masked experiments completed!")
+    print("=" * 80)
+    print(f"\nResults are saved in: results_llava_hf/{model_name}/{results_subdir}/")
+    print("  - data/ (original vlm_levels)")
+    print("  - data_v2/ (vlm_levels_v2)")
+    print("  - data_v3/ (vlm_levels_v3)")
+    print("  - existential_yesno/ (existential yes/no questions)")
+    print("  - existential_attribute/ (existential attribute questions)")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run masked accuracy experiments for all datasets")
-    parser.add_argument("--levels", nargs="+", default=None, 
-                        help="Level IDs to run (e.g., level_0 level_1). Default: all levels")
-    parser.add_argument("--show-output", action="store_true", 
-                        help="Show full model outputs during inference")
-    
+    parser.add_argument(
+        "--levels",
+        type=str,
+        nargs="+",
+        default=["level_0", "level_1", "level_2", "level_3", "level_4"],
+        help="Level IDs to run (default: all levels)",
+    )
+    parser.add_argument("--show-output", action="store_true", help="Show model outputs during inference")
+    parser.add_argument(
+        "--mask-type",
+        type=str,
+        default=DEFAULT_MASK_TYPE,
+        help="Masking strategy (passed to infer_model_for_levels)",
+    )
+    parser.add_argument(
+        "--results-subdir",
+        type=str,
+        default=DEFAULT_RESULTS_SUBDIR,
+        help="Subdirectory under results_llava_hf/<model>/ to store outputs",
+    )
+    parser.add_argument(
+        "--no-always-mask",
+        action="store_true",
+        help="Disable always_mask (only mask when relations exist)",
+    )
+    parser.add_argument(
+        "--no-mask",
+        action="store_true",
+        help="Disable attention masking (useful for A/B runs while keeping same output folder)",
+    )
+
     args = parser.parse_args()
-    
-    level_ids = args.levels if args.levels else None
-    
-    run_all_masked_experiments(level_ids=level_ids, show_output=args.show_output)
+
+    run_all_masked_experiments(
+        level_ids=args.levels,
+        show_output=args.show_output,
+        use_attention_mask=(not args.no_mask),
+        always_mask=(not args.no_always_mask),
+        mask_type=args.mask_type,
+        results_subdir=args.results_subdir,
+    )
+
