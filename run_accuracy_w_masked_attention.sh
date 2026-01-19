@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#SBATCH --job-name=objects_only_mask_accuracy      # Job name
+#SBATCH --account=deep_learning      # Account name
+#SBATCH --output=logs/objects_only_mask_accuracy_%j.out    # Standard output log (%j inserts JobID)
+#SBATCH --error=logs/objects_only_mask_accuracy_%j.err     # Standard error log
+#SBATCH --time=24:00:00              # Time limit (hrs:min:sec) - adjust as needed
+
+export HF_HOME="/work/scratch/$USER"
+
+# 1. Load modules (adjust based on your cluster's setup)
+# module load cuda/12.1
+
+# 2. Activate your virtual environment
+# Replace 'venv' with the actual path to your environment
+source venv/bin/activate
+source setup.sh
+
+echo "Running existential QA accuracy experiments..."
+python experiments/run_masked_accuracy_experiments.py
+
+echo "Job completed successfully!"
+
+EOF
