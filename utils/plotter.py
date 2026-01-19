@@ -330,11 +330,24 @@ class Plotter:
             values = list(accuracy_by_level.values())
 
         plt.figure(figsize=(6, 4))
-        plt.bar(labels, values)
+        bars = plt.bar(labels, values)
         plt.ylim(0, 1)
         plt.ylabel("Accuracy")
         plt.xlabel("Level")
         plt.title(title)
+        
+        # Add accuracy values on top of each bar
+        for bar, val in zip(bars, values):
+            plt.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 0.02,
+                f"{val:.2%}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+            )
+        
         plt.tight_layout()
         plt.savefig(out_path)
         plt.close()
